@@ -1,0 +1,24 @@
+---
+import Base from '../../layouts/Base.astro';
+import ContentTile from '../../components/ContentTile.astro';
+import EmptyState from '../../components/EmptyState.astro';
+import { getPublished, readingMinutes } from '../../lib/content';
+
+const articles = await getPublished('articles');
+---
+
+<Base title="Articles" description="Longer reads: what goes wrong, and what to do right.">
+  <section class="container page-head">
+    <h1>Articles</h1>
+    <p class="lede">Longer reads for when you want the full picture: what goes wrong, and what to do right.</p>
+  </section>
+  <section class="container">
+    {articles.length ? (
+      <div class="grid">
+        {articles.map((entry) => (
+          <ContentTile entry={entry} headingLevel="h2" meta={`${readingMinutes(entry.body ?? '')} min read`} />
+        ))}
+      </div>
+    ) : <EmptyState what="articles" />}
+  </section>
+</Base>

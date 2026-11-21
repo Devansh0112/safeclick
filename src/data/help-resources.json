@@ -1,0 +1,52 @@
+{
+  "_note": "Official help and reporting resources. Every link must be checked in a real browser before it is added (some government sites block automated checkers). Run `npm run check-links` as a first pass. Last checked: 2026-11-21.",
+  "region": "United States",
+  "resources": [
+    {
+      "name": "Report a scam to the Federal Trade Commission (FTC)",
+      "url": "https://reportfraud.ftc.gov/",
+      "what": "Tell the FTC about a scam, even if you didn't lose money. Your report helps stop scammers."
+    },
+    {
+      "name": "National Elder Fraud Hotline (U.S. Department of Justice)",
+      "url": "https://ovc.ojp.gov/program/stop-elder-fraud/providing-help-restoring-hope",
+      "phone": "1-833-FRAUD-11 (1-833-372-8311)",
+      "what": "Free help for adults aged 60 and older who may have been targeted by fraud. A real person will listen and help you take the next steps."
+    },
+    {
+      "name": "IdentityTheft.gov",
+      "url": "https://www.identitytheft.gov/",
+      "what": "If someone is using your personal information, get a step-by-step recovery plan."
+    },
+    {
+      "name": "FBI Internet Crime Complaint Center (IC3)",
+      "url": "https://www.ic3.gov/",
+      "what": "Report scams that happened online, by email, or through a website."
+    },
+    {
+      "name": "U.S. Postal Inspection Service",
+      "url": "https://www.uspis.gov/report",
+      "what": "Report scams that came by paper mail, like fake prize letters or fake checks."
+    },
+    {
+      "name": "Social Security Office of the Inspector General",
+      "url": "https://oig.ssa.gov/",
+      "what": "Report calls, letters or messages from people pretending to be Social Security."
+    },
+    {
+      "name": "AARP Fraud Watch Network Helpline",
+      "url": "https://www.aarp.org/money/scams-fraud/helpline/",
+      "what": "Free help from trained volunteers. You don't need to be an AARP member."
+    },
+    {
+      "name": "National Do Not Call Registry",
+      "url": "https://www.donotcall.gov/",
+      "what": "Add your number to cut down on sales calls, and report unwanted calls."
+    },
+    {
+      "name": "Eldercare Locator",
+      "url": "https://www.eldercare.acl.gov/",
+      "what": "Find local services for older adults and caregivers in your area."
+    }
+  ]
+}

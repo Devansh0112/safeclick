@@ -1,0 +1,75 @@
+---
+// A concept page automatically lists every card, video, article, story and
+// reading tagged with this concept. No manual linking needed.
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import ContentTile from '../../components/ContentTile.astro';
+import CardView from '../../components/CardView.astro';
+import { getConcepts, getByConcept, formatDuration, readingMinutes, type AnyEntry } from '../../lib/content';
+import type { CollectionEntry } from 'astro:content';
+
+export async function getStaticPaths() {
+  const concepts = await getConcepts();
+  return concepts.map((concept) => ({ params: { id: concept.id }, props: { concept } }));
+}
+const { concept } = Astro.props;
+const by = await getByConcept(concept.id);
+const total = Object.values(by).reduce((n, l) => n + l.length, 0);
+
+function metaFor(e: AnyEntry): string | undefined {
+  if (e.collection === 'videos') return formatDuration((e.data as CollectionEntry<'videos'>['data']).durationSeconds);
+  if (e.collection === 'articles' || e.collection === 'readings') return `${readingMinutes(e.body ?? '')} min read`;
+  if (e.collection === 'stories') return `About ${(e.data as CollectionEntry<'stories'>['data']).estimatedMinutes} min`;
+  return undefined;
+}
+
+const sections: { key: keyof typeof by; heading: string }[] = [
+  { key: 'stories', heading: 'Story games' },
+  { key: 'videos', heading: 'Videos' },
+  { key: 'articles', heading: 'Articles' },
+  { key: 'readings', heading: 'Readings (Older Adults Corner)' },
+  { key: 'quizzes', heading: 'Quizzes' },
+  { key: 'handouts', heading: 'Printable handouts' },
+];
+---
+
+<Base title={concept.data.title} description={concept.data.short}>
+  <Breadcrumbs items={[{ href: '/concepts/', label: 'Topics' }, { label: concept.data.title }]} />
+  <section class="container page-head">
+    <p class="big-emoji" aria-hidden="true">{concept.data.emoji}</p>
+    <h1>{concept.data.title}</h1>
+    <p class="lede">{concept.data.short}</p>
+  </section>
+
+  <div class="container">
+    {total === 0 && (
+      <div class="empty-state">
+        <p><strong>Nothing published on this topic yet.</strong></p>
+        <p><a href="/contribute/">Help us write something →</a></p>
+      </div>
+    )}
+
+    {by.cards.length > 0 && (
+      <section aria-labelledby="h-cards">
+        <h2 id="h-cards">Quick cards</h2>
+        <div class="grid">
+          {(by.cards as CollectionEntry<'cards'>[]).map((entry) => <CardView entry={entry} linkTitle headingLevel="h3" />)}
+        </div>
+      </section>
+    )}
+
+    {sections.map(({ key, heading }) => by[key].length > 0 && (
+      <section aria-labelledby={`h-${key}`}>
+        <h2 id={`h-${key}`}>{heading}</h2>
+        <div class="grid">
+          {by[key].map((entry) => <ContentTile entry={entry} showConcept={false} meta={metaFor(entry)} />)}
+        </div>
+      </section>
+    ))}
+  </div>
+</Base>
+
+<style>
+  .big-emoji { font-size: 3rem; margin: 0; line-height: 1; }
+  section + section { margin-top: 1rem; }
+</style>

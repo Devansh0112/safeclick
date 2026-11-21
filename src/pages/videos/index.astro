@@ -1,0 +1,28 @@
+---
+import Base from '../../layouts/Base.astro';
+import ContentTile from '../../components/ContentTile.astro';
+import EmptyState from '../../components/EmptyState.astro';
+import { getPublished, formatDuration } from '../../lib/content';
+
+const videos = await getPublished('videos');
+---
+
+<Base title="Videos" description="Short videos, 30 to 60 seconds each, about staying safe online.">
+  <section class="container page-head">
+    <h1>Short videos</h1>
+    <p class="lede">Quick, under-a-minute videos. Nothing loads from YouTube until you press play.</p>
+  </section>
+  <section class="container">
+    {videos.length ? (
+      <div class="grid">
+        {videos.map((entry) => (
+          <ContentTile
+            entry={entry}
+            headingLevel="h2"
+            meta={`${formatDuration(entry.data.durationSeconds)}${entry.data.placeholder ? ' · placeholder' : ''}`}
+          />
+        ))}
+      </div>
+    ) : <EmptyState what="videos" />}
+  </section>
+</Base>

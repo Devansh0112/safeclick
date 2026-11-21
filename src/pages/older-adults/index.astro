@@ -1,0 +1,114 @@
+---
+import Base from '../../layouts/Base.astro';
+import ReadingTools from '../../components/ReadingTools.astro';
+import HelpResources from '../../components/HelpResources.astro';
+import { getPublished, readingMinutes } from '../../lib/content';
+
+const readings = (await getPublished('readings')).sort((a, b) => a.data.order - b.data.order);
+const quizzes = await getPublished('quizzes');
+const handouts = (await getPublished('handouts')).sort((a, b) => a.data.order - b.data.order);
+const stories = (await getPublished('stories')).filter((s) => s.data.showInOlderAdults);
+---
+
+<Base
+  title="Older Adults Corner"
+  description="Calm, clear help with phone and mail scams, for older adults and their families."
+  bodyClass="older-adults"
+>
+  <section class="container readable page-head">
+    <h1>Older Adults Corner</h1>
+    <p class="lede">
+      Clear, calm help with scams that arrive by phone and by mail. Written for older adults and the people who care
+      about them. Read at your own pace. Nothing here is timed.
+    </p>
+    <ReadingTools />
+  </section>
+
+  <div class="container readable">
+    <section aria-labelledby="readings-h">
+      <h2 id="readings-h">Short readings</h2>
+      <p>Each one takes a few minutes and covers one kind of scam.</p>
+      {readings.length ? (
+        <ul class="big-list">
+          {readings.map((r) => (
+            <li>
+              <a href={`/older-adults/readings/${r.id}/`}>{r.data.title}</a>
+              <span class="sub">{r.data.summary} · {readingMinutes(r.body ?? '')} min read</span>
+            </li>
+          ))}
+        </ul>
+      ) : <p class="empty-state">Readings are being written and checked by experts. Please come back soon.</p>}
+    </section>
+
+    <section aria-labelledby="quizzes-h">
+      <h2 id="quizzes-h">Gentle quizzes</h2>
+      <p>Five questions each, with friendly explanations. No timer, no score, no pressure.</p>
+      {quizzes.length ? (
+        <ul class="big-list">
+          {quizzes.map((q) => (
+            <li>
+              <a href={`/older-adults/quizzes/${q.id}/`}>{q.data.title}</a>
+              <span class="sub">{q.data.summary}</span>
+            </li>
+          ))}
+        </ul>
+      ) : <p class="empty-state">Quizzes are on the way.</p>}
+    </section>
+
+    <section aria-labelledby="handouts-h">
+      <h2 id="handouts-h">Printable handouts and guides</h2>
+      <p>One page each. Print them and keep one by the phone or on the fridge.</p>
+      {handouts.length ? (
+        <ul class="big-list">
+          {handouts.map((h) => (
+            <li>
+              <a href={`/older-adults/handouts/${h.id}/`}>{h.data.kind === 'guide' ? '📋' : '🖨️'} {h.data.title}</a>
+              <span class="sub">{h.data.summary}</span>
+            </li>
+          ))}
+        </ul>
+      ) : <p class="empty-state">Handouts are on the way.</p>}
+    </section>
+
+    {stories.length > 0 && (
+      <section aria-labelledby="stories-h">
+        <h2 id="stories-h">Try a story</h2>
+        <p>Walk through a scam phone call safely, make choices, and see the warning signs afterward.</p>
+        <ul class="big-list">
+          {stories.map((s) => (
+            <li>
+              <a href={`/stories/${s.id}/`}>{s.data.title}</a>
+              <span class="sub">{s.data.summary}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+
+    <section aria-labelledby="family-h">
+      <h2 id="family-h">For families and caregivers</h2>
+      <p>
+        Scams can happen to anyone, at any age. The best protection is talking openly, without blame. Read these
+        together, set up a family safe word, and agree that anyone can call to double-check, any time, with no
+        judgment.
+      </p>
+    </section>
+
+    <HelpResources />
+  </div>
+</Base>
+
+<style>
+  section + section { margin-top: 2.5rem; }
+  .big-list { list-style: none; padding: 0; display: grid; gap: 0.75rem; }
+  .big-list li + li { margin-top: 0; }
+  .big-list li {
+    background: var(--surface);
+    border: var(--border-w) solid var(--line);
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+  }
+  .big-list a { font-weight: 700; font-size: 1.2em; }
+  .sub { display: block; color: var(--ink-soft); margin-top: 0.25rem; }
+  .empty-state { text-align: left; }
+</style>

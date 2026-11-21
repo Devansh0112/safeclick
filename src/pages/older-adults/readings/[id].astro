@@ -1,0 +1,40 @@
+---
+import { render } from 'astro:content';
+import Base from '../../../layouts/Base.astro';
+import Breadcrumbs from '../../../components/Breadcrumbs.astro';
+import ReviewBanner from '../../../components/ReviewBanner.astro';
+import ReadingTools from '../../../components/ReadingTools.astro';
+import Sources from '../../../components/Sources.astro';
+import { getPublished, readingMinutes } from '../../../lib/content';
+
+export async function getStaticPaths() {
+  const readings = await getPublished('readings');
+  return readings.map((entry) => ({ params: { id: entry.id }, props: { entry } }));
+}
+const { entry } = Astro.props;
+const d = entry.data;
+const { Content } = await render(entry);
+---
+
+<Base title={d.title} description={d.summary} bodyClass="older-adults">
+  <Breadcrumbs items={[{ href: '/older-adults/', label: 'Older Adults Corner' }, { label: d.title }]} />
+  <article class="container readable">
+    <ReviewBanner status={d.reviewStatus} reviewer={d.reviewer} reviewDate={d.reviewDate} />
+    <header class="page-head">
+      <h1>{d.title}</h1>
+      <p class="lede">{d.summary}</p>
+      <p class="meta">{readingMinutes(entry.body ?? '')} minute read</p>
+    </header>
+    <ReadingTools printable />
+    <div class="prose"><Content /></div>
+    {d.keyPoints.length > 0 && (
+      <aside class="callout callout--good" aria-labelledby="remember-h">
+        <h2 id="remember-h">Remember</h2>
+        <ul>{d.keyPoints.map((p) => <li>{p}</li>)}</ul>
+      </aside>
+    )}
+    <p class="no-print"><a href="/older-adults/#get-help">Where to get help and report a scam →</a></p>
+    <Sources sources={d.sources} />
+    <p class="no-print"><a href="/older-adults/">← Back to the Older Adults Corner</a></p>
+  </article>
+</Base>

@@ -1,0 +1,48 @@
+---
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import VideoEmbed from '../../components/VideoEmbed.astro';
+import ReviewBanner from '../../components/ReviewBanner.astro';
+import ConceptTag from '../../components/ConceptTag.astro';
+import Sources from '../../components/Sources.astro';
+import RelatedContent from '../../components/RelatedContent.astro';
+import { getPublished, formatDuration } from '../../lib/content';
+import { variantGroups, paragraphs } from '../../lib/variants';
+
+export async function getStaticPaths() {
+  const videos = await getPublished('videos');
+  return videos.map((entry) => ({ params: { id: entry.id }, props: { entry } }));
+}
+const { entry } = Astro.props;
+const d = entry.data;
+const groups = variantGroups({ title: d.title, summary: d.summary }, d.variants);
+---
+
+<Base title={d.title} description={d.summary}>
+  <Breadcrumbs items={[{ href: '/videos/', label: 'Videos' }, { label: d.title }]} />
+  <div class="container readable">
+    <ReviewBanner status={d.reviewStatus} reviewer={d.reviewer} reviewDate={d.reviewDate} />
+    {groups.map((g) => (
+      <div data-levels={g.attr} class="page-head">
+        <h1>{g.value.title}</h1>
+        <p class="lede">{g.value.summary}</p>
+      </div>
+    ))}
+    <p class="meta"><ConceptTag id={d.concept.id} /> <span>Length: {formatDuration(d.durationSeconds)}</span></p>
+    <VideoEmbed url={d.youtubeUrl} title={d.title} placeholder={d.placeholder} />
+    {d.transcript && (
+      <details class="transcript">
+        <summary>Read the transcript</summary>
+        {paragraphs(d.transcript).map((p) => <p>{p}</p>)}
+      </details>
+    )}
+    <Sources sources={d.sources} />
+  </div>
+  <div class="container"><RelatedContent conceptId={d.concept.id} exclude={{ collection: 'videos', id: entry.id }} /></div>
+</Base>
+
+<style>
+  .meta { margin: 0.5rem 0 1rem; }
+  .transcript { margin-top: 1rem; }
+  .transcript summary { cursor: pointer; font-weight: 700; color: var(--primary); min-height: 44px; display: flex; align-items: center; }
+</style>

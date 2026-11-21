@@ -1,0 +1,27 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Page not found">
+  <section class="container readable page-head">
+    <p class="big" aria-hidden="true">🧭</p>
+    <h1>We couldn't find that page</h1>
+    <p class="lede">The link might be old, or there may be a typo in the address. That happens to everyone.</p>
+    <div class="callout callout--good">
+      <h2>A quick safety tip while you're here</h2>
+      <p>
+        If you got here from a link in a message, it's a good habit to go to websites by typing the address yourself or
+        using a bookmark, instead of tapping links you weren't expecting.
+      </p>
+    </div>
+    <p class="actions">
+      <a class="btn" href="/">Go to the home page</a>
+      <a class="btn btn--ghost" href="/stories/">Play a story game</a>
+    </p>
+  </section>
+</Base>
+
+<style>
+  .big { font-size: 3rem; margin: 0; }
+  .actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1.5rem; }
+</style>

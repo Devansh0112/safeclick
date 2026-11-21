@@ -1,0 +1,53 @@
+---
+import Base from '../../layouts/Base.astro';
+import ContentTile from '../../components/ContentTile.astro';
+import EmptyState from '../../components/EmptyState.astro';
+import { getPublished } from '../../lib/content';
+
+const stories = await getPublished('stories');
+---
+
+<Base title="Story Games" description="Interactive scam stories. Make choices, watch the meters, then rewind to learn the red flags.">
+  <section class="container page-head">
+    <h1>Story games</h1>
+    <p class="lede">
+      Step into a story. Every choice moves the <strong>Trust</strong> meter and the
+      <strong>What the scammer knows about you</strong> meter. When the story ends, hit <strong>Rewind</strong> to
+      see the red flags and what to do next time. There are no wrong players, only sneaky scammers.
+    </p>
+  </section>
+  <section class="container">
+    {stories.length ? (
+      <ul class="grid plain">
+        {stories.map((entry) => (
+          <li data-story-card={entry.id}>
+            <ContentTile entry={entry} headingLevel="h2" meta={`About ${entry.data.estimatedMinutes} min`} />
+          </li>
+        ))}
+      </ul>
+    ) : <EmptyState what="story games" />}
+  </section>
+</Base>
+
+<script>
+  import { STORAGE_KEYS } from '../../site.config';
+  import { store } from '../../scripts/storage';
+  // Mark stories already finished on this device.
+  const progress = store.getJSON<{ stories?: Record<string, { endings: Record<string, string> }> }>(STORAGE_KEYS.progress, {});
+  document.querySelectorAll<HTMLElement>('[data-story-card]').forEach((card) => {
+    const done = progress.stories?.[card.dataset.storyCard ?? ''];
+    if (!done) return;
+    const n = Object.keys(done.endings).length;
+    const badge = document.createElement('p');
+    badge.className = 'done-badge';
+    badge.textContent = `✔ Played · ${n} ${n === 1 ? 'ending' : 'endings'} found`;
+    card.querySelector('.tile')?.appendChild(badge);
+  });
+</script>
+
+<style>
+  .plain { list-style: none; padding: 0; }
+  .plain li + li { margin-top: 0; }
+  .plain li { display: grid; }
+  :global(.done-badge) { margin: 0; font-weight: 700; color: var(--good); font-size: 0.9rem; }
+</style>

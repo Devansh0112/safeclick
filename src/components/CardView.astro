@@ -1,0 +1,66 @@
+---
+// One learning card: one idea, a "Red flag" and a "What to do".
+import { render, type CollectionEntry } from 'astro:content';
+import { variantGroups, paragraphs } from '../lib/variants';
+import ConceptTag from './ConceptTag.astro';
+
+interface Props {
+  entry: CollectionEntry<'cards'>;
+  /** On the index page each card links to its own page. */
+  linkTitle?: boolean;
+  headingLevel?: 'h1' | 'h2' | 'h3';
+}
+const { entry, linkTitle = false, headingLevel = 'h2' } = Astro.props;
+const H = headingLevel;
+const Sub = headingLevel === 'h1' ? 'h2' : headingLevel === 'h2' ? 'h3' : 'h4';
+const { Content } = await render(entry);
+const d = entry.data;
+const groups = variantGroups<{ title: string; body?: string; redFlag: string; whatToDo: string }>(
+  { title: d.title, redFlag: d.redFlag, whatToDo: d.whatToDo },
+  d.variants,
+);
+---
+
+<article class="learn-card">
+  {groups.map((g) => (
+    <div data-levels={g.attr} class="card-inner">
+      <H class="card-title">
+        {linkTitle ? <a href={`/cards/${entry.id}/`}>{g.value.title}</a> : g.value.title}
+      </H>
+      <div class="card-body">
+        {g.value.body ? paragraphs(g.value.body).map((p) => <p>{p}</p>) : <Content />}
+      </div>
+      <div class="callout callout--flag">
+        <Sub class="callout-h"><span aria-hidden="true">🚩</span> Red flag</Sub>
+        <p>{g.value.redFlag}</p>
+      </div>
+      <div class="callout callout--good">
+        <Sub class="callout-h"><span aria-hidden="true">✅</span> What to do</Sub>
+        <p>{g.value.whatToDo}</p>
+      </div>
+    </div>
+  ))}
+  <div class="card-foot">
+    <ConceptTag id={d.concept.id} />
+    {d.reviewStatus !== 'reviewed' && <span class="meta">({d.reviewStatus})</span>}
+  </div>
+</article>
+
+<style>
+  .learn-card {
+    background: var(--surface);
+    border: var(--border-w) solid var(--line);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+  }
+  .card-title { margin: 0 0 0.5rem; font-size: 1.3rem; }
+  .card-title a { color: var(--ink); }
+  .card-body :global(p) { margin-bottom: 0.75rem; }
+  .callout-h { font-size: 1rem; margin: 0 0 0.25rem; }
+  .callout--flag .callout-h { color: var(--flag); }
+  .callout--good .callout-h { color: var(--good); }
+  .card-foot { display: flex; gap: 0.5rem; align-items: center; margin-top: auto; padding-top: 0.5rem; }
+</style>

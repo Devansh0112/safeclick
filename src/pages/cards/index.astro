@@ -1,0 +1,26 @@
+---
+import Base from '../../layouts/Base.astro';
+import CardView from '../../components/CardView.astro';
+import EmptyState from '../../components/EmptyState.astro';
+import { getPublished } from '../../lib/content';
+
+const cards = await getPublished('cards');
+---
+
+<Base title="Cards" description="Quick cards: one idea each, with the red flag to watch for and what to do.">
+  <section class="container page-head">
+    <h1>Quick cards</h1>
+    <p class="lede">One idea per card. Spot the red flag, then learn what to do. Takes about 30 seconds each.</p>
+  </section>
+  <section class="container">
+    {cards.length ? (
+      <div class="grid cards-grid">
+        {cards.map((entry) => <CardView entry={entry} linkTitle />)}
+      </div>
+    ) : <EmptyState what="cards" />}
+  </section>
+</Base>
+
+<style>
+  .cards-grid { grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr)); }
+</style>

@@ -1,0 +1,54 @@
+---
+// Big, obvious text size and contrast buttons for the Older Adults Corner.
+// They drive the same saved settings as the header controls, so both stay in sync.
+interface Props { printable?: boolean }
+const { printable = false } = Astro.props;
+---
+
+<div class="reading-tools no-print" role="group" aria-label="Reading options">
+  <button type="button" class="btn btn--ghost" data-size-step="-1">A− <span class="visually-hidden">Smaller text</span></button>
+  <button type="button" class="btn btn--ghost" data-size-step="1">A+ <span class="visually-hidden">Larger text</span></button>
+  <button type="button" class="btn btn--ghost" data-contrast-toggle aria-pressed="false">High contrast</button>
+  {printable && <button type="button" class="btn" data-print>🖨️ Print this page</button>}
+</div>
+
+<script>
+  const SIZES = ['normal', 'large', 'larger', 'largest'];
+  const root = document.documentElement;
+
+  function setHeaderRadio(value: string) {
+    const input = document.querySelector<HTMLInputElement>(`input[name="text-size"][value="${value}"]`);
+    if (input) {
+      input.checked = true;
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+  }
+
+  document.querySelectorAll<HTMLButtonElement>('[data-size-step]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const current = SIZES.indexOf(root.dataset.textSize || 'normal');
+      const next = Math.max(0, Math.min(SIZES.length - 1, current + Number(btn.dataset.sizeStep)));
+      setHeaderRadio(SIZES[next]);
+    });
+  });
+
+  document.querySelectorAll<HTMLButtonElement>('[data-contrast-toggle]').forEach((btn) => {
+    const sync = () => btn.setAttribute('aria-pressed', String(root.dataset.contrast === 'high'));
+    sync();
+    btn.addEventListener('click', () => {
+      const box = document.querySelector<HTMLInputElement>('input[name="high-contrast"]');
+      if (box) {
+        box.checked = !box.checked;
+        box.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+      sync();
+    });
+  });
+
+  document.querySelectorAll<HTMLButtonElement>('[data-print]').forEach((btn) => btn.addEventListener('click', () => window.print()));
+</script>
+
+<style>
+  .reading-tools { display: flex; flex-wrap: wrap; gap: 0.6rem; margin: 1rem 0 1.5rem; }
+  .reading-tools [aria-pressed='true'] { background: var(--primary); color: var(--primary-ink); }
+</style>

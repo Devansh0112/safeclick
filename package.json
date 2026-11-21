@@ -1,0 +1,28 @@
+{
+  "name": "safeclick",
+  "version": "0.1.0",
+  "description": "Free, open source, playful lessons that help people of all ages stay safe online and avoid scams.",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "validate": "node scripts/validate-content.mjs",
+    "build": "node scripts/validate-content.mjs && astro build",
+    "build:preview": "node scripts/validate-content.mjs && SAFECLICK_INCLUDE_DRAFTS=1 astro build",
+    "preview": "astro preview",
+    "check-links": "node scripts/check-links.mjs"
+  },
+  "dependencies": {
+    "@astrojs/markdown-remark": "^7.3.10",
+    "@fontsource/atkinson-hyperlegible": "^5.3.0",
+    "astro": "^7.4.13",
+    "rehype-sanitize": "^6.0.0"
+  },
+  "devDependencies": {
+    "yaml": "^2.9.1"
+  }
+}

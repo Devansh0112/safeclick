@@ -1,0 +1,35 @@
+---
+import help from '../data/help-resources.json';
+interface Props { headingLevel?: 'h2' | 'h3' }
+const { headingLevel = 'h2' } = Astro.props;
+const H = headingLevel;
+---
+
+<section id="get-help" class="help" aria-labelledby="help-h">
+  <H id="help-h">Where to get help and report a scam</H>
+  <p>
+    If something happened, you are not alone and it is not your fault. Scammers are professionals. Reporting helps
+    you, and it helps protect other people too. ({help.region} resources.)
+  </p>
+  <p class="callout callout--good">
+    <strong>If you sent money in the last day or two,</strong> call your bank or the company you paid (gift card
+    company, money transfer service) right away using the number on your card or their official website. Ask them to
+    stop or reverse the payment.
+  </p>
+  <ul class="help-list">
+    {help.resources.map((r) => (
+      <li>
+        <a href={r.url} rel="noopener noreferrer" class="print-url" data-url={r.url}>{r.name}</a>
+        {'phone' in r && r.phone && <span class="phone"> · Phone: <strong>{r.phone}</strong></span>}
+        <br /><span class="what">{r.what}</span>
+      </li>
+    ))}
+  </ul>
+</section>
+
+<style>
+  .help-list { list-style: none; padding: 0; display: grid; gap: 1rem; }
+  .help-list li + li { margin-top: 0; }
+  .help-list a { font-weight: 700; }
+  .what { color: var(--ink-soft); }
+</style>

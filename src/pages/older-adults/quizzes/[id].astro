@@ -1,0 +1,133 @@
+---
+// Gentle quiz: no timer, no score, kind feedback after each answer.
+// Works without JavaScript (each question has a "Show the answer" section);
+// with JavaScript, feedback appears as soon as an option is picked.
+import Base from '../../../layouts/Base.astro';
+import Breadcrumbs from '../../../components/Breadcrumbs.astro';
+import ReviewBanner from '../../../components/ReviewBanner.astro';
+import ReadingTools from '../../../components/ReadingTools.astro';
+import Sources from '../../../components/Sources.astro';
+import { getPublished } from '../../../lib/content';
+
+export async function getStaticPaths() {
+  const quizzes = await getPublished('quizzes');
+  return quizzes.map((entry) => ({ params: { id: entry.id }, props: { entry } }));
+}
+const { entry } = Astro.props;
+const d = entry.data;
+---
+
+<Base title={d.title} description={d.summary} bodyClass="older-adults">
+  <Breadcrumbs items={[{ href: '/older-adults/', label: 'Older Adults Corner' }, { label: d.title }]} />
+  <div class="container readable">
+    <ReviewBanner status={d.reviewStatus} reviewer={d.reviewer} reviewDate={d.reviewDate} />
+    <header class="page-head">
+      <h1>{d.title}</h1>
+      <p class="lede">{d.intro ?? d.summary}</p>
+      <p>There's no timer and no score. Take your time, and pick the answer that feels right to you.</p>
+    </header>
+    <ReadingTools />
+
+    <div class="quiz" data-quiz>
+      {d.questions.map((q, qi) => (
+        <fieldset class="question" data-question>
+          <legend><span class="q-num">Question {qi + 1} of {d.questions.length}</span>{q.prompt}</legend>
+          <div class="options">
+            {q.options.map((o, oi) => (
+              <label class="option">
+                <input type="radio" name={`q${qi}`} value={String(oi)} data-correct={o.correct ? 'true' : 'false'} />
+                <span>{o.text}</span>
+              </label>
+            ))}
+          </div>
+          <div class="feedback" aria-live="polite" data-feedback>
+            {q.options.map((o, oi) => (
+              <p hidden data-feedback-for={String(oi)} class={o.correct ? 'fb fb--right' : 'fb fb--other'}>
+                <strong>{o.correct ? 'Yes, that’s the safest choice. ' : 'Good thought. Here’s another way to look at it. '}</strong>
+                {o.feedback}
+              </p>
+            ))}
+          </div>
+          <details class="answer no-js-answer">
+            <summary>Show the answer</summary>
+            {q.options.filter((o) => o.correct).map((o) => <p><strong>{o.text}</strong> {o.feedback}</p>)}
+          </details>
+        </fieldset>
+      ))}
+    </div>
+
+    <div class="finish callout callout--good" data-finish hidden tabindex="-1">
+      <h2>You’ve looked at every question</h2>
+      <p>
+        Thank you for taking the time. Every question you think through makes it easier to spot a scam when one shows
+        up for real. Feel free to try again, or share this quiz with someone you care about.
+      </p>
+      <p><a href="/older-adults/">← Back to the Older Adults Corner</a></p>
+    </div>
+
+    <Sources sources={d.sources} />
+  </div>
+</Base>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-quiz]').forEach((form) => {
+    form.classList.add('js');
+    const questions = [...form.querySelectorAll<HTMLFieldSetElement>('[data-question]')];
+    const finish = document.querySelector<HTMLElement>('[data-finish]');
+    const answered = new Set<number>();
+
+    questions.forEach((q, qi) => {
+      q.querySelectorAll<HTMLInputElement>('input[type="radio"]').forEach((input) => {
+        input.addEventListener('change', () => {
+          q.querySelectorAll<HTMLElement>('[data-feedback-for]').forEach((p) => {
+            p.hidden = p.dataset.feedbackFor !== input.value;
+          });
+          q.querySelectorAll('.option').forEach((l) => l.classList.remove('is-picked', 'is-right'));
+          const label = input.closest('.option');
+          label?.classList.add('is-picked');
+          if (input.dataset.correct === 'true') label?.classList.add('is-right');
+          answered.add(qi);
+          if (finish && answered.size === questions.length && finish.hidden) {
+            finish.hidden = false;
+          }
+        });
+      });
+    });
+  });
+</script>
+
+<style>
+  .quiz { display: grid; gap: 1.5rem; }
+  .question {
+    border: var(--border-w) solid var(--line);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    margin: 0;
+    background: var(--surface);
+  }
+  legend { float: left; width: 100%; font-weight: 700; font-size: 1.15em; padding: 0; }
+  legend + * { clear: both; }
+  .q-num { display: block; font-size: 0.8em; color: var(--ink-soft); font-weight: 400; }
+  .options { display: grid; gap: 0.6rem; margin-top: 0.75rem; }
+  .option {
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+    padding: 0.8rem 1rem;
+    border: 2px solid var(--line);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    min-height: 56px;
+  }
+  .option input { width: 1.5rem; height: 1.5rem; margin-top: 0.2rem; flex: none; accent-color: var(--primary); }
+  .option:has(input:focus-visible) { outline: 3px solid var(--focus); outline-offset: 2px; }
+  .option.is-picked { border-color: var(--primary); background: var(--primary-soft); }
+  .option.is-right { border-color: var(--good); background: var(--good-soft); }
+  .fb { margin: 1rem 0 0; padding: 0.75rem 1rem; border-radius: var(--radius-sm); }
+  .fb--right { background: var(--good-soft); border-left: 5px solid var(--good); }
+  .fb--other { background: var(--surface-2); border-left: 5px solid var(--primary); }
+  .answer { margin-top: 1rem; }
+  .answer summary { cursor: pointer; color: var(--primary); font-weight: 700; min-height: 44px; display: flex; align-items: center; }
+  .quiz.js .no-js-answer { display: none; }
+  .finish { margin-top: 2rem; }
+</style>

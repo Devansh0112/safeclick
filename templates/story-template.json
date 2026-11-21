@@ -1,0 +1,70 @@
+{
+  "title": "Your story title",
+  "concept": "smishing-vishing",
+  "relatedConcepts": [],
+  "ageLevels": ["everyone"],
+  "summary": "One sentence that tells players what the story is about.",
+  "estimatedMinutes": 4,
+  "showInOlderAdults": false,
+  "reviewStatus": "draft",
+  "reviewer": "",
+  "sources": [
+    { "title": "Name of the official guidance you based this on", "url": "https://..." }
+  ],
+  "variants": {
+    "kids": { "summary": "Optional simpler summary for the Kids level." }
+  },
+  "meters": [
+    { "id": "trust", "label": "Trust", "description": "How much you believe the person or message", "start": 30, "polarity": "neutral" },
+    { "id": "exposure", "label": "What the scammer knows about you", "start": 0, "polarity": "high-is-bad" }
+  ],
+  "start": "intro",
+  "scenes": {
+    "intro": {
+      "channel": "sms",
+      "speaker": "Unknown number",
+      "text": "What the player sees first. Use only made-up names and companies.",
+      "variants": { "kids": { "text": "Optional simpler text for the Kids level." } },
+      "redFlags": ["A warning sign in this moment", "Another warning sign"],
+      "choices": [
+        {
+          "id": "risky-choice",
+          "label": "What a busy, trusting person might do",
+          "to": "next-scene",
+          "effects": { "trust": 20, "exposure": 20 },
+          "safety": "risky",
+          "redFlag": "Required for risky choices: the warning sign the player missed.",
+          "lesson": "Required for risky choices: what to do instead."
+        },
+        {
+          "id": "safe-choice",
+          "label": "The careful choice",
+          "to": "good-ending",
+          "effects": { "trust": -10 },
+          "safety": "safe",
+          "lesson": "Optional: why this was a smart move."
+        }
+      ]
+    },
+    "next-scene": {
+      "channel": "web",
+      "text": "What happens next.",
+      "choices": [
+        { "id": "keep-going", "label": "Keep going", "to": "bad-ending", "effects": { "exposure": 50 }, "safety": "risky", "redFlag": "...", "lesson": "..." },
+        { "id": "stop", "label": "Stop and check", "to": "mixed-ending", "safety": "safe" }
+      ]
+    },
+    "good-ending": {
+      "text": "How the story ends.",
+      "ending": { "kind": "good", "title": "Short ending title", "rewindSummary": "One or two sentences shown at the top of the Rewind screen." }
+    },
+    "mixed-ending": {
+      "text": "How the story ends.",
+      "ending": { "kind": "mixed", "title": "Short ending title", "rewindSummary": "..." }
+    },
+    "bad-ending": {
+      "text": "How the story ends. Be kind: it happens to careful people too.",
+      "ending": { "kind": "bad", "title": "Short ending title", "rewindSummary": "..." }
+    }
+  }
+}

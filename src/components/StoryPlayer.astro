@@ -1,0 +1,155 @@
+---
+// Renders the shell for a story game. The engine fills it in on the client.
+// Story data is embedded as JSON (never as HTML or script code) and parsed with JSON.parse.
+import type { CollectionEntry } from 'astro:content';
+
+interface Props { entry: CollectionEntry<'stories'> }
+const { entry } = Astro.props;
+const d = entry.data;
+
+// Only the fields the engine needs. Escape "<" so the JSON can't close the tag.
+const payload = JSON.stringify({ meters: d.meters, start: d.start, scenes: d.scenes }).replace(/</g, '\\u003c');
+---
+
+<div class="story" data-story-root data-story-id={entry.id}>
+  <script type="application/json" set:html={payload} />
+  <div class="story-meters" data-story-meters aria-label="Story meters" role="group"></div>
+  <div class="story-stage" data-story-stage>
+    <div data-story-intro class="panel">
+      <p>Loading the story…</p>
+      <noscript>This story game needs JavaScript turned on. Everything else on this site works without it.</noscript>
+    </div>
+  </div>
+  <p class="visually-hidden" data-story-live aria-live="polite"></p>
+</div>
+
+<script>
+  import { bootStories } from '../scripts/story-engine.js';
+  bootStories();
+</script>
+
+<style>
+  .story { display: grid; gap: 1rem; }
+
+  /* Meters */
+  .story-meters { display: grid; gap: 0.75rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)); }
+  .story-meters :global(.meter) {
+    background: var(--surface);
+    border: var(--border-w) solid var(--line);
+    border-radius: var(--radius-sm);
+    padding: 0.6rem 0.8rem;
+  }
+  .story-meters :global(.meter-label) { display: flex; justify-content: space-between; gap: 0.5rem; font-weight: 700; font-size: 0.95rem; }
+  .story-meters :global(.meter-bar) { height: 12px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--line); overflow: hidden; margin-top: 0.35rem; }
+  .story-meters :global(.meter-fill) { height: 100%; background: var(--primary); transition: width 0.5s ease; }
+  .story-meters :global(.meter--high-is-bad .meter-fill) { background: var(--flag); }
+  .story-meters :global(.meter--high-is-good .meter-fill) { background: var(--good); }
+
+  /* Scenes */
+  .story-stage :global(.scene),
+  .story-stage :global(.rewind) {
+    background: var(--surface);
+    border: var(--border-w) solid var(--line);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    box-shadow: var(--shadow);
+    animation: scene-in 0.35s ease;
+  }
+  @keyframes scene-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+  .story-stage :global(.scene-heading) { margin: 0 0 0.75rem; font-size: 1.15rem; color: var(--ink-soft); }
+  .story-stage :global(.scene-body) { font-size: 1.15rem; }
+
+  /* Channel styles: make each medium feel different. */
+  .story-stage :global(.scene--sms .scene-body),
+  .story-stage :global(.scene--chat .scene-body) {
+    background: var(--surface-2);
+    border-radius: 18px 18px 18px 4px;
+    padding: 0.9rem 1.1rem;
+    max-width: 34rem;
+    border: var(--border-w) solid var(--line);
+  }
+  .story-stage :global(.scene--chat .scene-body) { border-left: 5px solid var(--primary); }
+  .story-stage :global(.scene--call .scene-body) {
+    border-left: 5px solid var(--mixed);
+    padding-left: 1rem;
+    font-style: italic;
+  }
+  .story-stage :global(.scene--email .scene-body),
+  .story-stage :global(.scene--letter .scene-body) {
+    border: var(--border-w) dashed var(--line);
+    padding: 1rem;
+    border-radius: var(--radius-sm);
+    background: var(--bg);
+  }
+  .story-stage :global(.scene-body p:last-child) { margin-bottom: 0; }
+
+  /* Choices */
+  .story-stage :global(.choices) { list-style: none; padding: 0; margin: 1.25rem 0 0.25rem; display: grid; gap: 0.6rem; }
+  .story-stage :global(.choices li + li) { margin-top: 0; }
+  .story-stage :global(.choice) {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-align: left;
+    min-height: 52px;
+    padding: 0.7rem 1rem;
+    border-radius: var(--radius-sm);
+    border: 2px solid var(--primary);
+    background: var(--surface);
+    color: var(--ink);
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.15s ease;
+  }
+  .story-stage :global(.choice:hover) { background: var(--primary-soft); transform: translateX(3px); }
+  .story-stage :global(.choice-key) {
+    flex: none;
+    display: inline-grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background: var(--primary);
+    color: var(--primary-ink);
+    font-size: 0.95rem;
+  }
+  .story-stage :global(.choice-hint) { font-size: 0.85rem; color: var(--ink-soft); margin: 0.5rem 0 0; }
+  @media (hover: none) { .story-stage :global(.choice-hint) { display: none; } }
+
+  /* Endings */
+  .story-stage :global(.ending-badge) {
+    display: inline-block;
+    font-weight: 700;
+    padding: 0.25rem 0.9rem;
+    border-radius: 999px;
+    margin: 0 0 0.5rem;
+  }
+  .story-stage :global(.ending--good .ending-badge) { background: var(--good-soft); color: var(--good); }
+  .story-stage :global(.ending--mixed .ending-badge) { background: var(--mixed-soft); color: var(--mixed); }
+  .story-stage :global(.ending--bad .ending-badge) { background: var(--flag-soft); color: var(--flag); }
+  .story-stage :global(.scene--ending .scene-heading) { font-size: 1.6rem; color: var(--ink); }
+  .story-stage :global(.scene-actions) { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1.25rem; }
+
+  /* Rewind */
+  .story-stage :global(.rewind-summary) { font-size: 1.15rem; }
+  .story-stage :global(.rewind-steps) { padding-left: 1.25rem; display: grid; gap: 1.25rem; }
+  .story-stage :global(.rewind-step) { padding-left: 0.25rem; }
+  .story-stage :global(.rewind-step + .rewind-step) { margin-top: 0; }
+  .story-stage :global(.rewind-quote) {
+    margin: 0 0 0.5rem;
+    padding: 0.5rem 0.9rem;
+    border-left: 4px solid var(--line);
+    color: var(--ink-soft);
+    font-style: italic;
+  }
+  .story-stage :global(.rewind-flags summary) { cursor: pointer; font-weight: 700; color: var(--primary); min-height: 44px; display: flex; align-items: center; }
+  .story-stage :global(.rewind-tally) { font-weight: 700; margin-top: 1.5rem; }
+  .story-stage :global(.callout h3) { margin: 0 0 0.25rem; font-size: 1rem; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .story-stage :global(.choice:hover) { transform: none; }
+  }
+</style>

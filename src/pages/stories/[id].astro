@@ -1,0 +1,47 @@
+---
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import ReviewBanner from '../../components/ReviewBanner.astro';
+import ConceptTag from '../../components/ConceptTag.astro';
+import StoryPlayer from '../../components/StoryPlayer.astro';
+import Sources from '../../components/Sources.astro';
+import RelatedContent from '../../components/RelatedContent.astro';
+import { getPublished } from '../../lib/content';
+import { variantGroups } from '../../lib/variants';
+
+export async function getStaticPaths() {
+  const stories = await getPublished('stories');
+  return stories.map((entry) => ({ params: { id: entry.id }, props: { entry } }));
+}
+const { entry } = Astro.props;
+const d = entry.data;
+const groups = variantGroups({ title: d.title, summary: d.summary }, d.variants);
+const forLevels = d.ageLevels.map((l) => ({ kids: 'Kids', everyone: 'Everyone', builders: 'Builders' })[l]).join(', ');
+---
+
+<Base title={d.title} description={d.summary}>
+  <Breadcrumbs items={[{ href: '/stories/', label: 'Story Games' }, { label: d.title }]} />
+  <div class="container readable">
+    <ReviewBanner status={d.reviewStatus} reviewer={d.reviewer} reviewDate={d.reviewDate} />
+    {groups.map((g) => (
+      <header data-levels={g.attr} class="page-head">
+        <h1>{g.value.title}</h1>
+        <p class="lede">{g.value.summary}</p>
+      </header>
+    ))}
+    <p class="meta">
+      <ConceptTag id={d.concept.id} />
+      <span>About {d.estimatedMinutes} min</span>
+      <span>Best for: {forLevels}</span>
+    </p>
+    <p class="fiction-note">All names and companies in this story are made up.</p>
+    <StoryPlayer entry={entry} />
+    <Sources sources={d.sources} />
+  </div>
+  <div class="container"><RelatedContent conceptId={d.concept.id} exclude={{ collection: 'stories', id: entry.id }} /></div>
+</Base>
+
+<style>
+  .meta { margin-bottom: 0.5rem; }
+  .fiction-note { font-size: 0.9rem; color: var(--ink-soft); }
+</style>

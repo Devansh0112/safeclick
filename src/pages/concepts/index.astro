@@ -1,0 +1,34 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getConcepts, getByConcept } from '../../lib/content';
+
+const concepts = await getConcepts();
+const counts = await Promise.all(
+  concepts.map(async (c) => Object.values(await getByConcept(c.id)).reduce((n, list) => n + list.length, 0)),
+);
+---
+
+<Base title="Topics" description="Every topic, with its cards, videos, articles, stories and readings in one place.">
+  <section class="container page-head">
+    <h1>Topics</h1>
+    <p class="lede">Pick a topic to see everything about it in one place: cards, videos, articles, story games and readings.</p>
+  </section>
+  <section class="container">
+    <ul class="grid plain">
+      {concepts.map((c, i) => (
+        <li class="tile">
+          <span class="emoji" aria-hidden="true">{c.data.emoji}</span>
+          <h2><a class="tile-link" href={`/concepts/${c.id}/`}>{c.data.title}</a></h2>
+          <p>{c.data.short}</p>
+          <p class="count">{counts[i] === 1 ? '1 thing to explore' : `${counts[i]} things to explore`}</p>
+        </li>
+      ))}
+    </ul>
+  </section>
+</Base>
+
+<style>
+  .plain { list-style: none; padding: 0; }
+  .plain li + li { margin-top: 0; }
+  .count { font-size: 0.9rem; font-weight: 700; margin-top: auto !important; padding-top: 0.5rem; }
+</style>

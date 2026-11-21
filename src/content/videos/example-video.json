@@ -1,0 +1,12 @@
+{
+  "title": "EXAMPLE: Placeholder video",
+  "concept": "phishing",
+  "ageLevels": ["everyone"],
+  "summary": "Placeholder entry. Add a YouTube URL in youtubeUrl and set placeholder to false.",
+  "youtubeUrl": "",
+  "durationSeconds": 45,
+  "placeholder": true,
+  "reviewStatus": "draft",
+  "reviewer": "",
+  "sources": []
+}

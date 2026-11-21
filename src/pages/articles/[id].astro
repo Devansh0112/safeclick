@@ -1,0 +1,59 @@
+---
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import ReviewBanner from '../../components/ReviewBanner.astro';
+import ConceptTag from '../../components/ConceptTag.astro';
+import Sources from '../../components/Sources.astro';
+import RelatedContent from '../../components/RelatedContent.astro';
+import { getPublished, readingMinutes } from '../../lib/content';
+import { variantGroups } from '../../lib/variants';
+
+export async function getStaticPaths() {
+  const articles = await getPublished('articles');
+  return articles.map((entry) => ({ params: { id: entry.id }, props: { entry } }));
+}
+const { entry } = Astro.props;
+const d = entry.data;
+const { Content, headings } = await render(entry);
+const groups = variantGroups({ title: d.title, summary: d.summary }, d.variants);
+const toc = headings.filter((h) => h.depth === 2);
+---
+
+<Base title={d.title} description={d.summary}>
+  <Breadcrumbs items={[{ href: '/articles/', label: 'Articles' }, { label: d.title }]} />
+  <article class="container readable">
+    <ReviewBanner status={d.reviewStatus} reviewer={d.reviewer} reviewDate={d.reviewDate} />
+    {groups.map((g) => (
+      <header data-levels={g.attr} class="page-head">
+        <h1>{g.value.title}</h1>
+        <p class="lede">{g.value.summary}</p>
+      </header>
+    ))}
+    <p class="meta">
+      <ConceptTag id={d.concept.id} />
+      <span>{readingMinutes(entry.body ?? '')} min read</span>
+    </p>
+    {toc.length > 1 && (
+      <nav class="toc panel" aria-label="On this page">
+        <p class="toc-h">On this page</p>
+        <ol>{toc.map((h) => <li><a href={`#${h.slug}`}>{h.text}</a></li>)}</ol>
+      </nav>
+    )}
+    <div class="prose"><Content /></div>
+    <Sources sources={d.sources} />
+  </article>
+  <div class="container"><RelatedContent conceptId={d.concept.id} exclude={{ collection: 'articles', id: entry.id }} heading="Related" /></div>
+</Base>
+
+<style>
+  .meta { margin-bottom: 1.5rem; }
+  .toc { margin-bottom: 2rem; }
+  .toc-h { font-weight: 700; margin-bottom: 0.25rem; }
+  .toc ol { margin: 0; }
+  .prose :global(h2) { padding-top: 0.5rem; border-top: var(--border-w) solid var(--line); }
+  /* Authors mark the two key sections with these exact headings. */
+  .prose :global(h2#what-goes-wrong) { color: var(--flag); }
+  .prose :global(h2#what-to-do-right) { color: var(--good); }
+  .prose :global(blockquote) { margin: 1rem 0; padding: 0.75rem 1rem; border-left: 5px solid var(--primary); background: var(--surface-2); border-radius: var(--radius-sm); }
+</style>

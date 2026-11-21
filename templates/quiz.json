@@ -1,0 +1,19 @@
+{
+  "title": "Title",
+  "concept": "impersonation-scams",
+  "ageLevels": ["everyone"],
+  "summary": "One sentence.",
+  "intro": "Optional friendly introduction.",
+  "reviewStatus": "draft",
+  "reviewer": "",
+  "sources": [{ "title": "...", "url": "https://..." }],
+  "questions": [
+    {
+      "prompt": "Question text (write 5 questions).",
+      "options": [
+        { "text": "An answer", "correct": true, "feedback": "Kind explanation of why this is the safest choice." },
+        { "text": "Another answer", "feedback": "Kind, non-judgmental explanation. Never 'Wrong!'." }
+      ]
+    }
+  ]
+}

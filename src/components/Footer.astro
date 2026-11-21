@@ -1,0 +1,51 @@
+---
+import { SITE } from '../site.config';
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div>
+      <p class="footer-brand">🛡️ {SITE.name}</p>
+      <p>{SITE.tagline}</p>
+      <p class="privacy">
+        <strong>Your privacy:</strong> no accounts, no cookies, no tracking. Your settings and game progress are saved
+        only in this browser.
+      </p>
+    </div>
+    <div>
+      <h2 class="footer-h">Need help now?</h2>
+      <ul>
+        <li><a href="/older-adults/#get-help">Where to report a scam</a></li>
+        <li><a href="/older-adults/">Older Adults Corner</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2 class="footer-h">Open source</h2>
+      <ul>
+        <li><a href={SITE.repoUrl}>Source code</a> ({SITE.codeLicense})</li>
+        <li>Content: <a href={SITE.contentLicenseUrl}>{SITE.contentLicense}</a></li>
+        <li><a href="/contribute/">Help out, no code needed</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="container small">
+    <p>© {year} {SITE.name} contributors. Educational content, not legal or financial advice.</p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    background: var(--surface-2);
+    border-top: var(--border-w) solid var(--line);
+    padding: 2rem 0 1rem;
+    font-size: 0.95rem;
+  }
+  .footer-grid { display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)); }
+  .footer-brand { font-weight: 700; font-size: 1.15rem; margin-bottom: 0.25rem; }
+  .footer-h { font-size: 1rem; margin: 0 0 0.5rem; }
+  ul { list-style: none; padding: 0; }
+  .privacy { color: var(--ink-soft); }
+  .small { color: var(--ink-soft); font-size: 0.85rem; margin-top: 1rem; }
+  @media print { .site-footer { display: none; } }
+</style>

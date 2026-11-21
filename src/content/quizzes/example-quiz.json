@@ -1,0 +1,47 @@
+{
+  "title": "EXAMPLE: Quiz format",
+  "concept": "impersonation-scams",
+  "ageLevels": ["everyone"],
+  "summary": "Example five-question quiz showing the format. Replace with real, reviewed content.",
+  "intro": "This example shows how quizzes work. Each answer gets a kind explanation.",
+  "reviewStatus": "draft",
+  "reviewer": "",
+  "sources": [{ "title": "CISA: Secure Our World", "url": "https://www.cisa.gov/secure-our-world" }],
+  "questions": [
+    {
+      "prompt": "Example question 1. A caller says it's urgent. What's a good first step?",
+      "options": [
+        { "text": "Do what they say quickly", "feedback": "Many people feel that pull. Scammers create urgency on purpose, so slowing down is the safest move." },
+        { "text": "Hang up and call back on a number you already know", "correct": true, "feedback": "Calling back on a number you trust lets you check calmly." }
+      ]
+    },
+    {
+      "prompt": "Example question 2.",
+      "options": [
+        { "text": "Example answer A", "correct": true, "feedback": "Example kind feedback for the correct answer." },
+        { "text": "Example answer B", "feedback": "Example kind feedback for another answer." }
+      ]
+    },
+    {
+      "prompt": "Example question 3.",
+      "options": [
+        { "text": "Example answer A", "feedback": "Example kind feedback." },
+        { "text": "Example answer B", "correct": true, "feedback": "Example kind feedback." }
+      ]
+    },
+    {
+      "prompt": "Example question 4.",
+      "options": [
+        { "text": "Example answer A", "correct": true, "feedback": "Example kind feedback." },
+        { "text": "Example answer B", "feedback": "Example kind feedback." }
+      ]
+    },
+    {
+      "prompt": "Example question 5.",
+      "options": [
+        { "text": "Example answer A", "feedback": "Example kind feedback." },
+        { "text": "Example answer B", "correct": true, "feedback": "Example kind feedback." }
+      ]
+    }
+  ]
+}

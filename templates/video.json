@@ -1,0 +1,13 @@
+{
+  "title": "Title",
+  "concept": "public-wifi",
+  "ageLevels": ["everyone"],
+  "summary": "One sentence.",
+  "youtubeUrl": "https://www.youtube.com/watch?v=XXXXXXXXXXX",
+  "durationSeconds": 45,
+  "placeholder": false,
+  "transcript": "Optional, but please add one for accessibility.",
+  "reviewStatus": "draft",
+  "reviewer": "",
+  "sources": [{ "title": "...", "url": "https://..." }]
+}

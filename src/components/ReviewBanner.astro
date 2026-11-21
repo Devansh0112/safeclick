@@ -1,0 +1,30 @@
+---
+// Shown on any content that is not yet reviewed. In production builds such content
+// is never built at all, so this banner only appears in dev and preview builds.
+interface Props {
+  status: string;
+  reviewer?: string;
+  reviewDate?: Date;
+}
+const { status, reviewer, reviewDate } = Astro.props;
+const labels: Record<string, string> = {
+  draft: 'Draft',
+  'in-review': 'In review',
+};
+---
+
+{status !== 'reviewed' ? (
+  <div class="review-banner" role="note">
+    <strong>{labels[status] ?? status}: not yet checked by a reviewer.</strong>
+    {' '}You are seeing this because this is a preview. It will not appear on the live site until a security
+    professional or partner organization has reviewed it.
+  </div>
+) : (
+  <p class="reviewed-note">
+    ✔ Reviewed{reviewer ? ` by ${reviewer}` : ''}{reviewDate ? ` on ${reviewDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' })}` : ''}
+  </p>
+)}
+
+<style>
+  .reviewed-note { color: var(--good); font-size: 0.95rem; font-weight: 700; }
+</style>

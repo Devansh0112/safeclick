@@ -1,0 +1,83 @@
+---
+// Privacy-first YouTube embed.
+// Nothing is loaded from YouTube until the viewer presses Play. Then we load
+// the youtube-nocookie.com player. Placeholders (no URL yet) show a labeled box.
+interface Props {
+  url?: string;
+  title: string;
+  placeholder?: boolean;
+}
+import { youtubeId } from '../lib/video';
+const { url = '', title, placeholder = false } = Astro.props;
+
+const id = placeholder ? null : youtubeId(url);
+---
+
+<div class="video-frame">
+  {id ? (
+    <div class="video-facade" data-video-id={id} data-video-title={title}>
+      <button type="button" class="btn video-play">
+        <span aria-hidden="true">▶</span> Play video<span class="visually-hidden">: {title}</span>
+      </button>
+      <p class="video-note">Plays from YouTube. YouTube may store data on your device once you press play.</p>
+    </div>
+  ) : (
+    <div class="video-placeholder" role="img" aria-label={`Video placeholder: ${title}. Video coming soon.`}>
+      <span class="ph-badge">Placeholder</span>
+      <span aria-hidden="true" class="ph-icon">🎬</span>
+      <span class="ph-text">Video coming soon</span>
+    </div>
+  )}
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('.video-facade').forEach((facade) => {
+    const button = facade.querySelector('button');
+    button?.addEventListener('click', () => {
+      const id = facade.dataset.videoId ?? '';
+      if (!/^[A-Za-z0-9_-]{11}$/.test(id)) return;
+      const iframe = document.createElement('iframe');
+      iframe.src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`;
+      iframe.title = facade.dataset.videoTitle ?? 'Video';
+      iframe.allow = 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture';
+      iframe.allowFullscreen = true;
+      iframe.referrerPolicy = 'strict-origin-when-cross-origin';
+      iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-presentation allow-popups');
+      facade.replaceWith(iframe);
+      iframe.focus();
+    });
+  });
+</script>
+
+<style>
+  .video-frame {
+    aspect-ratio: 16 / 9;
+    width: 100%;
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: var(--surface-2);
+    border: var(--border-w) solid var(--line);
+  }
+  .video-frame :global(iframe) { width: 100%; height: 100%; border: 0; display: block; }
+  .video-facade, .video-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    text-align: center;
+  }
+  .video-note { font-size: 0.85rem; color: var(--ink-soft); margin: 0; max-width: 22rem; }
+  .video-placeholder { position: relative; color: var(--ink-soft); }
+  .ph-icon { font-size: 2.5rem; }
+  .ph-text { font-weight: 700; }
+  .ph-badge {
+    position: absolute; top: 0.75rem; left: 0.75rem;
+    font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
+    background: var(--draft-soft); color: var(--draft);
+    padding: 0.1rem 0.6rem; border-radius: 999px;
+  }
+</style>

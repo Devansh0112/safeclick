@@ -1,0 +1,46 @@
+name: "🎮 Story idea"
+description: Suggest an interactive story game.
+title: "Story idea: "
+labels: ["content", "story"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Story games put players inside a scam, let them make choices, and then **Rewind** to show the red flags. You don't need to write the whole thing. A rough idea is great. Please use made-up names only.
+  - type: dropdown
+    id: audience
+    attributes:
+      label: Who is it for?
+      multiple: true
+      options: [Kids, Everyone, Builders, Older adults]
+    validations:
+      required: true
+  - type: input
+    id: concept
+    attributes:
+      label: Topic
+      description: e.g. phishing, smishing and vishing, passwords, two-factor authentication, privacy
+  - type: textarea
+    id: setup
+    attributes:
+      label: The setup
+      description: How does the story start? Who contacts the player, and how?
+    validations:
+      required: true
+  - type: textarea
+    id: choices
+    attributes:
+      label: Key choices and endings
+      description: What tempting risky choices and smart safe choices could the player make? How might it end?
+  - type: textarea
+    id: lessons
+    attributes:
+      label: Red flags and lessons
+      description: What should players learn on the Rewind screen?
+  - type: checkboxes
+    id: help
+    attributes:
+      label: Can you help?
+      options:
+        - label: I'd like to write this story myself
+        - label: I can playtest it

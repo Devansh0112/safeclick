@@ -1,0 +1,40 @@
+name: "🗞️ Scam of the week suggestion"
+description: Tell us about a scam that's going around, so we can write about it.
+title: "Scam of the week: "
+labels: ["content", "scam-of-the-week"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping keep people safe! **Please don't share personal details**, real phone numbers, or working scam links. Describe the scam in your own words and remove names.
+  - type: dropdown
+    id: channel
+    attributes:
+      label: How did the scam arrive?
+      options: [Text message, Phone call, Email, Paper mail, Social media, Game or chat app, Website or pop-up, QR code, In person, Other]
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did the message or caller say or ask for? (Remove any personal details.)
+    validations:
+      required: true
+  - type: textarea
+    id: red-flags
+    attributes:
+      label: What gave it away?
+      description: Any warning signs you noticed.
+  - type: textarea
+    id: sources
+    attributes:
+      label: Official warnings about it
+      description: Links to warnings from the FTC, CISA, FBI, your bank, or similar, if you know any.
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: Before you submit
+      options:
+        - label: I removed personal details, real phone numbers and working scam links.
+          required: true

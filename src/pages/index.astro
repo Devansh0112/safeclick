@@ -1,0 +1,89 @@
+---
+import Base from '../layouts/Base.astro';
+import { SITE } from '../site.config';
+import { getConcepts } from '../lib/content';
+
+const concepts = await getConcepts();
+const sections = [
+  { href: '/stories/', emoji: '🎮', title: 'Story Games', text: 'Step into a scam story. Make choices, watch the meters, then rewind to see the red flags.' },
+  { href: '/cards/', emoji: '🃏', title: 'Quick Cards', text: 'One idea per card. A red flag and what to do, in under a minute.' },
+  { href: '/videos/', emoji: '🎬', title: 'Short Videos', text: 'Under-a-minute videos on one topic each.' },
+  { href: '/articles/', emoji: '📖', title: 'Articles', text: 'The full picture: what goes wrong, and what to do right.' },
+  { href: '/older-adults/', emoji: '☕', title: 'Older Adults Corner', text: 'Calm, clear help with phone and mail scams. Large text and printable handouts.' },
+];
+---
+
+<Base>
+  <section class="hero">
+    <div class="container hero-inner">
+      <h1>Spot the scam. <span class="accent">Keep your cool.</span></h1>
+      <p class="lede">
+        {SITE.name} helps people of every age stay safe online, through story games, quick cards and plain-language guides.
+        Free, open source, and no sign-up. We don't track you.
+      </p>
+      <div class="cta">
+        <a class="btn" href="/stories/">Play a story game</a>
+        <a class="btn btn--ghost" href="/cards/">Browse quick cards</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="container" aria-labelledby="explore-h">
+    <h2 id="explore-h">Ways to learn</h2>
+    <ul class="grid plain">
+      {sections.map((s) => (
+        <li class="tile">
+          <span class="emoji" aria-hidden="true">{s.emoji}</span>
+          <h3><a class="tile-link" href={s.href}>{s.title}</a></h3>
+          <p>{s.text}</p>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="container" aria-labelledby="topics-h">
+    <h2 id="topics-h">Pick a topic</h2>
+    <ul class="topic-chips plain">
+      {concepts.map((c) => (
+        <li><a class="chip" href={`/concepts/${c.id}/`}><span aria-hidden="true">{c.data.emoji}</span> {c.data.title}</a></li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="container" aria-labelledby="levels-h">
+    <h2 id="levels-h">Made for every age</h2>
+    <p class="readable">Use the <strong>Show content for</strong> switch at the top of every page:</p>
+    <ul class="readable">
+      <li><strong>Kids:</strong> simpler words and examples from games and chats.</li>
+      <li><strong>Everyone:</strong> clear, practical advice for teens and adults.</li>
+      <li><strong>Builders:</strong> extra notes for people who make apps and websites.</li>
+    </ul>
+  </section>
+</Base>
+
+<style>
+  .hero {
+    background: linear-gradient(160deg, var(--primary-soft), var(--bg) 70%);
+    border-bottom: var(--border-w) solid var(--line);
+    padding: 2.5rem 0 2rem;
+    margin-bottom: 1rem;
+  }
+  .hero h1 { margin-top: 0; max-width: 20ch; }
+  .accent { color: var(--primary); }
+  .lede { font-size: 1.2rem; max-width: 40rem; color: var(--ink-soft); }
+  .cta { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1.25rem; }
+  .plain { list-style: none; padding: 0; }
+  .plain li + li { margin-top: 0; }
+  .topic-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    min-height: 44px; padding: 0.4rem 1rem;
+    border-radius: 999px;
+    border: var(--border-w) solid var(--line);
+    background: var(--surface);
+    color: var(--ink);
+    font-weight: 700;
+    text-decoration: none;
+  }
+  .chip:hover { border-color: var(--primary); color: var(--primary); }
+</style>

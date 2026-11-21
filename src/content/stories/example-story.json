@@ -1,0 +1,94 @@
+{
+  "title": "EXAMPLE: The surprise prize message",
+  "concept": "urgency-fear",
+  "relatedConcepts": ["smishing-vishing", "privacy-oversharing"],
+  "showInOlderAdults": true,
+  "ageLevels": ["kids", "everyone"],
+  "summary": "A short example story that shows every feature of the story engine. Replace with real, reviewed stories.",
+  "estimatedMinutes": 2,
+  "reviewStatus": "draft",
+  "reviewer": "",
+  "sources": [
+    { "title": "FTC: How to Recognize and Report Spam Text Messages", "url": "https://consumer.ftc.gov/articles/how-recognize-and-report-spam-text-messages" }
+  ],
+  "variants": {
+    "kids": { "summary": "A quick example story about a message that says you won a prize." }
+  },
+  "meters": [
+    { "id": "trust", "label": "Trust", "description": "How much you believe the message", "start": 30, "polarity": "neutral" },
+    { "id": "exposure", "label": "What the scammer knows about you", "start": 0, "polarity": "high-is-bad" }
+  ],
+  "start": "intro",
+  "scenes": {
+    "intro": {
+      "channel": "sms",
+      "speaker": "Unknown number",
+      "text": "CONGRATS! You won a $500 Brightmart gift card! Claim in the next 10 minutes or it goes to someone else: brightmart-prizes.example",
+      "variants": {
+        "kids": { "text": "YOU WON 5,000 free gems for Starfall Quest! Claim in the next 10 minutes or they go to someone else. Tap here!" }
+      },
+      "redFlags": ["A prize you never entered to win", "A tight deadline", "A link from a number you don't know"],
+      "choices": [
+        {
+          "id": "tap-link",
+          "label": "Tap the link to claim it",
+          "to": "form",
+          "effects": { "trust": 30, "exposure": 10 },
+          "safety": "risky",
+          "redFlag": "You never entered a contest, and the message gave you only 10 minutes. Real prizes don't rush you.",
+          "lesson": "Don't tap links in surprise prize messages. If you think it might be real, go to the company's website by typing the address yourself.",
+          "variants": { "kids": { "lesson": "Don't tap links in surprise prize messages. Show a grown-up you trust first." } }
+        },
+        {
+          "id": "ignore",
+          "label": "Ignore it and delete the message",
+          "to": "end-good",
+          "effects": { "trust": -20 },
+          "safety": "safe",
+          "lesson": "Exactly right. A surprise prize with a countdown is a classic trick."
+        }
+      ],
+      "editor": { "x": 0, "y": 0 }
+    },
+    "form": {
+      "channel": "web",
+      "speaker": "Prize page",
+      "text": "Almost there! Enter your full name, home address and phone number so we can send your prize.",
+      "redFlags": ["A prize page asking for personal details"],
+      "choices": [
+        {
+          "id": "fill-form",
+          "label": "Fill in the form",
+          "to": "end-bad",
+          "effects": { "exposure": 60 },
+          "safety": "risky",
+          "redFlag": "The page wanted your name, address and phone number. Scammers collect these to trick you again or to pretend to be you.",
+          "lesson": "Close the page. Never type personal details into a page you reached from a surprise message."
+        },
+        {
+          "id": "close-page",
+          "label": "Something feels off. Close the page.",
+          "to": "end-mixed",
+          "safety": "safe",
+          "lesson": "Good instinct. Trust that 'something feels off' feeling."
+        }
+      ],
+      "editor": { "x": 300, "y": 0 }
+    },
+    "end-good": {
+      "text": "You deleted the message and got on with your day. No prize, but no problem either.",
+      "ending": { "kind": "good", "title": "Not falling for it", "rewindSummary": "You spotted the trick right away. Surprise prizes with a countdown are designed to make you hurry." },
+      "editor": { "x": 300, "y": 200 }
+    },
+    "end-mixed": {
+      "text": "You closed the page before typing anything. The scammer knows your number works, so you might get more messages, but they got nothing else.",
+      "ending": { "kind": "mixed", "title": "A close call", "rewindSummary": "Tapping the link told the scammer your number is real, but you stopped before sharing anything else." },
+      "editor": { "x": 600, "y": 100 }
+    },
+    "end-bad": {
+      "text": "No gift card ever arrives. A week later, you start getting calls from people who know your name and address.",
+      "ending": { "kind": "bad", "title": "The prize was the bait", "rewindSummary": "The 'prize' was a way to collect your personal details. It happens to careful people too. That's why knowing the red flags helps." },
+      "editor": { "x": 600, "y": -100 }
+    }
+  }
+}

@@ -1,0 +1,51 @@
+---
+// A clickable tile for any content entry. Title/summary honor age variants.
+import { urlFor, TYPE_LABELS, type AnyEntry, type ReviewedCollection } from '../lib/content';
+import { variantGroups } from '../lib/variants';
+import ConceptTag from './ConceptTag.astro';
+
+interface Props {
+  entry: AnyEntry;
+  headingLevel?: 'h2' | 'h3';
+  showConcept?: boolean;
+  meta?: string;
+}
+const { entry, headingLevel = 'h3', showConcept = true, meta } = Astro.props;
+const H = headingLevel;
+const type = TYPE_LABELS[entry.collection as ReviewedCollection];
+const data = entry.data as AnyEntry['data'] & { variants?: Record<string, { title?: string; summary?: string }> };
+const groups = variantGroups(
+  { title: data.title, summary: data.summary },
+  'variants' in data ? (data.variants as Record<string, { title?: string; summary?: string }>) : {},
+);
+---
+
+<article class="tile">
+  <div class="meta">
+    <span><span aria-hidden="true">{type.emoji}</span> {type.label}</span>
+    {meta && <span>{meta}</span>}
+    {data.reviewStatus !== 'reviewed' && <span class="draft-pill">{data.reviewStatus}</span>}
+  </div>
+  {groups.map((g) => (
+    <div data-levels={g.attr} class="stack-sm">
+      <H><a class="tile-link" href={urlFor(entry.collection, entry.id)}>{g.value.title}</a></H>
+      <p>{g.value.summary}</p>
+    </div>
+  ))}
+  {showConcept && <div class="tile-foot"><ConceptTag id={data.concept.id} /></div>}
+</article>
+
+<style>
+  .stack-sm { display: grid; gap: 0.4rem; }
+  .tile-foot { margin-top: auto; padding-top: 0.5rem; }
+  .draft-pill {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--draft);
+    background: var(--draft-soft);
+    border-radius: 999px;
+    padding: 0 0.5rem;
+  }
+</style>

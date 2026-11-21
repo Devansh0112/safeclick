@@ -1,0 +1,32 @@
+---
+// "Keep learning" block: everything else that shares this concept.
+import { getByConcept, type AnyEntry } from '../lib/content';
+import ContentTile from './ContentTile.astro';
+
+interface Props {
+  conceptId: string;
+  /** Exclude the current page. */
+  exclude?: { collection: string; id: string };
+  heading?: string;
+}
+const { conceptId, exclude, heading = 'Keep learning' } = Astro.props;
+const byType = await getByConcept(conceptId);
+const items: AnyEntry[] = Object.values(byType)
+  .flat()
+  .filter((e) => !(exclude && e.collection === exclude.collection && e.id === exclude.id))
+  .slice(0, 6);
+---
+
+{items.length > 0 && (
+  <section class="related" aria-labelledby="related-h">
+    <h2 id="related-h">{heading}</h2>
+    <div class="grid">
+      {items.map((entry) => <ContentTile entry={entry} showConcept={false} />)}
+    </div>
+    <p><a href={`/concepts/${conceptId}/`}>See everything on this topic →</a></p>
+  </section>
+)}
+
+<style>
+  .related { margin-top: 3rem; padding-top: 1rem; border-top: var(--border-w) solid var(--line); }
+</style>

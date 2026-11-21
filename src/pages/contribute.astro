@@ -1,0 +1,52 @@
+---
+import Base from '../layouts/Base.astro';
+import { SITE } from '../site.config';
+
+const ways = [
+  { emoji: '✍️', title: 'Write a story game', text: 'Turn a scam pattern into a choose-your-path story with made-up names. A rough outline is a great start.' },
+  { emoji: '🃏', title: 'Write a card or reading', text: 'Explain one idea in plain words: a red flag and what to do about it.' },
+  { emoji: '🔎', title: 'Fact-check', text: 'Compare our advice with official guidance from CISA, the FTC, NIST and OWASP. Flag anything outdated.' },
+  { emoji: '🎮', title: 'Playtest', text: 'Play a story with a kid, parent or grandparent and tell us what confused them.' },
+  { emoji: '🌍', title: 'Translate', text: 'Help bring this to people in their own language.' },
+  { emoji: '♿', title: 'Test accessibility', text: 'Try the site with a screen reader, keyboard only, or very large text.' },
+  { emoji: '🗞️', title: 'Suggest a scam of the week', text: 'Seen a scam going around? Tell us about it (without personal details).' },
+  { emoji: '🧑‍⚖️', title: 'Review content', text: 'Security professionals and partner organizations sign off on everything before it goes live.' },
+];
+---
+
+<Base title="Help out" description={`Ways to help ${SITE.name}, most of which need no coding at all.`}>
+  <section class="container page-head">
+    <h1>Help make the internet a little safer</h1>
+    <p class="lede">
+      {SITE.name} is free and open source. Most of the ways to help don't need any coding at all.
+    </p>
+  </section>
+  <section class="container">
+    <ul class="grid plain">
+      {ways.map((w) => (
+        <li class="tile">
+          <span class="emoji" aria-hidden="true">{w.emoji}</span>
+          <h2>{w.title}</h2>
+          <p>{w.text}</p>
+        </li>
+      ))}
+    </ul>
+    <div class="readable">
+      <h2>How to start</h2>
+      <p>
+        Read the <a href={`${SITE.repoUrl}/blob/main/CONTRIBUTING.md`}>contributing guide</a>, then open an issue or
+        pull request on <a href={SITE.repoUrl}>the project page</a>. If you'd rather not use GitHub, open an issue with
+        your text and a maintainer will turn it into a file for you.
+      </p>
+      <p>
+        Content is shared under <a href={SITE.contentLicenseUrl}>{SITE.contentLicense}</a> and code under
+        {' '}{SITE.codeLicense}, so schools, libraries and community groups can reuse it freely.
+      </p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .plain { list-style: none; padding: 0; }
+  .plain li + li { margin-top: 0; }
+</style>

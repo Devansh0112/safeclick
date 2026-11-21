@@ -1,0 +1,52 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { SITE, STORAGE_KEYS } from '../site.config';
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** Extra class on <body>, e.g. "older-adults" for the larger, calmer theme. */
+  bodyClass?: string;
+}
+
+const { title, description = SITE.description, bodyClass } = Astro.props;
+const fullTitle = title ? `${title} · ${SITE.name}` : `${SITE.name}: ${SITE.tagline}`;
+const keys = JSON.stringify(STORAGE_KEYS);
+---
+
+<!doctype html>
+<html lang="en" data-age="everyone">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <meta name="referrer" content="no-referrer" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <!-- Apply saved preferences before first paint so the page doesn't flash.
+         Reads localStorage only. Nothing leaves the device. -->
+    <script is:inline define:vars={{ keys }}>
+      (function () {
+        var k = JSON.parse(keys);
+        var d = document.documentElement;
+        try {
+          var age = localStorage.getItem(k.age);
+          if (age === 'kids' || age === 'everyone' || age === 'builders') d.dataset.age = age;
+          var size = localStorage.getItem(k.textSize);
+          if (size === 'large' || size === 'larger' || size === 'largest') d.dataset.textSize = size;
+          if (localStorage.getItem(k.contrast) === 'high') d.dataset.contrast = 'high';
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body class={bodyClass}>
+    <a class="skip-link" href="#main">Skip to main content</a>
+    <Header />
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

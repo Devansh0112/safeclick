@@ -1,0 +1,26 @@
+---
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import CardView from '../../components/CardView.astro';
+import ReviewBanner from '../../components/ReviewBanner.astro';
+import Sources from '../../components/Sources.astro';
+import RelatedContent from '../../components/RelatedContent.astro';
+import { getPublished } from '../../lib/content';
+
+export async function getStaticPaths() {
+  const cards = await getPublished('cards');
+  return cards.map((entry) => ({ params: { id: entry.id }, props: { entry } }));
+}
+const { entry } = Astro.props;
+const d = entry.data;
+---
+
+<Base title={d.title} description={d.summary}>
+  <Breadcrumbs items={[{ href: '/cards/', label: 'Cards' }, { label: d.title }]} />
+  <div class="container readable">
+    <ReviewBanner status={d.reviewStatus} reviewer={d.reviewer} reviewDate={d.reviewDate} />
+    <div class="page-head"><CardView entry={entry} headingLevel="h1" /></div>
+    <Sources sources={d.sources} />
+  </div>
+  <div class="container"><RelatedContent conceptId={d.concept.id} exclude={{ collection: 'cards', id: entry.id }} /></div>
+</Base>

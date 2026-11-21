@@ -1,0 +1,11 @@
+---
+import { getEntry } from 'astro:content';
+interface Props { id: string }
+const concept = await getEntry('concepts', Astro.props.id);
+---
+
+{concept && (
+  <a class="tag" href={`/concepts/${concept.id}/`}>
+    <span aria-hidden="true">{concept.data.emoji}</span> {concept.data.title}
+  </a>
+)}

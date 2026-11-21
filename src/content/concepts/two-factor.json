@@ -1,0 +1,6 @@
+{
+  "title": "Two-factor authentication",
+  "emoji": "🔐",
+  "short": "A second check when you log in, like a code or a tap on your phone, so a stolen password isn't enough.",
+  "order": 60
+}
