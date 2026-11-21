@@ -5,7 +5,7 @@ export const SITE = {
   tagline: 'Spot the scam. Keep your cool. Stay safe online.',
   description:
     'Free, open source, playful lessons that help people of all ages stay safe online and avoid scams.',
-  repoUrl: 'https://github.com/YOUR-ORG/safeclick',
+  repoUrl: 'https://github.com/Devansh0112/safeclick',
   codeLicense: 'MIT',
   contentLicense: 'CC BY 4.0',
   contentLicenseUrl: 'https://creativecommons.org/licenses/by/4.0/',

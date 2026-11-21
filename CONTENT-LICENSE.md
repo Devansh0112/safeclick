@@ -15,7 +15,7 @@ https://creativecommons.org/licenses/by/4.0/
 
 You are free to **share** (copy and redistribute in any medium or format) and **adapt** (remix, transform, and build upon) this content for any purpose, even commercially, as long as you give **attribution**:
 
-> Content from SafeClick (https://github.com/YOUR-ORG/safeclick), licensed under CC BY 4.0.
+> Content from SafeClick (https://github.com/Devansh0112/safeclick), licensed under CC BY 4.0.
 
 Indicate if you made changes. You may not suggest that SafeClick or its reviewers endorse you or your use.
 
