@@ -16,6 +16,17 @@ SafeClick is a free, open source website that teaches people of every age how to
 
 > "SafeClick" is a placeholder name. To rename, edit `src/site.config.ts`, the `name` in `package.json`, and this heading.
 
+## Screenshots
+
+![SafeClick home page](docs/screenshots/home.jpg)
+
+<table>
+  <tr>
+    <td width="50%"><img src="docs/screenshots/story-game.jpg" alt="Story game with Trust and scammer knowledge meters"><br><sub>Story game with the Trust and <i>What the scammer knows about you</i> meters (example draft story)</sub></td>
+    <td width="50%"><img src="docs/screenshots/older-adults.jpg" alt="Older Adults Corner with text size and contrast controls"><br><sub>Older Adults Corner with text size and contrast controls</sub></td>
+  </tr>
+</table>
+
 ## Run it locally
 
 You need [Node.js](https://nodejs.org/) 22.12 or newer.
