@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SafeClick game mockups (game-look-dark)</title>
+<style>body{margin:0;padding:24px;background:#1a1a1f;color:#e8e8ee;font-family:system-ui,sans-serif;line-height:1.5}h2{margin-top:0}.subtitle{color:#a8a8b8}.section{margin:28px 0}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}.card{background:#26262e;border-radius:10px;overflow:hidden}.card-body{padding:12px 14px}.card-body h3{margin:0 0 6px;font-size:16px}.card-body p{margin:0;color:#b8b8c8;font-size:14px}code{background:#33333d;padding:1px 4px;border-radius:3px}</style>
+</head><body>
+<p class="subtitle">Brainstorm mockup, rough sketches, not final art. See ../specs/2026-11-23-neon-city-game-brainstorm.md</p>
+<h2>Max's Safe Trip: dark "hacker" looks</h2>
+<p class="subtitle">Max is a young cyber-guardian moving through the internet. Scam bots are the bad guys. Rough sketches, not final art: the real game would add animation (glow pulses, rain, scrolling code).</p>
+
+<div class="section">
+<h3>Part 1 · Which dark look?</h3>
+<p class="subtitle">Same level each time: Gate 1 cleared, Max jumping toward Gate 2 (active), Gate 3 locked, the exit portal is point B.</p>
+
+<div class="cards">
+
+<!-- ============ D: NEON CITY ============ -->
+<div class="card" data-choice="neon-city">
+<div class="card-image">
+<svg viewBox="0 0 480 270" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;font-family:'Courier New',monospace">
+  <defs>
+    <linearGradient id="dSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#07021a"/><stop offset="1" stop-color="#2b0a4d"/></linearGradient>
+    <linearGradient id="dSun" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff3d9a"/><stop offset="1" stop-color="#ff9f43"/></linearGradient>
+    <filter id="dGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <rect width="480" height="270" fill="url(#dSky)"/>
+  <g fill="#fff" opacity=".6"><circle cx="40" cy="30" r="1"/><circle cx="130" cy="55" r="1"/><circle cx="210" cy="20" r="1.2"/><circle cx="350" cy="40" r="1"/><circle cx="455" cy="70" r="1"/><circle cx="300" cy="80" r="1"/></g>
+  <circle cx="240" cy="150" r="70" fill="url(#dSun)" opacity=".85"/>
+  <g fill="#2b0a4d"><rect x="160" y="120" width="160" height="4"/><rect x="160" y="132" width="160" height="6"/><rect x="160" y="146" width="160" height="8"/></g>
+  <!-- skyline -->
+  <g fill="#0d0526">
+    <rect x="0" y="120" width="40" height="90"/><rect x="38" y="95" width="30" height="115"/><rect x="66" y="135" width="44" height="75"/>
+    <rect x="110" y="105" width="26" height="105"/><rect x="330" y="110" width="34" height="100"/><rect x="362" y="85" width="28" height="125"/>
+    <rect x="390" y="128" width="46" height="82"/><rect x="436" y="100" width="44" height="110"/>
+  </g>
+  <g fill="#18f0ff" opacity=".8"><rect x="45" y="105" width="4" height="4"/><rect x="55" y="120" width="4" height="4"/><rect x="45" y="140" width="4" height="4"/><rect x="117" y="115" width="4" height="4"/><rect x="369" y="95" width="4" height="4"/><rect x="379" y="112" width="4" height="4"/><rect x="445" y="110" width="4" height="4"/><rect x="458" y="128" width="4" height="4"/></g>
+  <g fill="#ff3d9a" opacity=".8"><rect x="8" y="132" width="4" height="4"/><rect x="80" y="148" width="4" height="4"/><rect x="340" y="125" width="4" height="4"/><rect x="400" y="140" width="4" height="4"/></g>
+  <!-- grid floor -->
+  <rect x="0" y="205" width="480" height="65" fill="#0a0320"/>
+  <g stroke="#ff3d9a" stroke-width="1" opacity=".55">
+    <line x1="0" y1="218" x2="480" y2="218"/><line x1="0" y1="234" x2="480" y2="234"/><line x1="0" y1="255" x2="480" y2="255"/>
+    <line x1="240" y1="205" x2="240" y2="270"/><line x1="200" y1="205" x2="140" y2="270"/><line x1="160" y1="205" x2="40" y2="270"/><line x1="120" y1="205" x2="-60" y2="270"/>
+    <line x1="280" y1="205" x2="340" y2="270"/><line x1="320" y1="205" x2="440" y2="270"/><line x1="360" y1="205" x2="540" y2="270"/>
+  </g>
+  <line x1="0" y1="205" x2="480" y2="205" stroke="#18f0ff" stroke-width="3" filter="url(#dGlow)"/>
+  <!-- start A -->
+  <g filter="url(#dGlow)"><rect x="18" y="168" width="34" height="36" rx="3" fill="none" stroke="#18f0ff" stroke-width="2"/><text x="35" y="192" text-anchor="middle" font-size="16" font-weight="bold" fill="#18f0ff">A</text></g>
+  <!-- gate 1 cleared -->
+  <path d="M120 204 V150 a25 25 0 0 1 50 0 V204" fill="none" stroke="#39ff88" stroke-width="3" filter="url(#dGlow)"/>
+  <text x="145" y="122" text-anchor="middle" font-size="13" font-weight="bold" fill="#39ff88" filter="url(#dGlow)">[OK]</text>
+  <!-- gate 2 active -->
+  <ellipse cx="300" cy="165" rx="40" ry="48" fill="#ff3d9a" opacity=".18"/>
+  <path d="M275 204 V150 a25 25 0 0 1 50 0 V204 Z" fill="#1a0533" stroke="#ff3d9a" stroke-width="3" filter="url(#dGlow)"/>
+  <text x="300" y="183" text-anchor="middle" font-size="28" font-weight="bold" fill="#ff3d9a" filter="url(#dGlow)">?</text>
+  <!-- gate 3 locked -->
+  <path d="M385 204 V150 a25 25 0 0 1 50 0 V204 Z" fill="#110a22" stroke="#4a3f66" stroke-width="2.5"/>
+  <text x="410" y="182" text-anchor="middle" font-size="16" fill="#6e628f">🔒</text>
+  <!-- exit B -->
+  <g filter="url(#dGlow)"><ellipse cx="458" cy="172" rx="12" ry="30" fill="none" stroke="#ffd166" stroke-width="3"/><text x="458" y="178" text-anchor="middle" font-size="14" font-weight="bold" fill="#ffd166">B</text></g>
+  <!-- Max: hoodie + visor, with trail -->
+  <path d="M150 190 Q185 150 205 140" fill="none" stroke="#18f0ff" stroke-width="2" stroke-dasharray="3 5" opacity=".7"/>
+  <g transform="translate(220 124)">
+    <path d="M-12 18 q12 -8 24 0 l3 26 h-30Z" fill="#1c1a33" stroke="#18f0ff" stroke-width="1.5"/>
+    <path d="M-13 6 a13 14 0 0 1 26 0 v10 h-26Z" fill="#1c1a33" stroke="#18f0ff" stroke-width="1.5"/>
+    <rect x="-8" y="4" width="18" height="6" rx="3" fill="#18f0ff" filter="url(#dGlow)"/>
+    <path d="M-6 44 l-6 10 M6 44 l8 8" stroke="#18f0ff" stroke-width="3" stroke-linecap="round"/>
+  </g>
+  <!-- HUD -->
+  <text x="12" y="24" font-size="12" font-weight="bold" fill="#18f0ff" filter="url(#dGlow)">NEON CITY // LVL_02</text>
+  <text x="468" y="24" text-anchor="end" font-size="12" font-weight="bold" fill="#ff3d9a" filter="url(#dGlow)">GATES [■□□] 1/3</text>
+</svg>
+</div>
+<div class="card-body"><h3>D · Neon City</h3><p>Synthwave night city: glowing grid floor, pink and cyan neon, Max in a hoodie with a glowing visor. Highest "wow" factor, still clearly a game. Each world could be a different district (Link Alley, Password Tower…).</p></div>
+</div>
+
+<!-- ============ E: TERMINAL GRID ============ -->
+<div class="card" data-choice="terminal">
+<div class="card-image">
+<svg viewBox="0 0 480 270" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;font-family:'Courier New',monospace">
+  <defs><filter id="eGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+  <rect width="480" height="270" fill="#020805"/>
+  <!-- falling code -->
+  <g font-size="10" fill="#0f5c2e">
+    <text x="20" y="60">1</text><text x="20" y="74">0</text><text x="20" y="88">f</text><text x="20" y="102">7</text>
+    <text x="70" y="40">a</text><text x="70" y="54">3</text><text x="70" y="68">0</text>
+    <text x="180" y="70">e</text><text x="180" y="84">1</text><text x="180" y="98">9</text><text x="180" y="112">c</text>
+    <text x="250" y="45">0</text><text x="250" y="59">1</text>
+    <text x="340" y="66">d</text><text x="340" y="80">4</text><text x="340" y="94">b</text>
+    <text x="440" y="50">8</text><text x="440" y="64">0</text><text x="440" y="78">e</text><text x="440" y="92">1</text>
+  </g>
+  <g fill="#39ff88" font-size="10"><text x="20" y="116">2</text><text x="180" y="126">x</text><text x="340" y="108">7</text><text x="440" y="106">f</text></g>
+  <!-- background grid -->
+  <g stroke="#0b2a17" stroke-width="1"><line x1="0" y1="150" x2="480" y2="150"/><line x1="0" y1="175" x2="480" y2="175"/><line x1="96" y1="130" x2="96" y2="205"/><line x1="192" y1="130" x2="192" y2="205"/><line x1="288" y1="130" x2="288" y2="205"/><line x1="384" y1="130" x2="384" y2="205"/></g>
+  <!-- platform -->
+  <rect x="0" y="205" width="480" height="65" fill="#03140a"/>
+  <line x1="0" y1="205" x2="480" y2="205" stroke="#39ff88" stroke-width="2" filter="url(#eGlow)"/>
+  <text x="12" y="232" font-size="11" fill="#1d7a43">&gt; route: home ──────────── library</text>
+  <!-- A -->
+  <text x="30" y="196" text-anchor="middle" font-size="22" font-weight="bold" fill="#39ff88" filter="url(#eGlow)">~/</text>
+  <!-- gate 1 cleared: firewall brackets -->
+  <g filter="url(#eGlow)" font-weight="bold"><text x="145" y="200" text-anchor="middle" font-size="64" fill="#39ff88">{ }</text></g>
+  <text x="145" y="120" text-anchor="middle" font-size="11" fill="#39ff88">✓ passed</text>
+  <!-- gate 2 active -->
+  <rect x="268" y="135" width="64" height="69" fill="#39ff88" opacity=".08"/>
+  <g filter="url(#eGlow)" font-weight="bold"><text x="300" y="200" text-anchor="middle" font-size="64" fill="#e8ff5a">{ }</text><text x="300" y="185" text-anchor="middle" font-size="22" fill="#e8ff5a">?</text></g>
+  <text x="300" y="124" text-anchor="middle" font-size="11" fill="#e8ff5a">▮ scanning…</text>
+  <!-- gate 3 locked -->
+  <text x="410" y="200" text-anchor="middle" font-size="64" font-weight="bold" fill="#1d4a2e">{ }</text>
+  <text x="410" y="124" text-anchor="middle" font-size="11" fill="#1d4a2e">locked</text>
+  <!-- B -->
+  <g filter="url(#eGlow)"><rect x="447" y="166" width="24" height="38" fill="none" stroke="#39ff88" stroke-width="2"/><text x="459" y="191" text-anchor="middle" font-size="13" font-weight="bold" fill="#39ff88">B</text></g>
+  <!-- Max: hooded, green visor -->
+  <g transform="translate(220 128)">
+    <path d="M-11 16 q11 -7 22 0 l3 24 h-28Z" fill="#06180d" stroke="#39ff88" stroke-width="1.5"/>
+    <path d="M-12 6 a12 13 0 0 1 24 0 v10 h-24Z" fill="#06180d" stroke="#39ff88" stroke-width="1.5"/>
+    <rect x="-7" y="5" width="16" height="5" fill="#39ff88" filter="url(#eGlow)"/>
+    <path d="M-5 40 l-6 10 M5 40 l8 8" stroke="#39ff88" stroke-width="3" stroke-linecap="round"/>
+  </g>
+  <!-- HUD -->
+  <text x="12" y="22" font-size="12" fill="#39ff88" filter="url(#eGlow)">max@safenet:~/level_02$ <tspan fill="#e8ff5a">_</tspan></text>
+  <text x="468" y="22" text-anchor="end" font-size="12" fill="#39ff88">gates: 1/3</text>
+</svg>
+</div>
+<div class="card-body"><h3>E · Terminal Grid</h3><p>Black screen, green code rain, firewall gates shaped like <code>{ }</code>, HUD styled like a command line. The most "real hacker" feel. Can look cold, and readability takes care with green-on-black.</p></div>
+</div>
+
+<!-- ============ F: MIDNIGHT AURORA ============ -->
+<div class="card" data-choice="aurora">
+<div class="card-image">
+<svg viewBox="0 0 480 270" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;font-family:'Trebuchet MS',sans-serif">
+  <defs>
+    <linearGradient id="fSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#050816"/><stop offset="1" stop-color="#121a3a"/></linearGradient>
+    <linearGradient id="fAur" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#29e3c3" stop-opacity="0"/><stop offset=".35" stop-color="#29e3c3" stop-opacity=".5"/><stop offset=".7" stop-color="#8b5cff" stop-opacity=".5"/><stop offset="1" stop-color="#8b5cff" stop-opacity="0"/></linearGradient>
+    <linearGradient id="fGlass" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff" stop-opacity=".22"/><stop offset="1" stop-color="#ffffff" stop-opacity=".04"/></linearGradient>
+    <filter id="fGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="fBlur"><feGaussianBlur stdDeviation="8"/></filter>
+  </defs>
+  <rect width="480" height="270" fill="url(#fSky)"/>
+  <path d="M-20 90 Q120 20 240 80 T500 60 L500 110 Q360 130 240 120 T-20 130Z" fill="url(#fAur)" filter="url(#fBlur)"/>
+  <g fill="#fff" opacity=".7"><circle cx="60" cy="40" r="1"/><circle cx="160" cy="25" r="1.2"/><circle cx="330" cy="30" r="1"/><circle cx="420" cy="50" r="1.3"/><circle cx="260" cy="140" r="1"/></g>
+  <!-- floating islands -->
+  <g fill="#1b2450"><path d="M0 205 H480 V270 H0Z"/></g>
+  <path d="M0 205 H480" stroke="#29e3c3" stroke-width="2" opacity=".8" filter="url(#fGlow)"/>
+  <path d="M70 150 h60 l-10 12 h-40Z" fill="#1b2450" opacity=".8"/><path d="M360 120 h50 l-8 10 h-34Z" fill="#1b2450" opacity=".8"/>
+  <!-- A -->
+  <circle cx="35" cy="185" r="16" fill="url(#fGlass)" stroke="#ffffff" stroke-opacity=".35"/><text x="35" y="191" text-anchor="middle" font-size="15" font-weight="bold" fill="#e6ecff">A</text>
+  <!-- gate 1 cleared -->
+  <path d="M120 204 V150 a25 25 0 0 1 50 0 V204Z" fill="url(#fGlass)" stroke="#29e3c3" stroke-width="2" filter="url(#fGlow)"/>
+  <text x="145" y="182" text-anchor="middle" font-size="18" fill="#29e3c3">✓</text>
+  <!-- gate 2 active -->
+  <ellipse cx="300" cy="170" rx="46" ry="46" fill="#8b5cff" opacity=".25" filter="url(#fBlur)"/>
+  <path d="M275 204 V150 a25 25 0 0 1 50 0 V204Z" fill="url(#fGlass)" stroke="#b69bff" stroke-width="2.5" filter="url(#fGlow)"/>
+  <text x="300" y="184" text-anchor="middle" font-size="26" font-weight="bold" fill="#e6dcff">?</text>
+  <!-- gate 3 locked -->
+  <path d="M385 204 V150 a25 25 0 0 1 50 0 V204Z" fill="#ffffff" fill-opacity=".04" stroke="#ffffff" stroke-opacity=".15" stroke-width="2"/>
+  <text x="410" y="182" text-anchor="middle" font-size="14" fill="#6b739a">🔒</text>
+  <!-- B -->
+  <g filter="url(#fGlow)"><circle cx="458" cy="180" r="14" fill="none" stroke="#29e3c3" stroke-width="2.5"/><text x="458" y="186" text-anchor="middle" font-size="14" font-weight="bold" fill="#29e3c3">B</text></g>
+  <!-- Max -->
+  <g transform="translate(220 126)">
+    <path d="M-12 18 q12 -8 24 0 l3 24 h-30Z" fill="#2a3470"/>
+    <circle cx="0" cy="6" r="12" fill="#2a3470"/>
+    <path d="M-8 4 h16 a3 3 0 0 1 0 6 h-16 a3 3 0 0 1 0 -6Z" fill="#29e3c3" filter="url(#fGlow)"/>
+    <path d="M-6 42 l-6 10 M6 42 l8 8" stroke="#2a3470" stroke-width="4" stroke-linecap="round"/>
+  </g>
+  <!-- HUD glass pills -->
+  <rect x="10" y="10" width="180" height="28" rx="14" fill="url(#fGlass)" stroke="#ffffff" stroke-opacity=".25"/>
+  <text x="100" y="29" text-anchor="middle" font-size="12" fill="#e6ecff">Link Skies · Level 2</text>
+  <rect x="350" y="10" width="120" height="28" rx="14" fill="url(#fGlass)" stroke="#ffffff" stroke-opacity=".25"/>
+  <text x="410" y="29" text-anchor="middle" font-size="12" fill="#e6ecff">Gates 1 / 3</text>
+</svg>
+</div>
+<div class="card-body"><h3>F · Midnight Aurora</h3><p>Dark navy with aurora light and frosted-glass gates. The "aesthetic" lo-fi mood: dark and moody but calm. Less hacker, more stylish. Easiest to keep readable.</p></div>
+</div>
+
+</div>
+</div>
+
+<div class="section">
+<h3>Part 2 · Same gate flow, in look D (Neon City)</h3>
+<p class="subtitle">Habit: <b>read the web address, every letter counts.</b> Villain is a glitchy scam bot instead of a cartoon fisherman.</p>
+
+<div class="cards">
+
+<!-- gate -->
+<div class="card">
+<div class="card-image">
+<svg viewBox="0 0 360 250" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;font-family:'Courier New',monospace">
+  <defs><filter id="pG" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+  <rect width="360" height="250" fill="#0a0320"/>
+  <line x1="0" y1="205" x2="360" y2="205" stroke="#18f0ff" stroke-width="2" filter="url(#pG)"/>
+  <text x="180" y="28" text-anchor="middle" font-size="13" font-weight="bold" fill="#18f0ff" filter="url(#pG)">GATE_02 // FIND THE REAL LIBRARY</text>
+  <text x="180" y="46" text-anchor="middle" font-size="11" fill="#b9a8e6">tap the portal you trust</text>
+  <g filter="url(#pG)" fill="#14062b" stroke-width="2.5">
+    <path d="M30 204 V108 a32 32 0 0 1 64 0 V204Z" stroke="#18f0ff"/>
+    <path d="M148 204 V108 a32 32 0 0 1 64 0 V204Z" stroke="#18f0ff"/>
+    <path d="M266 204 V108 a32 32 0 0 1 64 0 V204Z" stroke="#ff3d9a"/>
+  </g>
+  <g font-size="10.5" font-weight="bold" text-anchor="middle">
+    <rect x="14" y="124" width="96" height="22" rx="3" fill="#0a0320" stroke="#18f0ff"/><text x="62" y="139" fill="#e6f7ff">libary.org</text>
+    <rect x="132" y="124" width="96" height="22" rx="3" fill="#0a0320" stroke="#18f0ff"/><text x="180" y="139" fill="#e6f7ff">library.org</text>
+    <rect x="246" y="116" width="104" height="36" rx="3" fill="#0a0320" stroke="#ff3d9a"/><text x="298" y="131" fill="#ff8fc7">FREE-GAMES-</text><text x="298" y="145" fill="#ff8fc7">library.win ★</text>
+  </g>
+  <g transform="translate(120 178)"><path d="M-8 6 q8 -5 16 0 l2 18 h-20Z" fill="#1c1a33" stroke="#18f0ff"/><circle cx="0" cy="0" r="8" fill="#1c1a33" stroke="#18f0ff"/><rect x="-5" y="-2" width="11" height="4" rx="2" fill="#18f0ff" filter="url(#pG)"/></g>
+</svg>
+</div>
+<div class="card-body"><h3>1 · The gate</h3><p>Three portals, three addresses. Max waits to the side so his position doesn't give away the answer.</p></div>
+</div>
+
+<!-- caught -->
+<div class="card">
+<div class="card-image">
+<svg viewBox="0 0 360 250" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;font-family:'Courier New',monospace">
+  <defs><filter id="cG" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+  <rect width="360" height="250" fill="#12020e"/>
+  <g fill="#ff2e63" opacity=".25"><rect x="0" y="60" width="360" height="3"/><rect x="0" y="118" width="360" height="2"/><rect x="0" y="171" width="360" height="4"/></g>
+  <text x="180" y="30" text-anchor="middle" font-size="15" font-weight="bold" fill="#ff2e63" filter="url(#cG)">!! CAUGHT BY PHISH.BOT !!</text>
+  <!-- phish bot: screen-faced bot with hook arm -->
+  <g transform="translate(85 120)">
+    <rect x="-36" y="-34" width="72" height="56" rx="10" fill="#1d0a1f" stroke="#ff2e63" stroke-width="2.5" filter="url(#cG)"/>
+    <text x="-14" y="-2" text-anchor="middle" font-size="18" font-weight="bold" fill="#ff2e63">&gt;</text>
+    <text x="14" y="-2" text-anchor="middle" font-size="18" font-weight="bold" fill="#ff2e63">&lt;</text>
+    <path d="M-12 10 h24" stroke="#ff2e63" stroke-width="2" stroke-dasharray="3 3"/>
+    <rect x="-20" y="22" width="40" height="34" rx="6" fill="#1d0a1f" stroke="#ff2e63" stroke-width="2"/>
+    <path d="M20 34 L70 10 L72 32 q0 10 -9 10 q-8 0 -8 -8" fill="none" stroke="#ff2e63" stroke-width="3" stroke-linecap="round" filter="url(#cG)"/>
+  </g>
+  <!-- Max in a data cage -->
+  <g transform="translate(225 100)">
+    <rect x="-24" y="-20" width="48" height="60" fill="none" stroke="#ff2e63" stroke-width="1.5" stroke-dasharray="2 4"/>
+    <path d="M-8 6 q8 -5 16 0 l2 18 h-20Z" fill="#1c1a33" stroke="#18f0ff"/><circle cx="0" cy="0" r="8" fill="#1c1a33" stroke="#18f0ff"/><rect x="-5" y="-2" width="11" height="4" rx="2" fill="#18f0ff"/>
+  </g>
+  <rect x="150" y="160" width="196" height="52" rx="4" fill="#0a0320" stroke="#ff2e63" stroke-width="2"/>
+  <text x="248" y="179" text-anchor="middle" font-size="11" font-weight="bold" fill="#ff8fa8">⚑ libary.org is missing an "r"</text>
+  <text x="248" y="196" text-anchor="middle" font-size="10" fill="#e6dcff">fakes copy real names and</text>
+  <text x="248" y="208" text-anchor="middle" font-size="10" fill="#e6dcff">change one letter</text>
+  <rect x="14" y="214" width="124" height="26" rx="3" fill="#18f0ff"/>
+  <text x="76" y="232" text-anchor="middle" font-size="12" font-weight="bold" fill="#0a0320">↻ RETRY GATE_02</text>
+</svg>
+</div>
+<div class="card-body"><h3>2 · Caught</h3><p>A glitchy scam bot traps Max in a data cage, with a red glitch effect. Edgy but not scary. Same one-line red flag and retry.</p></div>
+</div>
+
+<!-- clear -->
+<div class="card">
+<div class="card-image">
+<svg viewBox="0 0 360 250" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;font-family:'Courier New',monospace">
+  <defs><filter id="lG" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+  <rect width="360" height="250" fill="#07021a"/>
+  <text x="180" y="42" text-anchor="middle" font-size="22" font-weight="bold" fill="#39ff88" filter="url(#lG)">LEVEL CLEAR</text>
+  <text x="180" y="64" text-anchor="middle" font-size="11" fill="#b9a8e6">route secured · 3/3 gates · no hints used</text>
+  <g filter="url(#lG)" fill="none" stroke-width="2.5"><polygon points="120,80 128,96 145,98 132,110 136,126 120,118 104,126 108,110 95,98 112,96" stroke="#ffd166" fill="#ffd166"/><polygon points="180,74 189,92 208,94 194,107 198,125 180,116 162,125 166,107 152,94 171,92" stroke="#ffd166" fill="#ffd166"/><polygon points="240,80 248,96 265,98 252,110 256,126 240,118 224,126 228,110 215,98 232,96" stroke="#ffd166"/></g>
+  <rect x="20" y="140" width="320" height="38" rx="4" fill="#0e1240" stroke="#18f0ff" stroke-width="2" filter="url(#lG)"/>
+  <text x="180" y="164" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#e6f7ff">&gt; READ THE ADDRESS. EVERY LETTER COUNTS.</text>
+  <rect x="20" y="188" width="320" height="52" rx="4" fill="none" stroke="#ff3d9a" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <text x="180" y="206" text-anchor="middle" font-size="11" font-weight="bold" fill="#ff8fc7">CHALLENGE A GROWN-UP: spot the fake</text>
+  <text x="180" y="224" text-anchor="middle" font-size="11" fill="#e6dcff">school-portal.org · schoo1-portal.org</text>
+  <text x="180" y="236" text-anchor="middle" font-size="9" fill="#8b80b3">tap to reveal</text>
+</svg>
+</div>
+<div class="card-body"><h3>3 · Level clear</h3><p>Neon stars, the rule shown like a command, and the grown-up challenge framed as "can you beat your parent?"</p></div>
+</div>
+
+</div>
+</div>
+</body></html>
