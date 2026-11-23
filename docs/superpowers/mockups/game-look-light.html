@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SafeClick game mockups (game-look-light)</title>
+<style>body{margin:0;padding:24px;background:#1a1a1f;color:#e8e8ee;font-family:system-ui,sans-serif;line-height:1.5}h2{margin-top:0}.subtitle{color:#a8a8b8}.section{margin:28px 0}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}.card{background:#26262e;border-radius:10px;overflow:hidden}.card-body{padding:12px 14px}.card-body h3{margin:0 0 6px;font-size:16px}.card-body p{margin:0;color:#b8b8c8;font-size:14px}code{background:#33333d;padding:1px 4px;border-radius:3px}</style>
+</head><body>
+<p class="subtitle">Brainstorm mockup, rough sketches, not final art. See ../specs/2026-11-23-neon-city-game-brainstorm.md</p>
+<h2>Max's Safe Trip: rough mockups</h2>
+<p class="subtitle">Part 1: pick a look for the level screen. Part 2: one gate, from challenge to caught to level clear. Rough sketches, not final art.</p>
+
+<div class="section">
+<h3>Part 1 · Which look feels right for 8–12 year olds?</h3>
+<p class="subtitle">Same level in three styles: Max is between Gate 1 (cleared) and Gate 2 (glowing, next challenge). Gate 3 is locked. The flag is point B.</p>
+
+<div class="cards">
+
+<!-- ============ A: STORYBOOK CARTOON ============ -->
+<div class="card" data-choice="storybook">
+<div class="card-image">
+<svg viewBox="0 0 480 270" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;font-family:'Comic Sans MS','Chalkboard SE',sans-serif">
+  <rect width="480" height="270" fill="#bfe6ff"/>
+  <circle cx="425" cy="70" r="20" fill="#ffd84d" stroke="#2b2140" stroke-width="3"/>
+  <g fill="#fff" stroke="#2b2140" stroke-width="3">
+    <ellipse cx="110" cy="75" rx="34" ry="14"/><ellipse cx="300" cy="60" rx="40" ry="15"/>
+  </g>
+  <path d="M0 200 Q80 120 170 190 Q260 110 350 185 Q420 130 480 170 V210 H0Z" fill="#8fd16a" stroke="#2b2140" stroke-width="3"/>
+  <rect x="0" y="205" width="480" height="65" fill="#c98d4b"/>
+  <rect x="-5" y="199" width="490" height="12" rx="6" fill="#5cb85c" stroke="#2b2140" stroke-width="3"/>
+  <line x1="70" y1="228" x2="450" y2="228" stroke="#f3d3a6" stroke-width="5" stroke-dasharray="10 10" stroke-linecap="round"/>
+  <!-- house A -->
+  <rect x="22" y="160" width="44" height="42" fill="#ff8a65" stroke="#2b2140" stroke-width="3"/>
+  <polygon points="15,163 44,134 73,163" fill="#d84315" stroke="#2b2140" stroke-width="3" stroke-linejoin="round"/>
+  <rect x="37" y="178" width="14" height="24" fill="#6d4c41" stroke="#2b2140" stroke-width="2.5"/>
+  <circle cx="44" cy="245" r="12" fill="#fff" stroke="#2b2140" stroke-width="3"/><text x="44" y="250" text-anchor="middle" font-size="14" font-weight="bold" fill="#2b2140">A</text>
+  <!-- gate 1 cleared -->
+  <path d="M130 202 V150 a25 25 0 0 1 50 0 V202" fill="none" stroke="#2b2140" stroke-width="5"/>
+  <path d="M130 202 V150 a25 25 0 0 1 50 0 V202" fill="none" stroke="#66bb6a" stroke-width="3"/>
+  <circle cx="155" cy="112" r="11" fill="#66bb6a" stroke="#2b2140" stroke-width="2.5"/><path d="M149 112 l4 4 l8 -8" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <!-- gate 2 active -->
+  <circle cx="300" cy="165" r="44" fill="#ffe082" opacity=".55"/>
+  <path d="M275 202 V150 a25 25 0 0 1 50 0 V202 Z" fill="#ffca28" stroke="#2b2140" stroke-width="3"/>
+  <text x="300" y="180" text-anchor="middle" font-size="30" font-weight="bold" fill="#2b2140">?</text>
+  <!-- gate 3 locked -->
+  <path d="M385 202 V150 a25 25 0 0 1 50 0 V202 Z" fill="#b0bec5" stroke="#2b2140" stroke-width="3"/>
+  <rect x="400" y="165" width="20" height="16" rx="3" fill="#78909c" stroke="#2b2140" stroke-width="2.5"/><path d="M404 165 v-5 a6 6 0 0 1 12 0 v5" fill="none" stroke="#2b2140" stroke-width="2.5"/>
+  <!-- flag B -->
+  <line x1="460" y1="202" x2="460" y2="140" stroke="#2b2140" stroke-width="4"/>
+  <polygon points="460,140 478,148 460,156" fill="#e53935" stroke="#2b2140" stroke-width="2.5"/>
+  <circle cx="455" cy="245" r="12" fill="#fff" stroke="#2b2140" stroke-width="3"/><text x="455" y="250" text-anchor="middle" font-size="14" font-weight="bold" fill="#2b2140">B</text>
+  <!-- Max jumping -->
+  <g transform="translate(215 118)" stroke="#2b2140" stroke-width="2.5" stroke-linejoin="round">
+    <path d="M-22 22 h-10 M-24 32 h-14 M-22 42 h-10" stroke="#2b2140" stroke-linecap="round"/>
+    <rect x="-14" y="18" width="10" height="26" rx="4" fill="#ffb300"/>
+    <rect x="-6" y="16" width="22" height="26" rx="8" fill="#2e86de"/>
+    <path d="M-2 42 l-6 12 M10 42 l8 10" stroke-width="5" stroke-linecap="round"/>
+    <circle cx="5" cy="4" r="13" fill="#f5c69b"/>
+    <path d="M-8 0 a13 13 0 0 1 26 0 Z" fill="#e53935"/><path d="M16 0 h10" stroke-width="4" stroke-linecap="round" stroke="#e53935"/>
+    <circle cx="10" cy="6" r="2" fill="#2b2140" stroke="none"/>
+    <path d="M6 11 q4 3 8 0" fill="none" stroke-width="2"/>
+    <path d="M14 22 l12 -10" stroke-width="5" stroke-linecap="round"/>
+  </g>
+  <!-- HUD -->
+  <rect x="10" y="10" width="190" height="30" rx="15" fill="#fff" stroke="#2b2140" stroke-width="3"/>
+  <text x="105" y="30" text-anchor="middle" font-size="13" font-weight="bold" fill="#2b2140">Link Forest · Level 2</text>
+  <rect x="330" y="10" width="140" height="30" rx="15" fill="#fff" stroke="#2b2140" stroke-width="3"/>
+  <text x="400" y="30" text-anchor="middle" font-size="13" font-weight="bold" fill="#2b2140">Gates ✔ 1 / 3</text>
+</svg>
+</div>
+<div class="card-body"><h3>A · Storybook cartoon</h3><p>Thick outlines, bright warm colours, a bit goofy. Feels like a picture book that moves. Easiest to make friendly villains in this style.</p></div>
+</div>
+
+<!-- ============ B: PIXEL ART ============ -->
+<div class="card" data-choice="pixel">
+<div class="card-image">
+<svg viewBox="0 0 480 270" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges" style="width:100%;display:block;font-family:'Courier New',monospace">
+  <rect width="480" height="270" fill="#5c94fc"/>
+  <g fill="#fff"><rect x="80" y="64" width="64" height="16"/><rect x="96" y="48" width="32" height="16"/><rect x="272" y="48" width="80" height="16"/><rect x="288" y="32" width="40" height="16"/></g>
+  <g fill="#ffe14d"><rect x="408" y="56" width="32" height="32"/></g>
+  <g fill="#3aa83a"><rect x="0" y="176" width="112" height="32"/><rect x="16" y="160" width="80" height="16"/><rect x="192" y="160" width="128" height="48"/><rect x="216" y="144" width="80" height="16"/><rect x="368" y="168" width="112" height="40"/></g>
+  <rect x="0" y="200" width="480" height="70" fill="#c84c0c"/>
+  <rect x="0" y="200" width="480" height="8" fill="#00a800"/>
+  <g fill="#f8b878"><rect x="72" y="228" width="16" height="4"/><rect x="104" y="228" width="16" height="4"/><rect x="136" y="228" width="16" height="4"/><rect x="168" y="228" width="16" height="4"/><rect x="200" y="228" width="16" height="4"/><rect x="232" y="228" width="16" height="4"/><rect x="264" y="228" width="16" height="4"/><rect x="296" y="228" width="16" height="4"/><rect x="328" y="228" width="16" height="4"/><rect x="360" y="228" width="16" height="4"/><rect x="392" y="228" width="16" height="4"/><rect x="424" y="228" width="16" height="4"/></g>
+  <!-- house -->
+  <rect x="24" y="160" width="40" height="40" fill="#fc7460"/><rect x="16" y="152" width="56" height="8" fill="#a81000"/><rect x="24" y="144" width="40" height="8" fill="#a81000"/><rect x="36" y="136" width="16" height="8" fill="#a81000"/><rect x="38" y="176" width="12" height="24" fill="#503000"/>
+  <rect x="36" y="240" width="16" height="16" fill="#fff"/><text x="44" y="253" text-anchor="middle" font-size="13" font-weight="bold" fill="#000">A</text>
+  <!-- gate 1 cleared -->
+  <g fill="#00a800"><rect x="132" y="144" width="8" height="56"/><rect x="172" y="144" width="8" height="56"/><rect x="140" y="136" width="32" height="8"/></g>
+  <rect x="148" y="112" width="16" height="16" fill="#00a800"/><text x="156" y="125" text-anchor="middle" font-size="13" fill="#fff" font-weight="bold">✓</text>
+  <!-- gate 2 active -->
+  <rect x="268" y="128" width="64" height="72" fill="#fcfc54" opacity=".35"/>
+  <g fill="#fc9838"><rect x="276" y="144" width="48" height="56"/><rect x="284" y="136" width="32" height="8"/></g>
+  <text x="300" y="182" text-anchor="middle" font-size="28" font-weight="bold" fill="#000">?</text>
+  <!-- gate 3 locked -->
+  <g fill="#7c7c7c"><rect x="388" y="144" width="48" height="56"/><rect x="396" y="136" width="32" height="8"/></g>
+  <rect x="404" y="164" width="16" height="12" fill="#000"/><rect x="408" y="156" width="8" height="8" fill="none" stroke="#000" stroke-width="3"/>
+  <!-- flag -->
+  <rect x="458" y="136" width="4" height="64" fill="#fff"/><rect x="462" y="136" width="16" height="12" fill="#e40058"/>
+  <rect x="447" y="240" width="16" height="16" fill="#fff"/><text x="455" y="253" text-anchor="middle" font-size="13" font-weight="bold" fill="#000">B</text>
+  <!-- Max sprite (4px pixels) -->
+  <g transform="translate(200 112)">
+    <rect x="8" y="0" width="20" height="4" fill="#e40058"/><rect x="4" y="4" width="32" height="4" fill="#e40058"/>
+    <rect x="4" y="8" width="24" height="12" fill="#fcbcb0"/><rect x="20" y="12" width="4" height="4" fill="#000"/>
+    <rect x="0" y="20" width="8" height="16" fill="#fca044"/>
+    <rect x="8" y="20" width="20" height="16" fill="#0058f8"/><rect x="28" y="16" width="8" height="4" fill="#fcbcb0"/>
+    <rect x="4" y="36" width="8" height="8" fill="#503000"/><rect x="24" y="36" width="8" height="8" fill="#503000"/>
+  </g>
+  <!-- HUD -->
+  <rect x="8" y="8" width="200" height="24" fill="#000"/><text x="108" y="25" text-anchor="middle" font-size="13" fill="#fff" font-weight="bold">LINK FOREST 1-2</text>
+  <rect x="336" y="8" width="136" height="24" fill="#000"/><text x="404" y="25" text-anchor="middle" font-size="13" fill="#fff" font-weight="bold">GATES 1/3</text>
+</svg>
+</div>
+<div class="card-body"><h3>B · Retro pixel art</h3><p>Chunky blocks, limited colours, arcade feel. Kids read it as "a real video game." Quick to animate, but small details like web addresses are harder to show inside the scene.</p></div>
+</div>
+
+<!-- ============ C: PAPER CUT-OUT ============ -->
+<div class="card" data-choice="paper">
+<div class="card-image">
+<svg viewBox="0 0 480 270" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;font-family:'Trebuchet MS',sans-serif">
+  <defs><filter id="ds" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="3" dy="4" stdDeviation="2" flood-color="#3a2f5b" flood-opacity=".28"/></filter></defs>
+  <rect width="480" height="270" fill="#fdf1e3"/>
+  <circle cx="420" cy="70" r="24" fill="#ffc6a0" filter="url(#ds)"/>
+  <g fill="#fff" filter="url(#ds)"><rect x="70" y="60" width="80" height="24" rx="12"/><rect x="260" y="44" width="96" height="26" rx="13"/></g>
+  <path d="M0 210 Q90 130 190 200 Q280 120 370 190 Q430 140 480 175 V270 H0Z" fill="#b9dcc4" filter="url(#ds)"/>
+  <path d="M0 215 Q120 175 240 210 Q360 180 480 205 V270 H0Z" fill="#8cc5a2" filter="url(#ds)"/>
+  <rect x="0" y="205" width="480" height="65" fill="#e7c9a3" filter="url(#ds)"/>
+  <line x1="70" y1="228" x2="450" y2="228" stroke="#fff" stroke-width="4" stroke-dasharray="2 12" stroke-linecap="round"/>
+  <!-- house -->
+  <g filter="url(#ds)"><rect x="22" y="162" width="44" height="40" rx="4" fill="#f4a6a6"/><polygon points="16,164 44,138 72,164" fill="#d97b8a"/><rect x="38" y="180" width="12" height="22" rx="6" fill="#8c6a8f"/></g>
+  <circle cx="44" cy="246" r="12" fill="#fff" filter="url(#ds)"/><text x="44" y="251" text-anchor="middle" font-size="14" font-weight="bold" fill="#5b4a7a">A</text>
+  <!-- gate 1 cleared -->
+  <path d="M130 202 V150 a25 25 0 0 1 50 0 V202" fill="none" stroke="#7fc8a0" stroke-width="8" stroke-linecap="round" filter="url(#ds)"/>
+  <circle cx="155" cy="112" r="11" fill="#7fc8a0" filter="url(#ds)"/><path d="M149 112 l4 4 l8 -8" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <!-- gate 2 active -->
+  <circle cx="300" cy="166" r="46" fill="#ffe6a8" opacity=".7"/>
+  <path d="M275 202 V150 a25 25 0 0 1 50 0 V202 Z" fill="#ffd27a" filter="url(#ds)"/>
+  <text x="300" y="181" text-anchor="middle" font-size="30" font-weight="bold" fill="#5b4a7a">?</text>
+  <!-- gate 3 locked -->
+  <path d="M385 202 V150 a25 25 0 0 1 50 0 V202 Z" fill="#cfc8dc" filter="url(#ds)"/>
+  <rect x="401" y="166" width="18" height="14" rx="3" fill="#8a80a3"/><path d="M405 166 v-5 a5 5 0 0 1 10 0 v5" fill="none" stroke="#8a80a3" stroke-width="3"/>
+  <!-- flag -->
+  <line x1="460" y1="202" x2="460" y2="142" stroke="#5b4a7a" stroke-width="4" stroke-linecap="round"/>
+  <polygon points="460,142 478,150 460,158" fill="#f08a8a" filter="url(#ds)"/>
+  <circle cx="455" cy="246" r="12" fill="#fff" filter="url(#ds)"/><text x="455" y="251" text-anchor="middle" font-size="14" font-weight="bold" fill="#5b4a7a">B</text>
+  <!-- Max -->
+  <g transform="translate(215 118)" filter="url(#ds)">
+    <rect x="-14" y="18" width="10" height="24" rx="5" fill="#ffc46b"/>
+    <rect x="-6" y="16" width="22" height="26" rx="10" fill="#7aa7e0"/>
+    <path d="M-2 42 l-6 12 M10 42 l8 10" stroke="#5b4a7a" stroke-width="5" stroke-linecap="round"/>
+    <circle cx="5" cy="4" r="13" fill="#f6d2b5"/>
+    <path d="M-8 0 a13 13 0 0 1 26 0 Z" fill="#f08a8a"/>
+    <circle cx="10" cy="6" r="2" fill="#5b4a7a"/>
+  </g>
+  <!-- HUD -->
+  <rect x="10" y="10" width="190" height="30" rx="15" fill="#fff" filter="url(#ds)"/>
+  <text x="105" y="30" text-anchor="middle" font-size="13" font-weight="bold" fill="#5b4a7a">Link Forest · Level 2</text>
+  <rect x="330" y="10" width="140" height="30" rx="15" fill="#fff" filter="url(#ds)"/>
+  <text x="400" y="30" text-anchor="middle" font-size="13" font-weight="bold" fill="#5b4a7a">Gates ✔ 1 / 3</text>
+</svg>
+</div>
+<div class="card-body"><h3>C · Soft paper cut-out</h3><p>Pastel shapes with gentle shadows, like a craft project. Calm and friendly, and it fits SafeClick's current look best. Less "arcade energy" than A or B.</p></div>
+</div>
+
+</div>
+</div>
+
+<div class="section">
+<h3>Part 2 · One gate, start to finish (shown in look A)</h3>
+<p class="subtitle">Habit for this level: <b>read the web address, every letter counts.</b></p>
+
+<div class="cards">
+
+<!-- Gate challenge -->
+<div class="card">
+<div class="card-image">
+<svg viewBox="0 0 360 250" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;font-family:'Comic Sans MS','Chalkboard SE',sans-serif">
+  <rect width="360" height="250" fill="#bfe6ff"/>
+  <rect y="200" width="360" height="50" fill="#c98d4b"/><rect y="195" width="360" height="10" fill="#5cb85c"/>
+  <rect x="14" y="12" width="332" height="44" rx="14" fill="#fff" stroke="#2b2140" stroke-width="3"/>
+  <text x="180" y="31" text-anchor="middle" font-size="13" font-weight="bold" fill="#2b2140">Gate 2 · Max needs the Library.</text>
+  <text x="180" y="48" text-anchor="middle" font-size="12" fill="#2b2140">Which door is the REAL one? Tap it!</text>
+  <g stroke="#2b2140" stroke-width="3">
+    <path d="M30 197 V105 a32 32 0 0 1 64 0 V197Z" fill="#8d6e63"/>
+    <path d="M148 197 V105 a32 32 0 0 1 64 0 V197Z" fill="#8d6e63"/>
+    <path d="M266 197 V105 a32 32 0 0 1 64 0 V197Z" fill="#ab47bc"/>
+  </g>
+  <g font-size="10.5" font-weight="bold" fill="#2b2140" text-anchor="middle">
+    <rect x="16" y="124" width="92" height="22" rx="5" fill="#fff8e1" stroke="#2b2140" stroke-width="2"/><text x="62" y="139">libary.org</text>
+    <rect x="134" y="124" width="92" height="22" rx="5" fill="#fff8e1" stroke="#2b2140" stroke-width="2"/><text x="180" y="139">library.org</text>
+    <rect x="248" y="118" width="100" height="34" rx="5" fill="#fff59d" stroke="#2b2140" stroke-width="2"/><text x="298" y="132">FREE-GAMES-</text><text x="298" y="146">library.win ✨</text>
+  </g>
+  <g transform="translate(176 172)" stroke="#2b2140" stroke-width="2">
+    <rect x="-8" y="0" width="18" height="20" rx="6" fill="#2e86de"/><circle cx="1" cy="-7" r="9" fill="#f5c69b"/><path d="M-8 -9 a9 9 0 0 1 18 0Z" fill="#e53935"/>
+  </g>
+</svg>
+</div>
+<div class="card-body"><h3>1 · The gate</h3><p>Three doors, three addresses. One is misspelled, one is flashy and "free." Max walks through whichever one the kid taps.</p></div>
+</div>
+
+<!-- Caught -->
+<div class="card">
+<div class="card-image">
+<svg viewBox="0 0 360 250" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;font-family:'Comic Sans MS','Chalkboard SE',sans-serif">
+  <rect width="360" height="250" fill="#4a3b6b"/>
+  <circle cx="300" cy="40" r="16" fill="#fff59d"/>
+  <rect y="200" width="360" height="50" fill="#2f2550"/>
+  <!-- The Phisher -->
+  <g stroke="#1b1330" stroke-width="3" stroke-linejoin="round">
+    <ellipse cx="90" cy="160" rx="42" ry="40" fill="#7e57c2"/>
+    <path d="M58 128 l-6 -26 l66 0 l-6 26Z" fill="#26a69a"/>
+    <rect x="44" y="124" width="92" height="8" rx="4" fill="#26a69a"/>
+    <circle cx="78" cy="152" r="8" fill="#fff"/><circle cx="104" cy="152" r="8" fill="#fff"/>
+    <circle cx="80" cy="154" r="3" fill="#1b1330"/><circle cx="106" cy="154" r="3" fill="#1b1330"/>
+    <path d="M74 176 q16 12 34 0" fill="none"/>
+    <line x1="124" y1="150" x2="230" y2="60" stroke-width="4"/>
+  </g>
+  <line x1="230" y1="60" x2="232" y2="95" stroke="#cfd8dc" stroke-width="2"/>
+  <!-- net with Max -->
+  <g transform="translate(232 128)">
+    <path d="M-30 -30 Q0 50 30 -30Z" fill="#fff" opacity=".2" stroke="#cfd8dc" stroke-width="2"/>
+    <path d="M-20 -20 L18 18 M-5 -30 L25 0 M20 -25 L-15 15 M5 -30 L-25 0" stroke="#cfd8dc" stroke-width="1.5"/>
+    <g stroke="#1b1330" stroke-width="2"><circle cx="0" cy="-4" r="9" fill="#f5c69b"/><path d="M-9 -6 a9 9 0 0 1 18 0Z" fill="#e53935"/><path d="M-4 1 q4 -3 8 0" fill="none"/></g>
+  </g>
+  <text x="180" y="28" text-anchor="middle" font-size="17" font-weight="bold" fill="#fff">Gotcha! The Phisher tricked Max.</text>
+  <rect x="150" y="168" width="196" height="54" rx="10" fill="#fff" stroke="#1b1330" stroke-width="3"/>
+  <text x="248" y="186" text-anchor="middle" font-size="11" font-weight="bold" fill="#c62828">🚩 libary.org is missing an "r".</text>
+  <text x="248" y="202" text-anchor="middle" font-size="10.5" fill="#1b1330">Fake sites copy real names</text>
+  <text x="248" y="215" text-anchor="middle" font-size="10.5" fill="#1b1330">and change one letter.</text>
+  <rect x="14" y="214" width="122" height="28" rx="14" fill="#ffca28" stroke="#1b1330" stroke-width="3"/>
+  <text x="75" y="233" text-anchor="middle" font-size="12" font-weight="bold" fill="#1b1330">↻ Try Gate 2</text>
+</svg>
+</div>
+<div class="card-body"><h3>2 · Caught</h3><p>A goofy villain (not police) nets Max. One line says which red flag was missed. Retry from this gate, not the start.</p></div>
+</div>
+
+<!-- Level clear -->
+<div class="card">
+<div class="card-image">
+<svg viewBox="0 0 360 250" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;font-family:'Comic Sans MS','Chalkboard SE',sans-serif">
+  <rect width="360" height="250" fill="#fff3c4"/>
+  <g fill="#ffca28" stroke="#2b2140" stroke-width="2.5" stroke-linejoin="round">
+    <polygon points="120,40 127,56 144,57 131,68 135,85 120,76 105,85 109,68 96,57 113,56"/>
+    <polygon points="180,26 189,46 211,47 194,61 199,83 180,71 161,83 166,61 149,47 171,46"/>
+    <polygon points="240,40 247,56 264,57 251,68 255,85 240,76 225,85 229,68 216,57 233,56"/>
+  </g>
+  <text x="180" y="112" text-anchor="middle" font-size="20" font-weight="bold" fill="#2b2140">Level clear! Max made it!</text>
+  <rect x="24" y="124" width="312" height="44" rx="12" fill="#2e86de" stroke="#2b2140" stroke-width="3"/>
+  <text x="180" y="151" text-anchor="middle" font-size="14" font-weight="bold" fill="#fff">🔎 Read the address. Every letter counts!</text>
+  <rect x="24" y="178" width="312" height="60" rx="12" fill="#fff" stroke="#2b2140" stroke-width="3" stroke-dasharray="7 5"/>
+  <text x="180" y="197" text-anchor="middle" font-size="12" font-weight="bold" fill="#2b2140">👪 Teach a grown-up: can they spot the fake?</text>
+  <text x="180" y="217" text-anchor="middle" font-size="12" fill="#2b2140">school-portal.org   ·   schoo1-portal.org</text>
+  <text x="180" y="231" text-anchor="middle" font-size="10" fill="#6d6d6d">(tap to flip for the answer)</text>
+</svg>
+</div>
+<div class="card-body"><h3>3 · Level clear</h3><p>Stars, then the one-line rule to remember, then a "teach a grown-up" mini challenge the kid can show a parent.</p></div>
+</div>
+
+</div>
+</div>
+</body></html>
