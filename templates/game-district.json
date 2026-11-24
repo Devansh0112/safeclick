@@ -1,0 +1,142 @@
+{
+  "title": "Your district name",
+  "concept": "malicious-links-qr",
+  "relatedConcepts": [],
+  "ageLevels": [
+    "kids"
+  ],
+  "summary": "One sentence that tells players what this district teaches.",
+  "reviewStatus": "draft",
+  "reviewer": "",
+  "sources": [
+    {
+      "title": "Name of the official guidance you based this on",
+      "url": "https://..."
+    }
+  ],
+  "formatVersion": 1,
+  "order": 1,
+  "habit": "Check before you tap.",
+  "levels": [
+    {
+      "id": "level-1",
+      "title": "Read the address",
+      "goal": "Max needs to get to the real Library.",
+      "habit": "Read the address.",
+      "rule": "Read the address. Every letter counts.",
+      "layout": "alley-1",
+      "grownUpChallenge": {
+        "prompt": "Which web address is the real Library?",
+        "options": [
+          "library.org",
+          "libary.org",
+          "library.org.prizes.win"
+        ],
+        "answer": 0,
+        "explain": "libary.org is missing an r, and the last one hides the real name in front of a different ending."
+      },
+      "gates": [
+        {
+          "id": "gate-1",
+          "type": "choose-portal",
+          "rounds": [
+            {
+              "prompt": "Max needs the real Library.",
+              "options": [
+                {
+                  "label": "library.org",
+                  "safe": true
+                },
+                {
+                  "label": "libary.org",
+                  "safe": false,
+                  "redFlag": "libary.org is missing an r. Fakes copy real names and change one letter."
+                },
+                {
+                  "label": "FREE-GAMES-library.win",
+                  "safe": false,
+                  "redFlag": "The real name is buried in a long address that ends in .win."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "boss": {
+    "name": "PHISH.BOT",
+    "intro": "I am PHISH.BOT! Every message I send is totally real. Totally.",
+    "waves": [
+      {
+        "messages": [
+          {
+            "text": "Your account is LOCKED! Tap here",
+            "fake": true,
+            "redFlag": "Scary threat and a link to tap."
+          },
+          {
+            "text": "Mum: Home by 6 tonight?",
+            "fake": false
+          },
+          {
+            "text": "You won a free phone! Claim now",
+            "fake": true,
+            "redFlag": "A surprise prize you never entered for."
+          },
+          {
+            "text": "Coach Sam: Practice is at 4pm",
+            "fake": false
+          }
+        ]
+      },
+      {
+        "messages": [
+          {
+            "text": "Grandma Rosa: Dinner at 6!",
+            "fake": false
+          },
+          {
+            "text": "QuickShip: Pay a fee or lose your parcel",
+            "fake": true,
+            "redFlag": "A surprise problem and a rush to pay."
+          },
+          {
+            "text": "Class chat: Homework is on page 12",
+            "fake": false
+          },
+          {
+            "text": "Click here: your game gift expires today",
+            "fake": true,
+            "redFlag": "A countdown tries to rush you."
+          }
+        ]
+      },
+      {
+        "messages": [
+          {
+            "text": "Friend: Want to play after school?",
+            "fake": false
+          },
+          {
+            "text": "Tell no one! Send your password to win",
+            "fake": true,
+            "redFlag": "Nobody real asks for your password or says tell no one."
+          },
+          {
+            "text": "Library: Your book is ready to pick up",
+            "fake": false
+          },
+          {
+            "text": "Brigthmart: Log in at brigthmart.win",
+            "fake": true,
+            "redFlag": "The shop name is spelled wrong and the address is odd."
+          }
+        ]
+      }
+    ]
+  },
+  "scamFileRewards": [
+    "password-grabber"
+  ]
+}

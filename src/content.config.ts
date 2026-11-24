@@ -233,4 +233,89 @@ const handouts = defineCollection({
     .superRefine(reviewGate),
 });
 
-export const collections = { concepts, cards, videos, articles, stories, readings, quizzes, handouts };
+// --- Neon City game --------------------------------------------------------
+// Teaching text lives here so experts can review it; level geometry lives in code.
+
+const slug = z.string().regex(/^[a-z0-9-]+$/);
+
+const portalRound = z.object({
+  prompt: z.string().min(1),
+  options: z
+    .array(z.object({ label: z.string().min(1), safe: z.boolean(), redFlag: z.string().optional() }))
+    .min(2)
+    .max(3),
+});
+
+const trustRound = z.object({
+  prompt: z.string().min(1),
+  item: z.object({ kind: z.enum(['link', 'message', 'popup', 'qr']), text: z.string().min(1) }),
+  safe: z.boolean(),
+  redFlag: z.string().optional(),
+  /** Shown gently if the player reports a safe item by mistake. */
+  whySafe: z.string().optional(),
+});
+
+const gameGate = z.discriminatedUnion('type', [
+  z.object({ id: slug, type: z.literal('choose-portal'), rounds: z.array(portalRound).min(1) }),
+  z.object({ id: slug, type: z.literal('trust-or-report'), rounds: z.array(trustRound).min(1) }),
+]);
+
+const gameLevel = z.object({
+  id: slug,
+  title: z.string().min(1),
+  goal: z.string().min(1),
+  habit: z.string().min(1),
+  rule: z.string().min(1),
+  /** Id of a layout file in src/game/layouts/. */
+  layout: z.string().min(1),
+  concept: reference('concepts').optional(),
+  grownUpChallenge: z.object({
+    prompt: z.string().min(1),
+    options: z.array(z.string().min(1)).min(2),
+    answer: z.number().int().min(0),
+    explain: z.string().min(1),
+  }),
+  gates: z.array(gameGate).min(1),
+});
+
+const gameBoss = z.object({
+  name: z.string().min(1),
+  intro: z.string().min(1),
+  waves: z.array(
+    z.object({
+      messages: z.array(z.object({ text: z.string().min(1), fake: z.boolean(), redFlag: z.string().optional() })).min(2),
+    }),
+  ),
+});
+
+const gameDistricts = defineCollection({
+  loader: glob({ pattern: '**/*.json', base: './src/content/gameDistricts' }),
+  schema: z
+    .object({
+      ...reviewFields,
+      formatVersion: z.literal(1).default(1),
+      order: z.number(),
+      habit: z.string().min(1),
+      levels: z.array(gameLevel).min(1),
+      boss: gameBoss,
+      scamFileRewards: z.array(slug).default([]),
+    })
+    .superRefine(reviewGate),
+});
+
+const scamFiles = defineCollection({
+  loader: glob({ pattern: '**/*.json', base: './src/content/scamFiles' }),
+  schema: z
+    .object({
+      ...reviewFields,
+      example: z.string().min(1),
+      howToSpot: z.string().min(1),
+      whatToDo: z.string().min(1),
+      /** Id of the district this file previews (it may not exist yet). */
+      district: z.string().min(1),
+      order: z.number().default(100),
+    })
+    .superRefine(reviewGate),
+});
+
+export const collections = { concepts, cards, videos, articles, stories, readings, quizzes, handouts, gameDistricts, scamFiles };

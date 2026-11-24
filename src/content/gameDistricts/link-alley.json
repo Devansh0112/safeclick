@@ -1,0 +1,434 @@
+{
+  "_note": "PLACEHOLDER TEXT - must be rewritten and expert-reviewed before rollout",
+  "title": "Link Alley",
+  "concept": "malicious-links-qr",
+  "relatedConcepts": [
+    "phishing"
+  ],
+  "ageLevels": [
+    "kids"
+  ],
+  "summary": "Max runs through Link Alley, learning to check a link, a sender or a pop-up before tapping.",
+  "reviewStatus": "draft",
+  "reviewer": "",
+  "sources": [],
+  "formatVersion": 1,
+  "order": 1,
+  "habit": "Check before you tap.",
+  "levels": [
+    {
+      "id": "level-1",
+      "title": "Read the address",
+      "goal": "Max needs to get to the real Library.",
+      "habit": "Read the address.",
+      "rule": "Read the address. Every letter counts.",
+      "layout": "alley-1",
+      "grownUpChallenge": {
+        "prompt": "Which web address is the real Library?",
+        "options": [
+          "library.org",
+          "libary.org",
+          "library.org.prizes.win"
+        ],
+        "answer": 0,
+        "explain": "libary.org is missing an r, and the last one hides the real name in front of a different ending."
+      },
+      "gates": [
+        {
+          "id": "gate-1",
+          "type": "choose-portal",
+          "rounds": [
+            {
+              "prompt": "Max needs the real Library.",
+              "options": [
+                {
+                  "label": "library.org",
+                  "safe": true
+                },
+                {
+                  "label": "libary.org",
+                  "safe": false,
+                  "redFlag": "libary.org is missing an r. Fakes copy real names and change one letter."
+                },
+                {
+                  "label": "FREE-GAMES-library.win",
+                  "safe": false,
+                  "redFlag": "The real name is buried in a long address that ends in .win."
+                }
+              ]
+            },
+            {
+              "prompt": "Max needs the Brightmart shop.",
+              "options": [
+                {
+                  "label": "brightmart.example",
+                  "safe": true
+                },
+                {
+                  "label": "brigthmart.example",
+                  "safe": false,
+                  "redFlag": "The letters in brightmart are swapped around."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "gate-2",
+          "type": "choose-portal",
+          "rounds": [
+            {
+              "prompt": "Max wants the school website.",
+              "options": [
+                {
+                  "label": "northfield-school.example",
+                  "safe": true
+                },
+                {
+                  "label": "northfield-school.login.win",
+                  "safe": false,
+                  "redFlag": "The real name comes first, but the address really ends in login-now.win."
+                },
+                {
+                  "label": "northfie1d-school.example",
+                  "safe": false,
+                  "redFlag": "A number 1 is pretending to be a letter l."
+                }
+              ]
+            },
+            {
+              "prompt": "Max wants the Moonbeam Games page.",
+              "options": [
+                {
+                  "label": "moonbeam-games.example",
+                  "safe": true
+                },
+                {
+                  "label": "moonbeam-garnes.example",
+                  "safe": false,
+                  "redFlag": "An r and an n squeezed together look like an m."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "gate-3",
+          "type": "choose-portal",
+          "rounds": [
+            {
+              "prompt": "Max needs the QuickShip Parcel tracker.",
+              "options": [
+                {
+                  "label": "quickship.example/track",
+                  "safe": true
+                },
+                {
+                  "label": "quickship-track.win",
+                  "safe": false,
+                  "redFlag": "The address ends in .win, not the real quickship.example."
+                },
+                {
+                  "label": "quick-shlp.example/track",
+                  "safe": false,
+                  "redFlag": "The word quickship is spelled wrong."
+                }
+              ]
+            },
+            {
+              "prompt": "Max is looking for the town pool.",
+              "options": [
+                {
+                  "label": "townpool.example",
+                  "safe": true
+                },
+                {
+                  "label": "townp00l.example",
+                  "safe": false,
+                  "redFlag": "Zeros are pretending to be the letter o."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "level-2",
+      "title": "Who sent it?",
+      "goal": "Max must sort messages before reaching the exit.",
+      "habit": "Check who sent it.",
+      "rule": "Pause and ask: do I know who really sent this?",
+      "layout": "alley-2",
+      "grownUpChallenge": {
+        "prompt": "A text says \"Your parcel is stuck, tap here to pay a fee.\" You were not expecting a parcel. What is the safest move?",
+        "options": [
+          "Tap the link and pay",
+          "Ignore it, then check with the shop directly",
+          "Reply with your address"
+        ],
+        "answer": 1,
+        "explain": "Scam texts use surprise problems and links. Check using an app or number you already trust."
+      },
+      "gates": [
+        {
+          "id": "gate-1",
+          "type": "trust-or-report",
+          "rounds": [
+            {
+              "prompt": "A message pops up. Trust it or report it?",
+              "item": {
+                "kind": "message",
+                "text": "Grandma Rosa: Dinner at 6! Bring your appetite."
+              },
+              "safe": true,
+              "whySafe": "It is from someone you know and talks about a normal plan."
+            },
+            {
+              "prompt": "A message pops up. Trust it or report it?",
+              "item": {
+                "kind": "message",
+                "text": "QuickShip: Your parcel is stuck. Pay a fee at once!"
+              },
+              "safe": false,
+              "redFlag": "A surprise problem with a rush to pay is a classic trick."
+            }
+          ]
+        },
+        {
+          "id": "gate-2",
+          "type": "trust-or-report",
+          "rounds": [
+            {
+              "prompt": "A link arrives. Trust it or report it?",
+              "item": {
+                "kind": "link",
+                "text": "http://brightmart-gift.win/claim"
+              },
+              "safe": false,
+              "redFlag": "The address ends in .win and promises a gift you never asked for."
+            },
+            {
+              "prompt": "A link arrives from your teacher. Trust it or report it?",
+              "item": {
+                "kind": "link",
+                "text": "https://northfield-school.example/homework"
+              },
+              "safe": true,
+              "whySafe": "It is the real school address, and your teacher shared it in class."
+            }
+          ]
+        },
+        {
+          "id": "gate-3",
+          "type": "trust-or-report",
+          "rounds": [
+            {
+              "prompt": "A message pops up. Trust it or report it?",
+              "item": {
+                "kind": "message",
+                "text": "Your account is LOCKED. Tap here to unlock it now."
+              },
+              "safe": false,
+              "redFlag": "Scary threats and \"now\" try to make you tap before you think."
+            },
+            {
+              "prompt": "A message pops up. Trust it or report it?",
+              "item": {
+                "kind": "message",
+                "text": "Coach Sam: Practice moved to 4pm on Friday."
+              },
+              "safe": true,
+              "whySafe": "It is from a person you know about something you expected."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "level-3",
+      "title": "Prizes and pop-ups",
+      "goal": "Max must spot the tricks hiding in the bright lights.",
+      "habit": "If it sounds too good, stop.",
+      "rule": "Free prizes and loud pop-ups are a reason to stop and ask.",
+      "layout": "alley-3",
+      "concept": "malicious-links-qr",
+      "grownUpChallenge": {
+        "prompt": "A pop-up says \"You won a free phone! Tap to claim.\" What gives it away as fake?",
+        "options": [
+          "It is a surprise prize you never entered for",
+          "It uses bright colours",
+          "It has a big button"
+        ],
+        "answer": 0,
+        "explain": "Real prizes do not appear from nowhere. A surprise prize with a button to tap is bait."
+      },
+      "gates": [
+        {
+          "id": "gate-1",
+          "type": "trust-or-report",
+          "rounds": [
+            {
+              "prompt": "A pop-up appears. Trust it or report it?",
+              "item": {
+                "kind": "popup",
+                "text": "YOU WON a free phone! Tap to claim in 60 seconds!"
+              },
+              "safe": false,
+              "redFlag": "A surprise prize plus a countdown is bait to rush you."
+            },
+            {
+              "prompt": "A pop-up appears. Trust it or report it?",
+              "item": {
+                "kind": "popup",
+                "text": "Your game finished updating. Tap OK to keep playing."
+              },
+              "safe": true,
+              "whySafe": "It is a normal message from the game you chose to open."
+            }
+          ]
+        },
+        {
+          "id": "gate-2",
+          "type": "choose-portal",
+          "rounds": [
+            {
+              "prompt": "Max wants to download the Moonbeam Games app.",
+              "options": [
+                {
+                  "label": "store.example/moonbeam",
+                  "safe": true
+                },
+                {
+                  "label": "free-moonbeam-app.win",
+                  "safe": false,
+                  "redFlag": "A free-app site ending in .win is not the real store."
+                },
+                {
+                  "label": "moonbeam-games-prize.example",
+                  "safe": false,
+                  "redFlag": "Real stores do not put prize in the address."
+                }
+              ]
+            },
+            {
+              "prompt": "Max wants the Library eBook page.",
+              "options": [
+                {
+                  "label": "library.org/ebooks",
+                  "safe": true
+                },
+                {
+                  "label": "library-ebooks-free.win",
+                  "safe": false,
+                  "redFlag": "The real name is mixed into a long address ending in .win."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "gate-3",
+          "type": "trust-or-report",
+          "rounds": [
+            {
+              "prompt": "A poster has a square code. Trust it or report it?",
+              "item": {
+                "kind": "qr",
+                "text": "Sticker on a lamp post: Scan for free pizza!"
+              },
+              "safe": false,
+              "redFlag": "A sticker stuck over something else can hide a code that opens a fake site."
+            },
+            {
+              "prompt": "Your teacher shows a square code on screen. Trust it or report it?",
+              "item": {
+                "kind": "qr",
+                "text": "Class screen: Scan to join our reading club page."
+              },
+              "safe": true,
+              "whySafe": "You can see who is sharing it and why, and it matches what you were told."
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "boss": {
+    "name": "PHISH.BOT",
+    "intro": "I am PHISH.BOT! Every message I send is totally real. Totally.",
+    "waves": [
+      {
+        "messages": [
+          {
+            "text": "Your account is LOCKED! Tap here",
+            "fake": true,
+            "redFlag": "Scary threat and a link to tap."
+          },
+          {
+            "text": "Mum: Home by 6 tonight?",
+            "fake": false
+          },
+          {
+            "text": "You won a free phone! Claim now",
+            "fake": true,
+            "redFlag": "A surprise prize you never entered for."
+          },
+          {
+            "text": "Coach Sam: Practice is at 4pm",
+            "fake": false
+          }
+        ]
+      },
+      {
+        "messages": [
+          {
+            "text": "Grandma Rosa: Dinner at 6!",
+            "fake": false
+          },
+          {
+            "text": "QuickShip: Pay a fee or lose your parcel",
+            "fake": true,
+            "redFlag": "A surprise problem and a rush to pay."
+          },
+          {
+            "text": "Class chat: Homework is on page 12",
+            "fake": false
+          },
+          {
+            "text": "Click here: your game gift expires today",
+            "fake": true,
+            "redFlag": "A countdown tries to rush you."
+          }
+        ]
+      },
+      {
+        "messages": [
+          {
+            "text": "Friend: Want to play after school?",
+            "fake": false
+          },
+          {
+            "text": "Tell no one! Send your password to win",
+            "fake": true,
+            "redFlag": "Nobody real asks for your password or says tell no one."
+          },
+          {
+            "text": "Library: Your book is ready to pick up",
+            "fake": false
+          },
+          {
+            "text": "Brigthmart: Log in at brigthmart.win",
+            "fake": true,
+            "redFlag": "The shop name is spelled wrong and the address is odd."
+          }
+        ]
+      }
+    ]
+  },
+  "scamFileRewards": [
+    "password-grabber",
+    "fake-login-page",
+    "sneaky-peeker"
+  ]
+}
