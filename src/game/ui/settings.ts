@@ -61,12 +61,25 @@ export function createMuteButton(sound: SoundState, sfx: () => void = () => unde
   return b;
 }
 
-/** The always-visible corner of the game: just the mute button for now. */
-export function mountCorner(overlay: HTMLElement, sound: SoundState, sfx: () => void): HTMLElement {
+/**
+ * The always-visible corner of the game: a MAP button (leave a level or fight; hidden while the
+ * map is open) and the mute button. Both keep their keys away from the game.
+ */
+export function mountCorner(overlay: HTMLElement, sound: SoundState, sfx: () => void, onMap: () => void): { mapButton: HTMLButtonElement } {
   const corner = el('div', 'game-corner');
-  corner.append(createMuteButton(sound, sfx));
+  corner.dataset.gameCorner = '';
+  const mapButton = button('map-btn', 'MAP', '▦');
+  mapButton.setAttribute('aria-label', 'Back to the map');
+  mapButton.addEventListener('click', () => {
+    sfx();
+    onMap();
+  });
+  mapButton.addEventListener('keydown', (e) => {
+    if (e.key !== 'Tab') e.stopPropagation();
+  });
+  corner.append(mapButton, createMuteButton(sound, sfx));
   overlay.prepend(corner);
-  return corner;
+  return { mapButton };
 }
 
 export function showSettings(host: OverlayHost, o: SettingsOptions): Promise<void> {

@@ -89,7 +89,7 @@ const json = JSON.stringify(payload).replace(/</g, '\\u003c');
   }
 
   .game-overlay :global(.rotate-hint) {
-    position: absolute; inset: 0.5rem 3.75rem auto 0.5rem; display: flex; align-items: center; gap: 0.75rem;
+    position: absolute; inset: 0.5rem 8.5rem auto 0.5rem; display: flex; align-items: center; gap: 0.75rem;
     padding: 0.5rem 0.75rem; border: 2px solid #ffd166; border-radius: 0.5rem; background: rgba(7, 2, 26, 0.92);
     color: #fff; font-size: 0.95rem;
   }
@@ -271,7 +271,13 @@ const json = JSON.stringify(payload).replace(/</g, '\\u003c');
 
   /* Always-visible corner: the mute button (src/game/ui/settings.ts). Above the gate panel's edge,
      under the full-screen reading screens (the map carries its own mute button). */
-  .game-overlay :global(.game-corner) { position: absolute; top: 0.5rem; right: 0.5rem; z-index: 1; }
+  .game-overlay :global(.game-corner) { position: absolute; top: 0.5rem; right: 0.5rem; z-index: 3; display: flex; gap: 0.5rem; }
+  .game-overlay :global(.map-btn[hidden]) { display: none; }
+  .game-overlay :global(.map-btn) {
+    min-height: 2.75rem; padding: 0 0.75rem; border: 2px solid #ff3d9a; border-radius: 0.6rem; background: rgba(7, 2, 26, 0.75); color: #e6f7ff;
+    font: bold 1rem/1 "Courier New", ui-monospace, monospace; cursor: pointer;
+  }
+  .game-overlay :global(.map-btn:hover) { box-shadow: 0 0 0.75rem rgba(255, 61, 154, 0.6); }
   .game-overlay :global(.mute-btn) {
     display: grid; place-items: center; min-width: 2.75rem; min-height: 2.75rem; padding: 0; border: 2px solid #18f0ff; border-radius: 0.6rem;
     background: rgba(7, 2, 26, 0.75); color: #e6f7ff; font-size: 1.3rem; line-height: 1; cursor: pointer;
@@ -311,7 +317,7 @@ const json = JSON.stringify(payload).replace(/</g, '\\u003c');
   .game-overlay :global(.settings-radio) { display: flex; align-items: center; gap: 0.6rem; min-height: 2.75rem; font-size: 1.1rem; cursor: pointer; }
   .game-overlay :global(.settings-radio input) { width: 1.4rem; height: 1.4rem; accent-color: #ff3d9a; }
   .game-overlay :global(.settings-radio input:focus-visible) { outline: 3px solid #ffd166; outline-offset: 3px; }
-  :global(:root[data-contrast='high']) .game-overlay :global(:is(.map-level, .map-boss, .map-soon, .settings-group, .mute-btn)) { background: #fff; color: #000; border-color: #000; }
+  :global(:root[data-contrast='high']) .game-overlay :global(:is(.map-level, .map-boss, .map-soon, .settings-group, .mute-btn, .map-btn)) { background: #fff; color: #000; border-color: #000; }
   :global(:root[data-contrast='high']) .game-overlay :global(:is(.map-title, .map-district-title, .map-habit, .map-level-state, .map-stars, .map-soon-title, .settings-legend, .settings-help)) { color: #000; }
 
   @media (max-width: 767.98px) {

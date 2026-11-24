@@ -6,7 +6,7 @@ import type { GamePayload, ScamFileData } from './types';
 import { collectionView } from './logic/unlocks';
 import { showLevelClear, type LevelClearChoice, type LevelClearInfo } from './ui/level-clear';
 import { showMap, type MapChoice } from './ui/map';
-import { showCaught, showNote, type OverlayHost } from './ui/overlays';
+import { closeAllDialogs, showCaught, showNote, type OverlayHost } from './ui/overlays';
 import { showScamFiles, showStash } from './ui/scam-files';
 import { createMuteButton, mountCorner, showSettings, type SoundState } from './ui/settings';
 
@@ -104,10 +104,15 @@ export function createShell(root: HTMLElement, payload: GamePayload, kv: KV, opt
     sfx: click,
   });
 
+  const { mapButton } = mountCorner(overlay, soundState, click, () => openMap());
+
   const openMap = () => {
     if (mapOpen) return;
     mapOpen = true;
+    mapButton.hidden = true;
     opts.stopScenes?.();
+    // Abandon any screen left open (Caught, Level clear, stash...): their scene is stopped.
+    closeAllDialogs();
     if (hudEl) hudEl.hidden = true;
     if (touchEl) touchEl.hidden = true;
     void showMap(host, payload, {
@@ -118,13 +123,13 @@ export function createShell(root: HTMLElement, payload: GamePayload, kv: KV, opt
       muteButton: () => createMuteButton(soundState, click),
     }).then((choice) => {
       mapOpen = false;
+      mapButton.hidden = false;
       if (hudEl) hudEl.hidden = false;
       if (touchEl) touchEl.hidden = false;
       opts.startScene?.(choice);
     });
   };
 
-  mountCorner(overlay, soundState, click);
 
   return {
     payload,
