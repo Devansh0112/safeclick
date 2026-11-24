@@ -130,7 +130,10 @@ export class LevelScene extends Phaser.Scene {
       emitting: false,
     }).setDepth(6);
     this.max.on('land', (speed: number) => this.burst(this.max.x, this.max.body.bottom, Math.min(12, Math.round(speed / 80))));
-    this.max.on('jump', () => this.burst(this.max.x, this.max.body.bottom, 5));
+    this.max.on('jump', () => {
+      this.shell.sfx('jump');
+      this.burst(this.max.x, this.max.body.bottom, 5);
+    });
 
     this.buildHud(district.title, level.title);
     this.wireEvents(keyboard);
@@ -307,7 +310,7 @@ export class LevelScene extends Phaser.Scene {
     this.shell.update((p) => recordLevel(p, levelKey(districtId, this.level.id), stars));
     this.shell.sfx('clear');
     const hasNext = levelIndex + 1 < this.district.levels.length;
-    // Last level with every level cleared: offer the boss (the map gets its own entry in Task 7).
+    // Last level with every level cleared: offer the boss (the map has its own entry too).
     const bossLabel = !hasNext && isBossUnlocked(this.district, this.shell.progress()) ? `FACE ${this.district.boss.name}` : undefined;
     const choice = await this.shell.showLevelClear({ stars, rule: this.level.rule, challenge: this.level.grownUpChallenge, hasNext, bossLabel });
     if (!this.sys.isActive() && !this.sys.isPaused()) return;

@@ -28,14 +28,18 @@ export function bootNeonCity(root: HTMLElement): void {
   const stage = root.querySelector<HTMLElement>('[data-game-stage]');
   const focus = stage ? trackGameFocus(root, stage) : undefined;
   if (overlay) mountRotateHint(overlay);
-  const start: LevelInit = { districtId: 'link-alley', levelIndex: 0 };
+  const running = (key: string) => {
+    const sys = game.scene.getScene(key)?.sys;
+    return !!sys && (sys.isActive() || sys.isPaused());
+  };
   const shell = createShell(root, payload, store, {
-    // Placeholder until the district map (Task 7): back to the district's first level.
-    onOpenMap: () => {
-      game.scene.stop('boss');
-      const level = game.scene.getScene('level');
-      if (level?.sys.isActive() || level?.sys.isPaused()) level.scene.restart({ ...start });
-      else game.scene.start('level', { ...start });
+    // No scene runs while the map is open.
+    stopScenes: () => {
+      for (const key of ['level', 'boss']) if (running(key)) game.scene.stop(key);
+    },
+    startScene: (choice) => {
+      if (choice.type === 'boss') game.scene.start('boss', { districtId: choice.districtId });
+      else game.scene.start('level', { districtId: choice.districtId, levelIndex: choice.levelIndex } satisfies LevelInit);
     },
   });
 
@@ -44,6 +48,8 @@ export function bootNeonCity(root: HTMLElement): void {
     parent: canvasHost,
     backgroundColor: PALETTE.bg0,
     scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH, width: 1280, height: 720 },
+    // Sound is our own Web Audio (audio/sfx.ts), created on the first press; Phaser's would wake at boot.
+    audio: { noAudio: true },
     physics: { default: 'arcade', arcade: { gravity: { x: 0, y: MOVE.gravity } } },
     callbacks: {
       preBoot: (g) => {
@@ -55,11 +61,13 @@ export function bootNeonCity(root: HTMLElement): void {
       },
     },
   });
-  // The boss is entered from the last Level clear (and from the map in Task 7).
+  // The map is the first screen; the boss is entered from the map or the last Level clear.
   // Dev only: ?boss in the address jumps straight to the fight.
   const devBoss = import.meta.env.DEV && new URLSearchParams(location.search).has('boss');
-  game.scene.add('level', LevelScene, !devBoss, start);
-  game.scene.add('boss', BossScene, devBoss, { districtId: start.districtId });
+  game.scene.add('level', LevelScene, false);
+  game.scene.add('boss', BossScene, devBoss, { districtId: payload.districts[0]?.id });
+  if (!devBoss) shell.openMap();
   // Dev-only handle for browser checks; stripped from production builds.
-  if (import.meta.env.DEV) (window as unknown as { __neonCity?: Phaser.Game }).__neonCity = game;
+  if (import.meta.env.DEV) (window as unknown as { __neonCity?: Phaser.Game; __shell?: unknown }).__neonCity = game;
+  if (import.meta.env.DEV) (window as unknown as { __shell?: unknown }).__shell = shell;
 }

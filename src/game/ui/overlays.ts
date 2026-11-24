@@ -29,7 +29,7 @@ export function button(className: string, text: string, icon?: string): HTMLButt
 let nextId = 0;
 export const uid = (prefix: string) => `${prefix}-${++nextId}`;
 
-const FOCUSABLE = 'button:not([disabled]), [href], [tabindex]:not([tabindex="-1"])';
+const FOCUSABLE = 'button:not([disabled]), input:not([disabled]), [href], [tabindex]:not([tabindex="-1"])';
 
 export interface Dialog {
   root: HTMLElement;
