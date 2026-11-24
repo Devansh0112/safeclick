@@ -88,6 +88,7 @@ export interface LayoutData {
   height: number;
   start: { x: number; y: number };
   exit: { x: number; y: number };
-  platforms: { x: number; y: number; w: number; h: number }[];
+  /** `moving` slides the platform by dx/dy and back over periodMs. */
+  platforms: { x: number; y: number; w: number; h: number; moving?: { dx: number; dy: number; periodMs: number } }[];
   gates: { x: number }[];
 }
