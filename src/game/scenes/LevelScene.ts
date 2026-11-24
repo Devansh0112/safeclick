@@ -13,7 +13,7 @@ import { getLayout } from '../layouts/index';
 import { GateRound } from '../logic/gate-round';
 import { recordLevel } from '../logic/progress';
 import { starsFor } from '../logic/scoring';
-import { levelKey } from '../logic/unlocks';
+import { isBossUnlocked, levelKey } from '../logic/unlocks';
 import type { Shell } from '../shell';
 import type { DistrictData, LayoutData, LevelData } from '../types';
 import type { GameFocus } from '../ui/game-focus';
@@ -307,9 +307,12 @@ export class LevelScene extends Phaser.Scene {
     this.shell.update((p) => recordLevel(p, levelKey(districtId, this.level.id), stars));
     this.shell.sfx('clear');
     const hasNext = levelIndex + 1 < this.district.levels.length;
-    const choice = await this.shell.showLevelClear({ stars, rule: this.level.rule, challenge: this.level.grownUpChallenge, hasNext });
+    // Last level with every level cleared: offer the boss (the map gets its own entry in Task 7).
+    const bossLabel = !hasNext && isBossUnlocked(this.district, this.shell.progress()) ? `FACE ${this.district.boss.name}` : undefined;
+    const choice = await this.shell.showLevelClear({ stars, rule: this.level.rule, challenge: this.level.grownUpChallenge, hasNext, bossLabel });
     if (!this.sys.isActive() && !this.sys.isPaused()) return;
-    if (choice === 'map') this.shell.openMap();
+    if (choice === 'boss') this.scene.start('boss', { districtId });
+    else if (choice === 'map') this.shell.openMap();
     else this.scene.restart({ districtId, levelIndex: choice === 'next' ? levelIndex + 1 : levelIndex });
   }
 

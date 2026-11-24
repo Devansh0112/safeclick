@@ -197,6 +197,77 @@ const json = JSON.stringify(payload).replace(/</g, '\\u003c');
   .game-overlay :global(.gate-panel.is-busy .gate-choice) { opacity: 0.6; cursor: default; }
   .game-overlay :global(.gate-hint) { margin: 0.35rem 0 0; font-size: 0.85rem; color: #c9bdf0; }
 
+  /* Boss decision panel (src/game/ui/boss-panel.ts): below the canvas, the current card's text
+     between big SHIELD and LET IT THROUGH buttons. Text labels and icons, never colour alone. */
+  .game :global(.boss-panel) {
+    display: grid; grid-template-columns: minmax(8rem, 1fr) minmax(0, 2fr) minmax(8rem, 1fr);
+    grid-template-areas: 'shield now pass' 'hint hint hint'; gap: 0.5rem 0.75rem; align-items: stretch;
+    padding: 0.6rem 0.75rem; border-top: 2px solid #ff3d9a; background: #07021a; color: #f2ecff; font: 1rem/1.35 var(--font);
+  }
+  .game :global(.boss-now) { grid-area: now; min-width: 0; padding: 0.4rem 0.7rem; border: 2px solid #ffd166; border-radius: 0.4rem; background: #0e1240; }
+  .game :global(.boss-now-label) { margin: 0; font: bold 0.85rem/1.3 "Courier New", ui-monospace, monospace; color: #ffd166; }
+  .game :global(.boss-now-text) { margin: 0.1rem 0 0; font-size: 1.2rem; font-weight: bold; overflow-wrap: anywhere; }
+  .game :global(.boss-toast) { margin: 0.3rem 0 0; font: bold 0.95rem/1.3 "Courier New", ui-monospace, monospace; color: #ffd166; }
+  .game :global(.boss-toast[hidden]) { display: none; }
+  .game :global(.boss-btn) {
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.15rem; min-height: 4rem;
+    padding: 0.4rem 0.6rem; border: 3px solid #18f0ff; border-radius: 0.6rem; background: rgba(24, 240, 255, 0.12); color: #f2ecff;
+    font: bold 1.15rem/1.2 "Courier New", ui-monospace, monospace; cursor: pointer; touch-action: manipulation; user-select: none; -webkit-user-select: none;
+  }
+  .game :global(.boss-btn-shield) { grid-area: shield; }
+  .game :global(.boss-btn-pass) { grid-area: pass; border-color: #39ff88; background: rgba(57, 255, 136, 0.12); }
+  .game :global(.boss-btn-icon) { font-size: 1.5rem; line-height: 1; }
+  .game :global(.boss-btn-keys) { font-size: 0.8rem; font-weight: normal; color: #c9bdf0; }
+  .game :global(.boss-btn:focus-visible) { outline: 3px solid #ffd166; outline-offset: 2px; }
+  .game :global(.boss-btn:active) { transform: translateY(1px); }
+  .game :global(.boss-panel.is-busy .boss-btn) { opacity: 0.55; cursor: default; }
+  .game :global(.boss-hint) { grid-area: hint; margin: 0; font-size: 0.9rem; color: #c9bdf0; text-align: center; }
+  @media (max-width: 767.98px) {
+    .game :global(.boss-panel) { grid-template-columns: 1fr 1fr; grid-template-areas: 'now now' 'shield pass' 'hint hint'; }
+    .game :global(.boss-btn) { min-height: 4.5rem; }
+  }
+  @media (pointer: coarse) and (orientation: landscape) {
+    /* The canvas fills the phone's height, so the panel lies over its lower edge. */
+    .game :global(.boss-panel) { position: absolute; inset: auto 0 0 0; z-index: 1; padding: 0.4rem 0.6rem; background: rgba(7, 2, 26, 0.88); }
+    .game :global(.boss-hint) { display: none; }
+    .game :global(.boss-btn) { min-height: 3.25rem; }
+  }
+  :global(:root[data-contrast='high']) .game :global(.boss-panel) { background: #fff; color: #000; border-top: 3px solid #000; }
+  :global(:root[data-contrast='high']) .game :global(:is(.boss-now, .boss-btn)) { background: #fff; color: #000; border-color: #000; }
+  :global(:root[data-contrast='high']) .game :global(:is(.boss-now-label, .boss-toast, .boss-btn-keys, .boss-hint)) { color: #000; }
+  :global(:root[data-contrast='high']) .game :global(.boss-btn:focus-visible) { outline-color: #000; outline-width: 4px; }
+
+  /* Stash reveal and Scam Files collection (src/game/ui/scam-files.ts). */
+  .game-overlay :global(.ov-stash .ov-card), .game-overlay :global(.ov-files .ov-card) { border-color: #ffd166; }
+  .game-overlay :global(.stash-title), .game-overlay :global(.files-title) { color: #ffd166; }
+  .game-overlay :global(.stash-count) { margin: 0 0 0.4rem; font: bold 0.95rem/1.3 "Courier New", ui-monospace, monospace; color: #c9bdf0; text-align: center; }
+  .game-overlay :global(.sf-card) { margin: 0 0 1rem; padding: 0.75rem 0.9rem; border: 2px solid #18f0ff; border-radius: 0.5rem; background: #0e1240; }
+  .game-overlay :global(.ov-stash:not([data-reduced-motion]) .sf-card) { animation: sf-reveal 0.35s ease-out; }
+  @keyframes sf-reveal { from { opacity: 0; transform: translateY(0.75rem) scale(0.97); } to { opacity: 1; transform: none; } }
+  .game-overlay :global(.sf-label) { margin: 0; font: bold 0.8rem/1.3 "Courier New", ui-monospace, monospace; color: #18f0ff; letter-spacing: 0.1em; }
+  .game-overlay :global(.sf-title) { margin: 0 0 0.5rem; font: bold 1.3rem/1.25 var(--font); color: #fff; }
+  .game-overlay :global(.sf-example) { margin: 0 0 0.6rem; padding: 0.5rem 0.75rem; border: 2px solid #ff3d9a; border-radius: 0.9rem 0.9rem 0.9rem 0.2rem; background: #1a0533; }
+  .game-overlay :global(.sf-section) { margin: 0 0 0.5rem; }
+  .game-overlay :global(.sf-section-title) { margin: 0; font: bold 0.95rem/1.3 "Courier New", ui-monospace, monospace; color: #ffd166; }
+  .game-overlay :global(.sf-example .sf-section-title) { color: #ff8fc7; }
+  .game-overlay :global(.sf-section-text) { margin: 0.15rem 0 0; font-size: 1.05rem; }
+  .game-overlay :global(.sf-teaser) { margin: 0 0 1rem; padding: 0.75rem 0.9rem; border: 2px dashed #ff3d9a; border-radius: 0.5rem; text-align: center; }
+  .game-overlay :global(.sf-teaser-title) { margin: 0 0 0.25rem; font: bold 1.1rem/1.3 "Courier New", ui-monospace, monospace; color: #ff8fc7; }
+  .game-overlay :global(.sf-teaser-text) { margin: 0; }
+  .game-overlay :global(.sf-empty) { margin: 0 0 1rem; padding: 0.75rem; border: 2px dashed #8e82b3; border-radius: 0.5rem; text-align: center; font-weight: bold; list-style: none; }
+  .game-overlay :global(.files-body > .ov-btn) { display: block; margin: 0 auto 1rem; }
+  .game-overlay :global(.files-grid) { display: grid; grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr)); gap: 0.6rem; margin: 0 0 1rem; padding: 0; list-style: none; }
+  .game-overlay :global(.files-item) {
+    display: flex; flex-direction: column; align-items: flex-start; gap: 0.3rem; width: 100%; height: 100%; min-height: 6rem;
+    padding: 0.6rem 0.7rem; border: 2px solid #18f0ff; border-radius: 0.5rem; background: #0e1240; color: #f2ecff;
+    font: bold 1.05rem/1.3 var(--font); text-align: left; cursor: pointer;
+  }
+  .game-overlay :global(.files-item.is-locked) { border-style: dashed; border-color: #8e82b3; background: #110a22; cursor: default; }
+  .game-overlay :global(.files-silhouette) { font-size: 1.6rem; filter: grayscale(1); }
+  .game-overlay :global(.files-item-state) { font: bold 0.85rem/1.3 "Courier New", ui-monospace, monospace; color: #c9bdf0; }
+  :global(:root[data-contrast='high']) .game-overlay :global(:is(.sf-card, .sf-example, .sf-teaser, .sf-empty, .files-item)) { background: #fff; color: #000; border-color: #000; }
+  :global(:root[data-contrast='high']) .game-overlay :global(:is(.stash-count, .sf-label, .sf-title, .sf-section-title, .sf-teaser-title, .files-item-state)) { color: #000; }
+
   @media (max-width: 767.98px) {
     .game-overlay :global(.ov-backdrop), .game-overlay :global(.gate-panel) {
       position: fixed; inset: 0; z-index: 1000; max-height: none; background: #07021a;
@@ -208,7 +279,7 @@ const json = JSON.stringify(payload).replace(/</g, '\\u003c');
     .game-overlay :global(.gate-choice) { flex: none; min-height: 3.25rem; font-size: 1.15rem; }
   }
   @media (prefers-reduced-motion: reduce) {
-    .game-overlay :global(.caught-title), .game-overlay :global(.grownup) { animation: none !important; }
+    .game-overlay :global(.caught-title), .game-overlay :global(.grownup), .game-overlay :global(.sf-card) { animation: none !important; }
   }
 
   /* High contrast: black on white, borders carry the meaning (with text labels). */

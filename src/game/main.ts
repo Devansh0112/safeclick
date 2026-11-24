@@ -3,6 +3,7 @@
 import Phaser from 'phaser';
 import { PALETTE } from './art/palette';
 import { MOVE } from './entities/max';
+import { BossScene } from './scenes/BossScene';
 import { LevelScene, type LevelInit } from './scenes/LevelScene';
 import { createShell } from './shell';
 import { store } from '../scripts/storage';
@@ -30,7 +31,12 @@ export function bootNeonCity(root: HTMLElement): void {
   const start: LevelInit = { districtId: 'link-alley', levelIndex: 0 };
   const shell = createShell(root, payload, store, {
     // Placeholder until the district map (Task 7): back to the district's first level.
-    onOpenMap: () => game.scene.getScene('level')?.scene.restart({ ...start }),
+    onOpenMap: () => {
+      game.scene.stop('boss');
+      const level = game.scene.getScene('level');
+      if (level?.sys.isActive() || level?.sys.isPaused()) level.scene.restart({ ...start });
+      else game.scene.start('level', { ...start });
+    },
   });
 
   const game = new Phaser.Game({
@@ -49,7 +55,11 @@ export function bootNeonCity(root: HTMLElement): void {
       },
     },
   });
-  game.scene.add('level', LevelScene, true, start);
+  // The boss is entered from the last Level clear (and from the map in Task 7).
+  // Dev only: ?boss in the address jumps straight to the fight.
+  const devBoss = import.meta.env.DEV && new URLSearchParams(location.search).has('boss');
+  game.scene.add('level', LevelScene, !devBoss, start);
+  game.scene.add('boss', BossScene, devBoss, { districtId: start.districtId });
   // Dev-only handle for browser checks; stripped from production builds.
   if (import.meta.env.DEV) (window as unknown as { __neonCity?: Phaser.Game }).__neonCity = game;
 }

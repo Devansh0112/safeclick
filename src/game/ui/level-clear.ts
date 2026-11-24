@@ -1,15 +1,18 @@
 // Level clear screen (spec §6.3): stars, the level rule as a command line, the
-// "Challenge a grown-up" flip card, then Next level / Replay / Map.
+// "Challenge a grown-up" flip card, then Next level / Replay / Map. After the district's
+// last level, with every level cleared, it also offers the boss ("FACE PHISH.BOT").
 import type { GrownUpChallenge } from '../types';
 import { button, closeOn, el, openDialog, uid, type OverlayHost } from './overlays';
 
-export type LevelClearChoice = 'next' | 'replay' | 'map';
+export type LevelClearChoice = 'next' | 'replay' | 'map' | 'boss';
 
 export interface LevelClearInfo {
   stars: 1 | 2 | 3;
   rule: string;
   challenge: GrownUpChallenge;
   hasNext: boolean;
+  /** Label for the boss button, e.g. "FACE PHISH.BOT"; no button when absent. */
+  bossLabel?: string;
 }
 
 function grownUpCard(challenge: GrownUpChallenge): HTMLElement {
@@ -83,6 +86,11 @@ export function showLevelClear(host: OverlayHost, o: LevelClearInfo): Promise<Le
       next.dataset.autofocus = '';
       actions.append(next);
       closeOn(dialog, next, 'next', resolve);
+    } else if (o.bossLabel) {
+      const boss = button('ov-btn ov-btn-primary', o.bossLabel, '⚡');
+      boss.dataset.autofocus = '';
+      actions.append(boss);
+      closeOn(dialog, boss, 'boss', resolve);
     } else {
       replay.dataset.autofocus = '';
     }
