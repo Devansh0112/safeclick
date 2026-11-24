@@ -5,6 +5,7 @@ import { PALETTE } from './art/palette';
 import { MOVE } from './entities/max';
 import { LevelScene, type LevelInit } from './scenes/LevelScene';
 import type { GamePayload } from './types';
+import { trackGameFocus } from './ui/game-focus';
 import { mountHud } from './ui/hud';
 import { mountRotateHint } from './ui/rotate-hint';
 import { mountTouchControls } from './ui/touch-controls';
@@ -21,6 +22,8 @@ export function bootNeonCity(root: HTMLElement): void {
   const hudEl = root.querySelector<HTMLElement>('[data-game-hud]');
   const hud = hudEl ? mountHud(hudEl) : undefined;
   const touch = touchEl ? mountTouchControls(touchEl) : undefined;
+  const stage = root.querySelector<HTMLElement>('[data-game-stage]');
+  const focus = stage ? trackGameFocus(root, stage) : undefined;
   if (overlay) mountRotateHint(overlay);
 
   const game = new Phaser.Game({
@@ -34,6 +37,7 @@ export function bootNeonCity(root: HTMLElement): void {
         g.registry.set('payload', payload);
         if (touch) g.registry.set('touch', touch);
         if (hud) g.registry.set('hud', hud);
+        if (focus) g.registry.set('focus', focus);
       },
     },
   });

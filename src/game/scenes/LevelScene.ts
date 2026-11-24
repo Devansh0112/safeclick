@@ -10,6 +10,7 @@ import { GATE_SIZE, PLATFORM_GLOW, createTextures, platformTexture } from '../ar
 import { Max } from '../entities/max';
 import { getLayout } from '../layouts/index';
 import type { GamePayload, LayoutData } from '../types';
+import type { GameFocus } from '../ui/game-focus';
 import type { Hud } from '../ui/hud';
 import { keyboardControls, type ControlSource } from '../ui/keyboard';
 
@@ -84,7 +85,7 @@ export class LevelScene extends Phaser.Scene {
     this.buildExit();
     this.buildGates();
 
-    const keyboard = keyboardControls(this);
+    const keyboard = keyboardControls(this, this.registry.get('focus') as GameFocus | undefined);
     const touch = this.registry.get('touch') as ControlSource | undefined;
     this.max = new Max(this, layout.start.x, layout.start.y - 40, touch ? [keyboard, touch] : [keyboard]);
     this.max.setDepth(5);
@@ -213,18 +214,26 @@ export class LevelScene extends Phaser.Scene {
     };
     document.addEventListener('visibilitychange', onVisibility);
 
+    const focus = this.registry.get('focus') as GameFocus | undefined;
     // Dev-only shortcut until Task 5 wires the gate challenges: O opens the reached gate.
     if (import.meta.env.DEV) {
       this.input.keyboard?.on('keydown-O', () => {
+        if (focus?.isActive() === false) return;
         if (this.gates[this.opened]?.reached) this.events.emit('gate-opened', this.opened);
       });
     }
 
-    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+    // Window/document listeners must go on shutdown (restart) and on destroy (game torn down).
+    let cleaned = false;
+    const cleanup = () => {
+      if (cleaned) return;
+      cleaned = true;
       document.removeEventListener('visibilitychange', onVisibility);
       this.events.off('gate-opened', onGateOpened);
       keyboard.destroy();
-    });
+    };
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, cleanup);
+    this.events.once(Phaser.Scenes.Events.DESTROY, cleanup);
   }
 
   // ------------------------------------------------------------ play

@@ -47,6 +47,9 @@ export class Max extends Phaser.Physics.Arcade.Sprite {
     this.body.reset(x, y);
     this.lastGround = this.lastJumpPress = -Infinity;
     this.rising = false;
+    // Forget the fall, so landing after a respawn doesn't count as a hard landing.
+    this.prevVy = 0;
+    this.wasOnGround = false;
   }
 
   tick(time: number, delta: number): void {

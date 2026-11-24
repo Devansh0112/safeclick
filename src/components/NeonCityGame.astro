@@ -12,7 +12,13 @@ const json = JSON.stringify(payload).replace(/</g, '\\u003c');
 <div class="game" data-game-root>
   <script type="application/json" data-game-payload set:html={json} />
   <div class="game-hud" data-game-hud hidden></div>
-  <div class="game-stage">
+  <div
+    class="game-stage"
+    data-game-stage
+    tabindex="0"
+    role="group"
+    aria-label="Neon City game. Press the arrow keys to move and Space to jump."
+  >
     <div class="game-canvas" data-game-canvas></div>
     <div class="game-overlay" data-game-overlay>
       <p class="visually-hidden" data-game-live aria-live="polite"></p>
@@ -31,6 +37,9 @@ const json = JSON.stringify(payload).replace(/</g, '\\u003c');
 <style>
   .game { position: relative; width: 100%; background: #07021a; border-radius: var(--radius-sm); overflow: hidden; }
   .game-stage { position: relative; }
+  /* The stage takes keyboard focus; game keys only work while the game is active. */
+  .game-stage:focus { outline: none; }
+  .game-stage:focus-visible, :global([data-game-active]) .game-stage:focus { outline: 3px solid #ffd166; outline-offset: -3px; }
   .game-canvas { width: 100%; aspect-ratio: 16 / 9; }
   .game-canvas :global(canvas) { display: block; }
   .game-overlay { position: absolute; inset: 0; pointer-events: none; }
