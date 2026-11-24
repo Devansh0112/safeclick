@@ -19,7 +19,8 @@ export async function getStaticPaths() {
       title: e.data.title,
       habit: e.data.habit,
       order: e.data.order,
-      levels: e.data.levels,
+      // Level concepts are content references; the game only needs the id.
+      levels: e.data.levels.map((l) => ({ ...l, concept: l.concept?.id })),
       boss: e.data.boss,
       scamFileRewards: e.data.scamFileRewards,
     })),

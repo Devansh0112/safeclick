@@ -1,5 +1,4 @@
 import { describe, it, expect } from 'vitest';
-// @ts-expect-error plain .mjs module without types
 import { checkGameDistrict, checkScamFile } from '../scripts/lib/game-checks.mjs';
 
 const ctx = {
