@@ -1,11 +1,13 @@
 ---
 import Base from '../layouts/Base.astro';
 import { SITE } from '../site.config';
-import { getConcepts } from '../lib/content';
+import { getConcepts, getPublished } from '../lib/content';
 
 const concepts = await getConcepts();
+const hasGames = (await getPublished('gameDistricts')).length > 0;
 const sections = [
   { href: '/stories/', emoji: '🎮', title: 'Story Games', text: 'Step into a scam story. Make choices, watch the meters, then rewind to see the red flags.' },
+  ...(hasGames ? [{ href: '/games/', emoji: '🕹️', title: 'Games', text: 'Help Max cross Neon City and outsmart the scam bots.' }] : []),
   { href: '/cards/', emoji: '🃏', title: 'Quick Cards', text: 'One idea per card. A red flag and what to do, in under a minute.' },
   { href: '/videos/', emoji: '🎬', title: 'Short Videos', text: 'Under-a-minute videos on one topic each.' },
   { href: '/articles/', emoji: '📖', title: 'Articles', text: 'The full picture: what goes wrong, and what to do right.' },

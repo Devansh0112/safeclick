@@ -1,0 +1,35 @@
+---
+// Shell for the Neon City game. Content is embedded as JSON (never HTML or script code)
+// and parsed with JSON.parse by src/game/main.ts.
+import type { GamePayload } from '../game/types';
+
+interface Props { payload: GamePayload }
+const { payload } = Astro.props;
+// Escape "<" so the JSON can't close the tag.
+const json = JSON.stringify(payload).replace(/</g, '\\u003c');
+---
+
+<div class="game" data-game-root>
+  <script type="application/json" data-game-payload set:html={json} />
+  <div class="game-canvas" data-game-canvas></div>
+  <div class="game-overlay" data-game-overlay>
+    <p class="visually-hidden" data-game-live aria-live="polite"></p>
+  </div>
+  <div class="game-touch" data-game-touch></div>
+  <noscript>This game needs JavaScript turned on. Everything else on this site works without it.</noscript>
+</div>
+
+<script>
+  import { bootNeonCity } from '../game/main';
+  const root = document.querySelector<HTMLElement>('[data-game-root]');
+  if (root) bootNeonCity(root);
+</script>
+
+<style>
+  .game { position: relative; width: 100%; background: #07021a; border-radius: var(--radius-sm); overflow: hidden; }
+  .game-canvas { width: 100%; aspect-ratio: 16 / 9; }
+  .game-overlay { position: absolute; inset: 0; pointer-events: none; }
+  .game-overlay > :global(*) { pointer-events: auto; }
+  .game-touch { position: absolute; inset: auto 0 0 0; }
+  noscript { display: block; padding: 1rem; color: #fff; }
+</style>

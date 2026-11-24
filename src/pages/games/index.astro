@@ -1,0 +1,30 @@
+---
+import Base from '../../layouts/Base.astro';
+import EmptyState from '../../components/EmptyState.astro';
+import { getPublished } from '../../lib/content';
+
+const districts = await getPublished('gameDistricts');
+---
+
+<Base title="Games" description="Play games that teach you to spot scams.">
+  <section class="container page-head">
+    <h1>Games</h1>
+    <p class="lede">Play, explore and learn the habits that keep you safe online.</p>
+  </section>
+  <section class="container">
+    {districts.length ? (
+      <ul class="grid plain">
+        <li class="tile">
+          <span class="emoji" aria-hidden="true">🕹️</span>
+          <h2><a class="tile-link" href="/games/neon-city/">Neon City</a></h2>
+          <p>Help Max cross Neon City and outsmart the scam bots.</p>
+        </li>
+      </ul>
+    ) : <EmptyState what="games" />}
+  </section>
+</Base>
+
+<style>
+  .plain { list-style: none; padding: 0; }
+  .plain li + li { margin-top: 0; }
+</style>
