@@ -104,7 +104,7 @@ export function createShell(root: HTMLElement, payload: GamePayload, kv: KV, opt
     sfx: click,
   });
 
-  const { mapButton } = mountCorner(overlay, soundState, click, () => openMap());
+  const { mapButton } = mountCorner(overlay, stage, soundState, click, () => openMap());
 
   const openMap = () => {
     if (mapOpen) return;

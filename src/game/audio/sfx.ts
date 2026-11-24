@@ -16,6 +16,10 @@ export interface Sfx {
 }
 
 export const MUSIC_GAIN = 0.07;
+// At most one arp note and one bass note sound at once (arp notes end before the next starts),
+// so the music bus peaks at MUSIC_GAIN * (ARP_VOL + BASS_VOL) = 0.07 * 1.05 = 0.0735 <= 0.08.
+const ARP_VOL = 0.6;
+const BASS_VOL = 0.45;
 
 // A minor pentatonic arpeggio, one note per step.
 const ARP = [220, 261.63, 329.63, 392, 329.63, 261.63, 392, 440, 329.63, 261.63, 196, 261.63];
@@ -75,9 +79,9 @@ export function createSfx(): Sfx {
     while (nextNote < ctx.currentTime + LOOKAHEAD_S) {
       const f = ARP[step % ARP.length];
       const delay = nextNote - ctx.currentTime;
-      tone(f, f, STEP_S * 0.9, 'triangle', 1, delay, musicBus);
+      tone(f, f, STEP_S * 0.9, 'triangle', ARP_VOL, delay, musicBus);
       // A soft bass note at the start of each bar.
-      if (step % 4 === 0) tone(f / 2, f / 2, STEP_S * 3.2, 'sine', 0.8, delay, musicBus);
+      if (step % 4 === 0) tone(f / 2, f / 2, STEP_S * 3.2, 'sine', BASS_VOL, delay, musicBus);
       nextNote += STEP_S;
       step += 1;
     }

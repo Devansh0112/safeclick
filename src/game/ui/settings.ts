@@ -28,10 +28,18 @@ const MOTION_CHOICES: { value: MotionSetting; label: string; id: string }[] = [
 ];
 
 /**
- * A mute toggle: aria-pressed is true while muted. Space and Enter on it are kept from the
- * game, so pressing it never makes Max jump.
+ * Key rule for the corner buttons: only Enter and Space, which press the button itself, are kept
+ * from the game. Arrows and the rest reach the game, so a focused button never blocks movement.
  */
-export function createMuteButton(sound: SoundState, sfx: () => void = () => undefined): HTMLButtonElement {
+export const keepActivationKeys = (e: KeyboardEvent): void => {
+  if (e.key === 'Enter' || e.key === ' ') e.stopPropagation();
+};
+
+/**
+ * A mute toggle: aria-pressed is true while muted. After a pointer click, focus goes back to
+ * `stage` (when given) so the game keys work at once; a keyboard press keeps focus on the button.
+ */
+export function createMuteButton(sound: SoundState, sfx: () => void = () => undefined, stage?: HTMLElement): HTMLButtonElement {
   const b = el('button', 'mute-btn');
   b.type = 'button';
   const icon = el('span', 'mute-icon');
@@ -51,13 +59,13 @@ export function createMuteButton(sound: SoundState, sfx: () => void = () => unde
     else if (wasShown) { off(); return; }
     sync(m);
   });
-  b.addEventListener('click', () => {
+  b.addEventListener('click', (e) => {
     sound.setMuted(!sound.muted());
     sfx();
+    // detail is 0 for a keyboard-activated click.
+    if (stage && e.detail > 0) stage.focus({ preventScroll: true });
   });
-  b.addEventListener('keydown', (e) => {
-    if (e.key !== 'Tab') e.stopPropagation();
-  });
+  b.addEventListener('keydown', keepActivationKeys);
   return b;
 }
 
@@ -65,7 +73,7 @@ export function createMuteButton(sound: SoundState, sfx: () => void = () => unde
  * The always-visible corner of the game: a MAP button (leave a level or fight; hidden while the
  * map is open) and the mute button. Both keep their keys away from the game.
  */
-export function mountCorner(overlay: HTMLElement, sound: SoundState, sfx: () => void, onMap: () => void): { mapButton: HTMLButtonElement } {
+export function mountCorner(overlay: HTMLElement, stage: HTMLElement, sound: SoundState, sfx: () => void, onMap: () => void): { mapButton: HTMLButtonElement } {
   const corner = el('div', 'game-corner');
   corner.dataset.gameCorner = '';
   const mapButton = button('map-btn', 'MAP', '▦');
@@ -74,10 +82,8 @@ export function mountCorner(overlay: HTMLElement, sound: SoundState, sfx: () => 
     sfx();
     onMap();
   });
-  mapButton.addEventListener('keydown', (e) => {
-    if (e.key !== 'Tab') e.stopPropagation();
-  });
-  corner.append(mapButton, createMuteButton(sound, sfx));
+  mapButton.addEventListener('keydown', keepActivationKeys);
+  corner.append(mapButton, createMuteButton(sound, sfx, stage));
   overlay.prepend(corner);
   return { mapButton };
 }
