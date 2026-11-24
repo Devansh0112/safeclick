@@ -10,6 +10,7 @@ import { GATE_SIZE, PLATFORM_GLOW, createTextures, platformTexture } from '../ar
 import { Max } from '../entities/max';
 import { getLayout } from '../layouts/index';
 import type { GamePayload, LayoutData } from '../types';
+import type { Hud } from '../ui/hud';
 import { keyboardControls, type ControlSource } from '../ui/keyboard';
 
 export interface LevelInit {
@@ -49,7 +50,7 @@ export class LevelScene extends Phaser.Scene {
   private exited = false;
   private elapsed = 0;
   private sparks!: Phaser.GameObjects.Particles.ParticleEmitter;
-  private gateHud!: Phaser.GameObjects.Text;
+  private hud?: Hud;
   private pausedByVisibility = false;
   private lastTrail = 0;
 
@@ -71,7 +72,7 @@ export class LevelScene extends Phaser.Scene {
     const payload = this.registry.get('payload') as GamePayload;
     const district = payload.districts.find((d) => d.id === this.init_.districtId);
     const level = district?.levels[this.init_.levelIndex];
-    if (!level) throw new Error(`No level ${this.init_.levelIndex} in district "${this.init_.districtId}"`);
+    if (!district || !level) throw new Error(`No level ${this.init_.levelIndex} in district "${this.init_.districtId}"`);
     const layout = (this.layout = getLayout(level.layout));
 
     createTextures(this);
@@ -108,7 +109,7 @@ export class LevelScene extends Phaser.Scene {
     this.max.on('land', (speed: number) => this.burst(this.max.x, this.max.body.bottom, Math.min(12, Math.round(speed / 80))));
     this.max.on('jump', () => this.burst(this.max.x, this.max.body.bottom, 5));
 
-    this.buildHud(level.title);
+    this.buildHud(district.title, level.title);
     this.wireEvents(keyboard);
   }
 
@@ -185,21 +186,15 @@ export class LevelScene extends Phaser.Scene {
     }
   }
 
-  private buildHud(title: string): void {
-    const style = { fontFamily: HUD_FONT, fontSize: '24px', fontStyle: 'bold' };
-    this.add.text(24, 20, `NEON CITY // LVL_0${this.init_.levelIndex + 1}`, { ...style, color: PALETTE.cyan })
-      .setScrollFactor(0).setDepth(10);
-    this.add.text(24, 52, title.toUpperCase(), { ...style, fontSize: '18px', color: '#b9a8e6' })
-      .setScrollFactor(0).setDepth(10);
-    this.gateHud = this.add.text(1256, 20, '', { ...style, color: PALETTE.pink })
-      .setOrigin(1, 0).setScrollFactor(0).setDepth(10);
+  /** The HUD is an HTML bar above the canvas (src/game/ui/hud.ts), so it stays readable on phones. */
+  private buildHud(districtTitle: string, levelTitle: string): void {
+    this.hud = this.registry.get('hud') as Hud | undefined;
+    this.hud?.setLevel(`${districtTitle.toUpperCase()} // LVL_0${this.init_.levelIndex + 1}`, levelTitle);
     this.updateGateHud();
   }
 
   private updateGateHud(): void {
-    const n = this.gates.length;
-    const boxes = '■'.repeat(this.opened) + '□'.repeat(n - this.opened);
-    this.gateHud.setText(`GATES [${boxes}] ${this.opened}/${n}`);
+    this.hud?.setGates(this.opened, this.gates.length);
   }
 
   private wireEvents(keyboard: { destroy(): void }): void {

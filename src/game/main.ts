@@ -5,6 +5,7 @@ import { PALETTE } from './art/palette';
 import { MOVE } from './entities/max';
 import { LevelScene, type LevelInit } from './scenes/LevelScene';
 import type { GamePayload } from './types';
+import { mountHud } from './ui/hud';
 import { mountRotateHint } from './ui/rotate-hint';
 import { mountTouchControls } from './ui/touch-controls';
 
@@ -17,6 +18,8 @@ export function bootNeonCity(root: HTMLElement): void {
 
   const touchEl = root.querySelector<HTMLElement>('[data-game-touch]');
   const overlay = root.querySelector<HTMLElement>('[data-game-overlay]');
+  const hudEl = root.querySelector<HTMLElement>('[data-game-hud]');
+  const hud = hudEl ? mountHud(hudEl) : undefined;
   const touch = touchEl ? mountTouchControls(touchEl) : undefined;
   if (overlay) mountRotateHint(overlay);
 
@@ -30,6 +33,7 @@ export function bootNeonCity(root: HTMLElement): void {
       preBoot: (g) => {
         g.registry.set('payload', payload);
         if (touch) g.registry.set('touch', touch);
+        if (hud) g.registry.set('hud', hud);
       },
     },
   });

@@ -11,11 +11,14 @@ const json = JSON.stringify(payload).replace(/</g, '\\u003c');
 
 <div class="game" data-game-root>
   <script type="application/json" data-game-payload set:html={json} />
-  <div class="game-canvas" data-game-canvas></div>
-  <div class="game-overlay" data-game-overlay>
-    <p class="visually-hidden" data-game-live aria-live="polite"></p>
+  <div class="game-hud" data-game-hud hidden></div>
+  <div class="game-stage">
+    <div class="game-canvas" data-game-canvas></div>
+    <div class="game-overlay" data-game-overlay>
+      <p class="visually-hidden" data-game-live aria-live="polite"></p>
+    </div>
   </div>
-  <div class="game-touch" data-game-touch></div>
+  <div class="game-touch" data-game-touch hidden></div>
   <noscript>This game needs JavaScript turned on. Everything else on this site works without it.</noscript>
 </div>
 
@@ -27,30 +30,55 @@ const json = JSON.stringify(payload).replace(/</g, '\\u003c');
 
 <style>
   .game { position: relative; width: 100%; background: #07021a; border-radius: var(--radius-sm); overflow: hidden; }
+  .game-stage { position: relative; }
   .game-canvas { width: 100%; aspect-ratio: 16 / 9; }
   .game-canvas :global(canvas) { display: block; }
   .game-overlay { position: absolute; inset: 0; pointer-events: none; }
   .game-overlay > :global(*) { pointer-events: auto; }
-  /* Touch pad: in flow below the letterboxed canvas when upright, overlaid in landscape. */
-  .game-touch[hidden] { display: none; }
-  .game-touch :global(.touch-pad) { display: flex; gap: 0.75rem; padding: 0.75rem; background: #07021a; }
-  .game-touch :global(.touch-btn) {
-    min-width: 4.5rem; min-height: 4.5rem; padding: 0 1rem; border: 2px solid #18f0ff; border-radius: 1rem;
-    background: rgba(24, 240, 255, 0.12); color: #e6f7ff; font: bold 1.5rem/1 "Courier New", ui-monospace, monospace;
-    touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
+
+  /* HUD bar above the canvas (rem sizes follow the site's text-size setting). */
+  .game-hud {
+    display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0.25rem 1rem;
+    padding: 0.5rem 0.75rem; font: bold 1rem/1.3 "Courier New", ui-monospace, monospace;
+    border-bottom: 1px solid rgba(24, 240, 255, 0.35);
   }
-  .game-touch :global(.touch-jump) { margin-left: auto; min-width: 6.5rem; border-color: #ff3d9a; background: rgba(255, 61, 154, 0.15); }
+  .game-hud[hidden] { display: none; }
+  .game-hud :global(p) { margin: 0; }
+  .game-hud :global(.hud-label) { color: #18f0ff; margin-right: 0.75rem; }
+  .game-hud :global(.hud-title) { color: #e3d9ff; }
+  .game-hud :global(.hud-gates) { color: #ff6fb4; white-space: nowrap; }
+  :global(:root[data-contrast='high']) .game-hud { background: #fff; border-bottom: 3px solid #000; }
+  :global(:root[data-contrast='high']) .game-hud :global(.hud-label),
+  :global(:root[data-contrast='high']) .game-hud :global(.hud-title),
+  :global(:root[data-contrast='high']) .game-hud :global(.hud-gates) { color: #000; }
+
+  /* On-screen controls for every pointer type: a compact row below the canvas for a mouse,
+     big buttons below the canvas on an upright phone, and overlaid in phone landscape. */
+  .game-touch[hidden] { display: none; }
+  .game-touch :global(.touch-pad) { display: flex; gap: 0.5rem; padding: 0.5rem 0.75rem; background: #07021a; }
+  .game-touch :global(.touch-btn) {
+    min-width: 3rem; min-height: 2.75rem; padding: 0 0.75rem; border: 2px solid #18f0ff; border-radius: 0.6rem;
+    background: rgba(24, 240, 255, 0.12); color: #e6f7ff; font: bold 1.1rem/1 "Courier New", ui-monospace, monospace;
+    cursor: pointer; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
+  }
+  .game-touch :global(.touch-jump) { margin-left: auto; min-width: 5rem; border-color: #ff3d9a; background: rgba(255, 61, 154, 0.15); }
+  .game-touch :global(.touch-btn:focus-visible) { outline: 3px solid #ffd166; outline-offset: 2px; }
   .game-touch :global(.touch-btn.is-down) { background: rgba(24, 240, 255, 0.4); }
   .game-touch :global(.touch-jump.is-down) { background: rgba(255, 61, 154, 0.45); }
-  @media (orientation: landscape) {
+  :global(:root[data-contrast='high']) .game-touch :global(.touch-btn) { background: #fff; color: #000; border: 3px solid #000; }
+  @media (pointer: coarse) {
+    .game-touch :global(.touch-pad) { gap: 0.75rem; padding: 0.75rem; }
+    .game-touch :global(.touch-btn) { min-width: 4.5rem; min-height: 4.5rem; padding: 0 1rem; border-radius: 1rem; font-size: 1.5rem; }
+    .game-touch :global(.touch-jump) { min-width: 6.5rem; }
+  }
+  @media (pointer: coarse) and (orientation: landscape) {
+    /* Keep the whole 16:9 canvas plus the HUD bar on screen; Phaser letterboxes inside. */
+    .game-canvas { max-height: calc(100svh - 3rem); }
     .game-touch { position: absolute; inset: auto 0 0 0; pointer-events: none; }
     .game-touch :global(.touch-pad) { background: none; }
     .game-touch :global(.touch-btn) { pointer-events: auto; opacity: 0.55; background: rgba(7, 2, 26, 0.25); }
   }
-  @media (pointer: coarse) and (orientation: landscape) {
-    /* Keep the whole 16:9 canvas on screen; Phaser letterboxes inside. */
-    .game-canvas { max-height: 100svh; }
-  }
+
   .game-overlay :global(.rotate-hint) {
     position: absolute; inset: 0.5rem 0.5rem auto; display: flex; align-items: center; gap: 0.75rem;
     padding: 0.5rem 0.75rem; border: 2px solid #ffd166; border-radius: 0.5rem; background: rgba(7, 2, 26, 0.92);

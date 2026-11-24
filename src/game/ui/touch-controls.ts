@@ -1,5 +1,6 @@
-// On-screen ◀ ▶ JUMP buttons for touch screens. Plain DOM buttons, so they work with
-// touch, mouse and pen alike, and the LevelScene polls their state each frame.
+// On-screen ◀ ▶ JUMP buttons for every pointer type (touch, mouse, pen), so the game is
+// playable mouse-only or touch-only. Pointer events make press-and-hold work the same
+// everywhere; the LevelScene polls their state each frame. CSS lays them out per pointer.
 
 export interface TouchControls {
   left(): boolean;
@@ -56,11 +57,7 @@ export function mountTouchControls(el: HTMLElement): TouchControls {
   }
 
   el.append(pad);
-  const coarse = window.matchMedia('(pointer: coarse)');
-  const sync = () => { el.hidden = !coarse.matches; };
-  sync();
-  coarse.addEventListener('change', sync);
-  cleanups.push(() => coarse.removeEventListener('change', sync));
+  el.hidden = false;
 
   return {
     left: () => held.left.size > 0,
