@@ -225,7 +225,8 @@ export class LevelScene extends Phaser.Scene {
     this.events.on('gate-opened', onGateOpened);
     const onGateReached = (index: number) => void this.runGate(index);
     this.events.on('gate-reached', onGateReached);
-    this.events.once('level-exit', () => void this.finishLevel());
+    const onLevelExit = () => void this.finishLevel();
+    this.events.once('level-exit', onLevelExit);
 
     const onVisibility = () => {
       if (document.hidden && this.scene.isActive()) {
@@ -247,6 +248,7 @@ export class LevelScene extends Phaser.Scene {
       document.removeEventListener('visibilitychange', onVisibility);
       this.events.off('gate-opened', onGateOpened);
       this.events.off('gate-reached', onGateReached);
+      this.events.off('level-exit', onLevelExit);
       this.challenge?.destroy();
       this.challenge = undefined;
       keyboard.destroy();
@@ -298,6 +300,8 @@ export class LevelScene extends Phaser.Scene {
   }
 
   private async finishLevel(): Promise<void> {
+    // Max stays put behind the Level clear screen (keys and touch pad are ignored).
+    this.freeze(true);
     const stars = starsFor(this.catches);
     const { districtId, levelIndex } = this.init_;
     this.shell.update((p) => recordLevel(p, levelKey(districtId, this.level.id), stars));

@@ -6,7 +6,9 @@
 // Keys (only while the game is focused, since they are heard on the game root):
 // 1-3 choose, arrows move the selection, Enter chooses the selection. Held or repeated
 // keys never choose, and a Space/Enter that started before the panel opened (e.g. Max's
-// jump) can't press a button by its key-up.
+// jump) can't press a button by its key-up. Choice keys (1-N, Enter, Space) are also
+// ignored for KEY_GRACE_MS after the panel opens or re-enables, so mashing Enter on
+// Retry / OK can't pick a portal in the next round. Clicks and taps are never delayed.
 import type { GateChoice } from '../logic/gate-round';
 import type { TrustOrReportRound } from '../types';
 import { el, uid } from './overlays';
@@ -19,6 +21,8 @@ const KINDS: Record<TrustOrReportRound['item']['kind'], { icon: string; label: s
 };
 
 export const kindInfo = (kind: TrustOrReportRound['item']['kind']) => KINDS[kind] ?? KINDS.message;
+
+const KEY_GRACE_MS = 300;
 
 export interface GatePanelOptions {
   gateLabel: string;
@@ -83,6 +87,7 @@ export function mountGatePanel(overlay: HTMLElement, stage: HTMLElement, o: Gate
   panel.append(list, hint);
 
   let busy = false;
+  let keysFrom = performance.now() + KEY_GRACE_MS;
   let selected = 0;
   // Keys pressed down while the panel is open; a key-up without one is a leftover.
   const fresh = new Set<string>();
@@ -106,8 +111,14 @@ export function mountGatePanel(overlay: HTMLElement, stage: HTMLElement, o: Gate
       if (e.key === 'Enter' || e.key === ' ') e.preventDefault();
       return;
     }
-    fresh.add(e.key);
     const n = Number.parseInt(e.key, 10);
+    const choiceKey = e.key === 'Enter' || e.key === ' ' || (n >= 1 && n <= buttons.length && String(n) === e.key);
+    if (choiceKey && performance.now() < keysFrom) {
+      // Also stops Enter's native click; a Space never marked fresh can't click on key-up.
+      e.preventDefault();
+      return;
+    }
+    fresh.add(e.key);
     if (n >= 1 && n <= buttons.length && String(n) === e.key) {
       e.preventDefault();
       select(n - 1, true);
@@ -138,6 +149,7 @@ export function mountGatePanel(overlay: HTMLElement, stage: HTMLElement, o: Gate
     select,
     setBusy(b) {
       busy = b;
+      if (!b) keysFrom = performance.now() + KEY_GRACE_MS;
       panel.classList.toggle('is-busy', b);
       buttons.forEach((btn) => btn.setAttribute('aria-disabled', String(b)));
     },
