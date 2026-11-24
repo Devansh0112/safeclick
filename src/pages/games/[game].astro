@@ -1,0 +1,64 @@
+---
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import ReviewBanner from '../../components/ReviewBanner.astro';
+import NeonCityGame from '../../components/NeonCityGame.astro';
+import Sources from '../../components/Sources.astro';
+import RelatedContent from '../../components/RelatedContent.astro';
+import { getPublished } from '../../lib/content';
+import type { GamePayload } from '../../game/types';
+
+export async function getStaticPaths() {
+  const districts = (await getPublished('gameDistricts')).sort((a, b) => a.data.order - b.data.order);
+  if (districts.length === 0) return [];
+  const scamFiles = await getPublished('scamFiles');
+  // Only the fields the game declares (no review metadata) go into the payload.
+  const payload: GamePayload = {
+    districts: districts.map((e) => ({
+      id: e.id,
+      title: e.data.title,
+      habit: e.data.habit,
+      order: e.data.order,
+      levels: e.data.levels,
+      boss: e.data.boss,
+      scamFileRewards: e.data.scamFileRewards,
+    })),
+    scamFiles: scamFiles
+      .map((e) => ({
+        id: e.id,
+        title: e.data.title,
+        example: e.data.example,
+        howToSpot: e.data.howToSpot,
+        whatToDo: e.data.whatToDo,
+        district: e.data.district,
+        order: e.data.order,
+      }))
+      .sort((a, b) => a.order - b.order),
+  };
+  const allReviewed = [...districts, ...scamFiles].every((e) => e.data.reviewStatus === 'reviewed');
+  const sources = [...new Map(districts.flatMap((e) => e.data.sources).map((s) => [s.url, s])).values()];
+  return [{
+    params: { game: 'neon-city' },
+    props: { payload, allReviewed, sources, conceptId: districts[0].data.concept.id },
+  }];
+}
+const { payload, allReviewed, sources, conceptId } = Astro.props;
+---
+
+<Base title="Neon City" description="A platform game where Max crosses Neon City and outsmarts the scam bots.">
+  <Breadcrumbs items={[{ href: '/games/', label: 'Games' }, { label: 'Neon City' }]} />
+  <div class="container">
+    {!allReviewed && <ReviewBanner status="draft" />}
+    <header class="page-head">
+      <h1>Neon City</h1>
+      <p class="lede">
+        Help Max cross the city and outsmart the scam bots. For parents and carers: each district teaches one
+        safe habit, such as checking a link before tapping it, by asking players to choose the safe path or report
+        the fake. Mistakes are gentle, and every answer explains the red flag.
+      </p>
+    </header>
+    <NeonCityGame payload={payload} />
+    <Sources sources={sources} />
+  </div>
+  <div class="container"><RelatedContent conceptId={conceptId} /></div>
+</Base>

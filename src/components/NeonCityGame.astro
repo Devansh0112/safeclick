@@ -1,0 +1,300 @@
+---
+// Shell for the Neon City game. Content is embedded as JSON (never HTML or script code)
+// and parsed with JSON.parse by src/game/main.ts.
+import type { GamePayload } from '../game/types';
+
+interface Props { payload: GamePayload }
+const { payload } = Astro.props;
+// Escape "<" so the JSON can't close the tag.
+const json = JSON.stringify(payload).replace(/</g, '\\u003c');
+---
+
+<div class="game" data-game-root>
+  <script type="application/json" data-game-payload set:html={json} />
+  <div class="game-hud" data-game-hud hidden></div>
+  <div
+    class="game-stage"
+    data-game-stage
+    tabindex="0"
+    role="group"
+    aria-label="Neon City game. Press the arrow keys to move and Space to jump."
+  >
+    <div class="game-canvas" data-game-canvas></div>
+    <div class="game-overlay" data-game-overlay>
+      <p class="visually-hidden" data-game-live aria-live="polite"></p>
+    </div>
+  </div>
+  <div class="game-touch" data-game-touch hidden></div>
+  <noscript>This game needs JavaScript turned on. Everything else on this site works without it.</noscript>
+</div>
+
+<script>
+  import { bootNeonCity } from '../game/main';
+  const root = document.querySelector<HTMLElement>('[data-game-root]');
+  if (root) bootNeonCity(root);
+</script>
+
+<style>
+  .game { position: relative; width: 100%; background: #07021a; border-radius: var(--radius-sm); overflow: hidden; }
+  .game-stage { position: relative; }
+  /* The stage takes keyboard focus; game keys only work while the game is active. */
+  .game-stage:focus { outline: none; }
+  .game-stage:focus-visible, :global([data-game-active]) .game-stage:focus { outline: 3px solid #ffd166; outline-offset: -3px; }
+  .game-canvas { width: 100%; aspect-ratio: 16 / 9; }
+  .game-canvas :global(canvas) { display: block; }
+  .game-overlay { position: absolute; inset: 0; pointer-events: none; }
+  .game-overlay > :global(*) { pointer-events: auto; }
+
+  /* HUD bar above the canvas (rem sizes follow the site's text-size setting). */
+  .game-hud {
+    display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0.25rem 1rem;
+    padding: 0.5rem 0.75rem; font: bold 1rem/1.3 "Courier New", ui-monospace, monospace;
+    border-bottom: 1px solid rgba(24, 240, 255, 0.35);
+  }
+  .game-hud[hidden] { display: none; }
+  .game-hud :global(p) { margin: 0; }
+  .game-hud :global(.hud-label) { color: #18f0ff; margin-right: 0.75rem; }
+  .game-hud :global(.hud-title) { color: #e3d9ff; }
+  .game-hud :global(.hud-gates) { color: #ff6fb4; white-space: nowrap; }
+  :global(:root[data-contrast='high']) .game-hud { background: #fff; border-bottom: 3px solid #000; }
+  :global(:root[data-contrast='high']) .game-hud :global(.hud-label),
+  :global(:root[data-contrast='high']) .game-hud :global(.hud-title),
+  :global(:root[data-contrast='high']) .game-hud :global(.hud-gates) { color: #000; }
+
+  /* On-screen controls for every pointer type: a compact row below the canvas for a mouse,
+     big buttons below the canvas on an upright phone, and overlaid in phone landscape. */
+  .game-touch[hidden] { display: none; }
+  .game-touch :global(.touch-pad) { display: flex; gap: 0.5rem; padding: 0.5rem 0.75rem; background: #07021a; }
+  .game-touch :global(.touch-btn) {
+    min-width: 3rem; min-height: 2.75rem; padding: 0 0.75rem; border: 2px solid #18f0ff; border-radius: 0.6rem;
+    background: rgba(24, 240, 255, 0.12); color: #e6f7ff; font: bold 1.1rem/1 "Courier New", ui-monospace, monospace;
+    cursor: pointer; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
+  }
+  .game-touch :global(.touch-jump) { margin-left: auto; min-width: 5rem; border-color: #ff3d9a; background: rgba(255, 61, 154, 0.15); }
+  .game-touch :global(.touch-btn:focus-visible) { outline: 3px solid #ffd166; outline-offset: 2px; }
+  .game-touch :global(.touch-btn.is-down) { background: rgba(24, 240, 255, 0.4); }
+  .game-touch :global(.touch-jump.is-down) { background: rgba(255, 61, 154, 0.45); }
+  :global(:root[data-contrast='high']) .game-touch :global(.touch-btn) { background: #fff; color: #000; border: 3px solid #000; }
+  @media (pointer: coarse) {
+    .game-touch :global(.touch-pad) { gap: 0.75rem; padding: 0.75rem; }
+    .game-touch :global(.touch-btn) { min-width: 4.5rem; min-height: 4.5rem; padding: 0 1rem; border-radius: 1rem; font-size: 1.5rem; }
+    .game-touch :global(.touch-jump) { min-width: 6.5rem; }
+  }
+  @media (pointer: coarse) and (orientation: landscape) {
+    /* Keep the whole 16:9 canvas plus the HUD bar on screen; Phaser letterboxes inside. */
+    .game-canvas { max-height: calc(100svh - 3rem); }
+    .game-touch { position: absolute; inset: auto 0 0 0; pointer-events: none; }
+    .game-touch :global(.touch-pad) { background: none; }
+    .game-touch :global(.touch-btn) { pointer-events: auto; opacity: 0.55; background: rgba(7, 2, 26, 0.25); }
+  }
+
+  .game-overlay :global(.rotate-hint) {
+    position: absolute; inset: 0.5rem 0.5rem auto; display: flex; align-items: center; gap: 0.75rem;
+    padding: 0.5rem 0.75rem; border: 2px solid #ffd166; border-radius: 0.5rem; background: rgba(7, 2, 26, 0.92);
+    color: #fff; font-size: 0.95rem;
+  }
+  .game-overlay :global(.rotate-hint[hidden]) { display: none; }
+  .game-overlay :global(.rotate-hint button) {
+    margin-left: auto; min-height: 2.75rem; min-width: 2.75rem; border: 2px solid #ffd166; border-radius: 0.4rem;
+    background: transparent; color: #ffd166; font-weight: bold;
+  }
+  noscript { display: block; padding: 1rem; color: #fff; }
+
+  /* ---------- Reading screens (src/game/ui/overlays.ts, level-clear.ts, gate-panel.ts) ----------
+     rem sizes follow the site's text size; Atkinson for reading, monospace for labels.
+     Wide: centred over the canvas (gate panel docked at the bottom, below the portals).
+     Below 768px: they fill the viewport. */
+  .game-overlay :global(.ov-backdrop) {
+    position: absolute; inset: 0; z-index: 2; display: flex; align-items: center; justify-content: center;
+    padding: 0.75rem; overflow: auto; background: rgba(7, 2, 26, 0.72);
+  }
+  .game-overlay :global(.ov-card) {
+    width: min(36rem, 100%); max-height: 100%; overflow: auto; margin: auto; padding: 1rem 1.25rem;
+    border: 2px solid #18f0ff; border-radius: 0.6rem; background: #0a0320; color: #f2ecff;
+    font: 1rem/1.45 var(--font); box-shadow: 0 0 1.5rem rgba(24, 240, 255, 0.25);
+  }
+  .game-overlay :global(.ov-title) {
+    margin: 0 0 0.75rem; font: bold 1.35rem/1.25 "Courier New", ui-monospace, monospace; color: #18f0ff; text-align: center;
+  }
+  .game-overlay :global(.ov-text) { margin: 0 0 1rem; font-size: 1.1rem; }
+  .game-overlay :global(.ov-icon) { margin-right: 0.4em; }
+  .game-overlay :global(.ov-btn) {
+    min-height: 2.75rem; padding: 0.5rem 1rem; border: 2px solid #18f0ff; border-radius: 0.4rem;
+    background: transparent; color: #e6f7ff; font: bold 1rem/1.2 "Courier New", ui-monospace, monospace; cursor: pointer;
+  }
+  .game-overlay :global(.ov-btn-primary) { background: #18f0ff; color: #0a0320; }
+  .game-overlay :global(.ov-btn:hover) { box-shadow: 0 0 0.75rem rgba(24, 240, 255, 0.6); }
+  .game-overlay :global(button:focus-visible) { outline: 3px solid #ffd166; outline-offset: 3px; }
+
+  /* Caught: red glitch title, cartoon bot, one red-flag line, retry. */
+  .game-overlay :global(.ov-caught .ov-card) { border-color: #ff2e63; background: #12020e; box-shadow: 0 0 1.5rem rgba(255, 46, 99, 0.35); }
+  .game-overlay :global(.caught-title) { color: #ff5c85; }
+  .game-overlay :global(.ov-caught:not([data-reduced-motion]) .caught-title) { animation: caught-glitch 1s steps(1) 2; }
+  .game-overlay :global(.caught-bot) { margin: 0 0 0.75rem; text-align: center; font: bold 2rem/1 "Courier New", ui-monospace, monospace; color: #ff5c85; }
+  .game-overlay :global(.caught-flag) { margin: 0 0 0.75rem; padding: 0.6rem 0.8rem; border: 2px solid #ff2e63; border-radius: 0.4rem; font-size: 1.15rem; font-weight: bold; }
+  .game-overlay :global(.caught-flag-label) { color: #ff8fa8; }
+  .game-overlay :global(.ov-caught .ov-btn-primary) { display: block; margin: 0 auto; }
+  @keyframes caught-glitch {
+    0%, 100% { transform: none; text-shadow: none; }
+    25% { transform: translateX(3px); text-shadow: -3px 0 #18f0ff; }
+    50% { transform: none; text-shadow: none; }
+    75% { transform: translateX(-3px); text-shadow: 3px 0 #18f0ff; }
+  }
+
+  /* Gentle note for reporting a safe item. */
+  .game-overlay :global(.ov-note .ov-card) { border-color: #ffd166; }
+  .game-overlay :global(.note-title) { color: #ffd166; }
+  .game-overlay :global(.ov-note .ov-btn-primary) { display: block; margin: 0 auto; background: #ffd166; border-color: #ffd166; }
+
+  /* Level clear. */
+  .game-overlay :global(.ov-clear .ov-card) { border-color: #39ff88; }
+  .game-overlay :global(.clear-title) { color: #39ff88; font-size: 1.6rem; margin-bottom: 0.25rem; }
+  .game-overlay :global(.clear-stars) { margin: 0 0 0.5rem; text-align: center; font-size: 2.25rem; line-height: 1; color: #ffd166; letter-spacing: 0.2em; }
+  .game-overlay :global(.clear-rule) {
+    margin: 0 0 1rem; padding: 0.6rem 0.8rem; border: 2px solid #18f0ff; border-radius: 0.4rem; background: #0e1240;
+    font: bold 1.05rem/1.4 "Courier New", ui-monospace, monospace; color: #e6f7ff;
+  }
+  .game-overlay :global(.clear-rule-prompt) { color: #18f0ff; }
+  .game-overlay :global(.grownup) { margin: 0 0 1rem; padding: 0.75rem 0.9rem; border: 2px dashed #ff3d9a; border-radius: 0.4rem; }
+  .game-overlay :global(.ov-clear:not([data-reduced-motion]) .grownup.is-flipped) { animation: grownup-flip 0.45s ease-out; }
+  @keyframes grownup-flip { from { transform: perspective(40rem) rotateY(90deg); } to { transform: none; } }
+  .game-overlay :global(.grownup-title) { margin: 0 0 0.4rem; font: bold 1rem/1.3 "Courier New", ui-monospace, monospace; color: #ff8fc7; }
+  .game-overlay :global(.grownup-prompt) { margin: 0 0 0.25rem; font-weight: bold; }
+  .game-overlay :global(.grownup-hint) { margin: 0 0 0.5rem; font-size: 0.9rem; color: #c9bdf0; }
+  .game-overlay :global(.grownup-options) { display: grid; gap: 0.4rem; margin: 0 0 0.5rem; padding: 0; list-style: none; }
+  .game-overlay :global(.grownup-option) {
+    width: 100%; min-height: 2.75rem; padding: 0.4rem 0.75rem; border: 2px solid #8e82b3; border-radius: 0.4rem;
+    background: transparent; color: #f2ecff; font: 1rem/1.3 var(--font); text-align: left; cursor: pointer;
+  }
+  .game-overlay :global(.grownup-option.is-answer) { border-color: #39ff88; }
+  .game-overlay :global(.grownup-tag) { margin-right: 0.5em; padding: 0 0.35em; border: 1px solid currentColor; border-radius: 0.25rem; font: bold 0.85rem/1.4 "Courier New", ui-monospace, monospace; color: #c9bdf0; }
+  .game-overlay :global(.grownup-tag.is-answer) { color: #39ff88; }
+  .game-overlay :global(.grownup-answer p) { margin: 0.25rem 0 0; }
+  .game-overlay :global(.grownup-verdict) { font-weight: bold; }
+  .game-overlay :global(.clear-actions) { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; }
+
+  /* Gate panel: readable prompt and real buttons; docked below the canvas portals. */
+  .game-overlay :global(.gate-panel) {
+    position: absolute; inset: auto 0 0 0; z-index: 1; max-height: 42%; overflow: auto; padding: 0.5rem 0.75rem 0.6rem;
+    border-top: 2px solid #18f0ff; background: rgba(7, 2, 26, 0.94); color: #f2ecff; font: 1rem/1.35 var(--font);
+  }
+  .game-overlay :global(.gate-panel-label) { margin: 0; font: bold 0.85rem/1.3 "Courier New", ui-monospace, monospace; color: #18f0ff; }
+  .game-overlay :global(.gate-panel-prompt) { margin: 0 0 0.35rem; font: bold 1.05rem/1.3 "Courier New", ui-monospace, monospace; color: #e6f7ff; }
+  .game-overlay :global(.gate-item) { margin: 0 0 0.4rem; padding: 0.35rem 0.6rem; border: 2px solid #18f0ff; border-radius: 0.4rem; background: #0e1240; font-size: 1.05rem; }
+  .game-overlay :global(.gate-item-icon) { margin-right: 0.4em; }
+  .game-overlay :global(.gate-item-kind) { font-weight: bold; color: #9ff7ff; }
+  .game-overlay :global(.gate-choices) { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .game-overlay :global(.gate-choice) {
+    display: flex; flex: 1 1 12rem; align-items: center; gap: 0.5rem; min-height: 2.75rem; padding: 0.35rem 0.6rem;
+    border: 2px solid #18f0ff; border-radius: 0.4rem; background: #14062b; color: #f2ecff;
+    font: bold 1.05rem/1.25 var(--font); text-align: left; overflow-wrap: anywhere; cursor: pointer;
+  }
+  .game-overlay :global(.gate-choice.is-selected) { border-color: #ffd166; box-shadow: 0 0 0.6rem rgba(255, 209, 102, 0.5); }
+  .game-overlay :global(.gate-badge) {
+    flex: none; display: inline-grid; place-items: center; width: 1.8rem; height: 1.8rem; border: 2px solid #ffd166; border-radius: 50%;
+    font: bold 1rem/1 "Courier New", ui-monospace, monospace; color: #ffd166;
+  }
+  .game-overlay :global(.gate-panel.is-busy .gate-choice) { opacity: 0.6; cursor: default; }
+  .game-overlay :global(.gate-hint) { margin: 0.35rem 0 0; font-size: 0.85rem; color: #c9bdf0; }
+
+  /* Boss decision panel (src/game/ui/boss-panel.ts): below the canvas, the current card's text
+     between big SHIELD and LET IT THROUGH buttons. Text labels and icons, never colour alone. */
+  .game :global(.boss-panel) {
+    display: grid; grid-template-columns: minmax(8rem, 1fr) minmax(0, 2fr) minmax(8rem, 1fr);
+    grid-template-areas: 'shield now pass' 'hint hint hint'; gap: 0.5rem 0.75rem; align-items: stretch;
+    padding: 0.6rem 0.75rem; border-top: 2px solid #ff3d9a; background: #07021a; color: #f2ecff; font: 1rem/1.35 var(--font);
+  }
+  .game :global(.boss-now) { grid-area: now; min-width: 0; padding: 0.4rem 0.7rem; border: 2px solid #ffd166; border-radius: 0.4rem; background: #0e1240; }
+  .game :global(.boss-now-label) { margin: 0; font: bold 0.85rem/1.3 "Courier New", ui-monospace, monospace; color: #ffd166; }
+  .game :global(.boss-now-text) { margin: 0.1rem 0 0; font-size: 1.2rem; font-weight: bold; overflow-wrap: anywhere; }
+  .game :global(.boss-toast) { margin: 0.3rem 0 0; font: bold 0.95rem/1.3 "Courier New", ui-monospace, monospace; color: #ffd166; }
+  .game :global(.boss-toast[hidden]) { display: none; }
+  .game :global(.boss-btn) {
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.15rem; min-height: 4rem;
+    padding: 0.4rem 0.6rem; border: 3px solid #18f0ff; border-radius: 0.6rem; background: rgba(24, 240, 255, 0.12); color: #f2ecff;
+    font: bold 1.15rem/1.2 "Courier New", ui-monospace, monospace; cursor: pointer; touch-action: manipulation; user-select: none; -webkit-user-select: none;
+  }
+  .game :global(.boss-btn-shield) { grid-area: shield; }
+  .game :global(.boss-btn-pass) { grid-area: pass; border-color: #39ff88; background: rgba(57, 255, 136, 0.12); }
+  .game :global(.boss-btn-icon) { font-size: 1.5rem; line-height: 1; }
+  .game :global(.boss-btn-keys) { font-size: 0.8rem; font-weight: normal; color: #c9bdf0; }
+  .game :global(.boss-btn:focus-visible) { outline: 3px solid #ffd166; outline-offset: 2px; }
+  .game :global(.boss-btn:active) { transform: translateY(1px); }
+  .game :global(.boss-panel.is-busy .boss-btn) { opacity: 0.55; cursor: default; }
+  .game :global(.boss-hint) { grid-area: hint; margin: 0; font-size: 0.9rem; color: #c9bdf0; text-align: center; }
+  @media (max-width: 767.98px) {
+    .game :global(.boss-panel) { grid-template-columns: 1fr 1fr; grid-template-areas: 'now now' 'shield pass' 'hint hint'; }
+    .game :global(.boss-btn) { min-height: 4.5rem; }
+  }
+  @media (pointer: coarse) and (orientation: landscape) {
+    /* The canvas fills the phone's height, so the panel lies over its lower edge. */
+    .game :global(.boss-panel) { position: absolute; inset: auto 0 0 0; z-index: 1; padding: 0.4rem 0.6rem; background: rgba(7, 2, 26, 0.88); }
+    .game :global(.boss-hint) { display: none; }
+    .game :global(.boss-btn) { min-height: 3.25rem; }
+  }
+  :global(:root[data-contrast='high']) .game :global(.boss-panel) { background: #fff; color: #000; border-top: 3px solid #000; }
+  :global(:root[data-contrast='high']) .game :global(:is(.boss-now, .boss-btn)) { background: #fff; color: #000; border-color: #000; }
+  :global(:root[data-contrast='high']) .game :global(:is(.boss-now-label, .boss-toast, .boss-btn-keys, .boss-hint)) { color: #000; }
+  :global(:root[data-contrast='high']) .game :global(.boss-btn:focus-visible) { outline-color: #000; outline-width: 4px; }
+
+  /* Stash reveal and Scam Files collection (src/game/ui/scam-files.ts). */
+  .game-overlay :global(.ov-stash .ov-card), .game-overlay :global(.ov-files .ov-card) { border-color: #ffd166; }
+  .game-overlay :global(.stash-title), .game-overlay :global(.files-title) { color: #ffd166; }
+  .game-overlay :global(.stash-count) { margin: 0 0 0.4rem; font: bold 0.95rem/1.3 "Courier New", ui-monospace, monospace; color: #c9bdf0; text-align: center; }
+  .game-overlay :global(.sf-card) { margin: 0 0 1rem; padding: 0.75rem 0.9rem; border: 2px solid #18f0ff; border-radius: 0.5rem; background: #0e1240; }
+  .game-overlay :global(.ov-stash:not([data-reduced-motion]) .sf-card) { animation: sf-reveal 0.35s ease-out; }
+  @keyframes sf-reveal { from { opacity: 0; transform: translateY(0.75rem) scale(0.97); } to { opacity: 1; transform: none; } }
+  .game-overlay :global(.sf-label) { margin: 0; font: bold 0.8rem/1.3 "Courier New", ui-monospace, monospace; color: #18f0ff; letter-spacing: 0.1em; }
+  .game-overlay :global(.sf-title) { margin: 0 0 0.5rem; font: bold 1.3rem/1.25 var(--font); color: #fff; }
+  .game-overlay :global(.sf-example) { margin: 0 0 0.6rem; padding: 0.5rem 0.75rem; border: 2px solid #ff3d9a; border-radius: 0.9rem 0.9rem 0.9rem 0.2rem; background: #1a0533; }
+  .game-overlay :global(.sf-section) { margin: 0 0 0.5rem; }
+  .game-overlay :global(.sf-section-title) { margin: 0; font: bold 0.95rem/1.3 "Courier New", ui-monospace, monospace; color: #ffd166; }
+  .game-overlay :global(.sf-example .sf-section-title) { color: #ff8fc7; }
+  .game-overlay :global(.sf-section-text) { margin: 0.15rem 0 0; font-size: 1.05rem; }
+  .game-overlay :global(.sf-teaser) { margin: 0 0 1rem; padding: 0.75rem 0.9rem; border: 2px dashed #ff3d9a; border-radius: 0.5rem; text-align: center; }
+  .game-overlay :global(.sf-teaser-title) { margin: 0 0 0.25rem; font: bold 1.1rem/1.3 "Courier New", ui-monospace, monospace; color: #ff8fc7; }
+  .game-overlay :global(.sf-teaser-text) { margin: 0; }
+  .game-overlay :global(.sf-empty) { margin: 0 0 1rem; padding: 0.75rem; border: 2px dashed #8e82b3; border-radius: 0.5rem; text-align: center; font-weight: bold; list-style: none; }
+  .game-overlay :global(.files-body > .ov-btn) { display: block; margin: 0 auto 1rem; }
+  .game-overlay :global(.files-grid) { display: grid; grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr)); gap: 0.6rem; margin: 0 0 1rem; padding: 0; list-style: none; }
+  .game-overlay :global(.files-item) {
+    display: flex; flex-direction: column; align-items: flex-start; gap: 0.3rem; width: 100%; height: 100%; min-height: 6rem;
+    padding: 0.6rem 0.7rem; border: 2px solid #18f0ff; border-radius: 0.5rem; background: #0e1240; color: #f2ecff;
+    font: bold 1.05rem/1.3 var(--font); text-align: left; cursor: pointer;
+  }
+  .game-overlay :global(.files-item.is-locked) { border-style: dashed; border-color: #8e82b3; background: #110a22; cursor: default; }
+  .game-overlay :global(.files-silhouette) { font-size: 1.6rem; filter: grayscale(1); }
+  .game-overlay :global(.files-item-state) { font: bold 0.85rem/1.3 "Courier New", ui-monospace, monospace; color: #c9bdf0; }
+  :global(:root[data-contrast='high']) .game-overlay :global(:is(.sf-card, .sf-example, .sf-teaser, .sf-empty, .files-item)) { background: #fff; color: #000; border-color: #000; }
+  :global(:root[data-contrast='high']) .game-overlay :global(:is(.stash-count, .sf-label, .sf-title, .sf-section-title, .sf-teaser-title, .files-item-state)) { color: #000; }
+
+  @media (max-width: 767.98px) {
+    .game-overlay :global(.ov-backdrop), .game-overlay :global(.gate-panel) {
+      position: fixed; inset: 0; z-index: 1000; max-height: none; background: #07021a;
+    }
+    .game-overlay :global(.ov-card) { width: 100%; max-height: none; border-width: 0; box-shadow: none; }
+    .game-overlay :global(.gate-panel) { display: flex; flex-direction: column; justify-content: center; padding: 1rem; border-top: 0; }
+    .game-overlay :global(.gate-panel-prompt) { font-size: 1.25rem; margin-bottom: 0.75rem; }
+    .game-overlay :global(.gate-choices) { flex-direction: column; }
+    .game-overlay :global(.gate-choice) { flex: none; min-height: 3.25rem; font-size: 1.15rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .game-overlay :global(.caught-title), .game-overlay :global(.grownup), .game-overlay :global(.sf-card) { animation: none !important; }
+  }
+
+  /* High contrast: black on white, borders carry the meaning (with text labels). */
+  :global(:root[data-contrast='high']) .game-overlay :global(.ov-card),
+  :global(:root[data-contrast='high']) .game-overlay :global(.gate-panel) {
+    background: #fff; color: #000; border: 3px solid #000; box-shadow: none;
+  }
+  :global(:root[data-contrast='high']) .game-overlay :global(.ov-backdrop) { background: rgba(0, 0, 0, 0.6); }
+  :global(:root[data-contrast='high']) .game-overlay :global(:is(.ov-title, .caught-bot, .caught-flag-label, .clear-stars, .clear-rule, .clear-rule-prompt, .grownup-title, .grownup-hint, .grownup-tag, .gate-panel-label, .gate-panel-prompt, .gate-item-kind, .gate-badge, .gate-hint)) {
+    color: #000; text-shadow: none;
+  }
+  :global(:root[data-contrast='high']) .game-overlay :global(:is(.ov-btn, .grownup-option, .gate-choice, .gate-item, .clear-rule, .caught-flag, .grownup, .gate-badge)) {
+    background: #fff; color: #000; border-color: #000;
+  }
+  :global(:root[data-contrast='high']) .game-overlay :global(:is(.ov-btn-primary, .gate-choice.is-selected)) { background: #000; color: #fff; box-shadow: none; }
+  :global(:root[data-contrast='high']) .game-overlay :global(.gate-choice.is-selected .gate-badge) { background: #000; color: #fff; border-color: #fff; }
+  :global(:root[data-contrast='high']) .game-overlay :global(button:focus-visible) { outline-color: #000; outline-width: 4px; }
+</style>

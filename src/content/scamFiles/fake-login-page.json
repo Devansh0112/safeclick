@@ -1,0 +1,18 @@
+{
+  "_note": "PLACEHOLDER TEXT - must be rewritten and expert-reviewed before rollout",
+  "title": "Fake Login Page",
+  "concept": "passwords",
+  "relatedConcepts": [],
+  "ageLevels": [
+    "kids"
+  ],
+  "summary": "A copy of a real sign-in page built to catch what you type.",
+  "reviewStatus": "draft",
+  "reviewer": "",
+  "sources": [],
+  "example": "A page looks just like the Moonbeam Games login, but the address is moonbeam-garnes.example.",
+  "howToSpot": "Check the address before you type anything. One wrong letter means a fake.",
+  "whatToDo": "Close the page. Open the real site yourself from a bookmark or app and sign in there.",
+  "district": "password-tower",
+  "order": 2
+}

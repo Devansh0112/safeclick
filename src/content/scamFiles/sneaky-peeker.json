@@ -1,0 +1,18 @@
+{
+  "_note": "PLACEHOLDER TEXT - must be rewritten and expert-reviewed before rollout",
+  "title": "Sneaky Peeker",
+  "concept": "passwords",
+  "relatedConcepts": [],
+  "ageLevels": [
+    "kids"
+  ],
+  "summary": "Someone who watches or guesses to learn your password.",
+  "reviewStatus": "draft",
+  "reviewer": "",
+  "sources": [],
+  "example": "A stranger in a game chat says: \"What was your first pet? Mine was Biscuit!\" to guess your security answer.",
+  "howToSpot": "Questions about pets, schools or birthdays can be clues to your password.",
+  "whatToDo": "Keep those answers private. Use long passwords that are not about you.",
+  "district": "password-tower",
+  "order": 3
+}

@@ -39,6 +39,8 @@ Every content type has a template in [`templates/`](templates/). Copy it into th
 | Older Adults reading (about 300 words) | `templates/reading.md` | `src/content/readings/` |
 | Older Adults quiz (5 questions) | `templates/quiz.json` | `src/content/quizzes/` |
 | Printable handout or guide | `templates/handout.md` | `src/content/handouts/` |
+| Game district | `templates/game-district.json` | `src/content/gameDistricts/` |
+| Scam File card | `templates/scam-file.json` | `src/content/scamFiles/` |
 
 The file name becomes the web address, so use short lowercase names with dashes, like `fake-delivery-text.json`.
 
@@ -117,6 +119,30 @@ The `editor` field on a scene (`{ "x": 0, "y": 0 }`) is reserved for a future vi
 ### The validator
 
 `npm run validate` (also run on every build) checks every story for broken scene links, unreachable scenes, scenes that can't reach an ending, missing endings, missing Rewind explanations, unknown meters, missing review fields, and any HTML or scripts. Fix what it reports and run it again.
+
+## Writing a game district
+
+A district is the content behind a level of the Neon City platform game. One JSON file holds everything an expert needs to review: the levels, the gate challenges, the boss and the rewards. Copy `templates/game-district.json` into `src/content/gameDistricts/`. Scam Files (the cards players collect) use `templates/scam-file.json` and go into `src/content/scamFiles/`. Level geometry lives in `src/game/layouts/`, not in the content file.
+
+A district has an umbrella `habit`, a list of `levels`, a `boss` and `scamFileRewards` (ids of scam files). Each level has a `habit`, a `rule` (one line shown at level clear), a `layout` id, an optional `concept`, a `grownUpChallenge` and its `gates`. Each gate is either `choose-portal` or `trust-or-report` and has one or more `rounds`.
+
+**The validator rules, in plain words**
+
+- A choose-portal round has 2 or 3 options, and exactly one is safe.
+- Every unsafe portal option needs a `redFlag`: the warning sign the player missed.
+- Portal labels can be at most 32 characters, so they fit on a gate.
+- An unsafe trust-or-report item needs a `redFlag`. A safe item needs `whySafe`, a gentle note shown if the player reports it by mistake.
+- Trust-or-report item text can be at most 80 characters, and its `kind` must be `link`, `message`, `popup` or `qr`.
+- A level's `layout` must be a real file in `src/game/layouts/`, and the number of gates must match the layout's gate slots.
+- `grownUpChallenge.answer` is the position (starting at 0) of the right option in its `options` list.
+- The boss has exactly 3 waves. Every wave needs at least one fake and at least one real message.
+- Every fake boss message needs a `redFlag`. Boss message text can be at most 60 characters.
+- Every id in `scamFileRewards` must be a real file in `src/content/scamFiles/`.
+- Level ids must be unique, and gate ids must be unique within a level.
+- A level's `concept`, if set, must exist in `src/content/concepts/`.
+- A scam file needs `example`, `howToSpot`, `whatToDo` and `district`.
+
+Use made-up names and addresses, keep the tone kind, and run `npm run validate`. Files with placeholder text should stay `draft` until an expert has rewritten and reviewed them. Leave `reviewDate` out until someone signs off.
 
 ## Review process
 

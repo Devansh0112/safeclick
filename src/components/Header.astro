@@ -1,11 +1,14 @@
 ---
 import { SITE, AGE_LEVELS, AGE_LABELS } from '../site.config';
+import { getPublished } from '../lib/content';
 
+const hasGames = (await getPublished('gameDistricts')).length > 0;
 const nav = [
   { href: '/cards/', label: 'Cards' },
   { href: '/videos/', label: 'Videos' },
   { href: '/articles/', label: 'Articles' },
   { href: '/stories/', label: 'Story Games' },
+  ...(hasGames ? [{ href: '/games/', label: 'Games' }] : []),
   { href: '/concepts/', label: 'Topics' },
   { href: '/older-adults/', label: 'Older Adults Corner' },
 ];

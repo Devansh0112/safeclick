@@ -6,6 +6,7 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 
 export type ReviewedCollection = 'cards' | 'videos' | 'articles' | 'stories' | 'readings' | 'quizzes' | 'handouts';
+export type PublishableCollection = ReviewedCollection | 'gameDistricts' | 'scamFiles';
 export type AnyEntry = CollectionEntry<ReviewedCollection>;
 
 export const INCLUDE_DRAFTS: boolean =
@@ -15,7 +16,7 @@ export function isVisible(entry: { data: { reviewStatus: string } }): boolean {
   return INCLUDE_DRAFTS || entry.data.reviewStatus === 'reviewed';
 }
 
-export async function getPublished<C extends ReviewedCollection>(name: C): Promise<CollectionEntry<C>[]> {
+export async function getPublished<C extends PublishableCollection>(name: C): Promise<CollectionEntry<C>[]> {
   const entries = await getCollection(name, (e) => isVisible(e as AnyEntry));
   return entries.sort((a, b) => a.data.title.localeCompare(b.data.title));
 }

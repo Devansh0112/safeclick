@@ -11,14 +11,17 @@
 //                 endings have no choices and have a rewind summary; risky
 //                 choices explain the red flag and what to do instead; meter
 //                 effects name real meters.
+//   Game:         districts and scam files follow the rules in scripts/lib/game-checks.mjs
+//                 (one safe portal, red flags, text length caps, layouts, boss waves).
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { join, relative, extname, basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parse as parseYaml } from 'yaml';
+import { checkGameDistrict, checkScamFile } from './lib/game-checks.mjs';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const CONTENT = join(ROOT, 'src/content');
-const REVIEWED = ['cards', 'videos', 'articles', 'stories', 'readings', 'quizzes', 'handouts'];
+const REVIEWED = ['cards', 'videos', 'articles', 'stories', 'readings', 'quizzes', 'handouts', 'gameDistricts', 'scamFiles'];
 const STATUSES = ['draft', 'in-review', 'reviewed'];
 const LEVELS = ['kids', 'everyone', 'builders'];
 
@@ -190,6 +193,16 @@ function checkQuiz(file, quiz) {
   if ((quiz.questions ?? []).length !== 5) warn(file, `Older Adults quizzes should have 5 questions (has ${(quiz.questions ?? []).length}).`);
 }
 
+// --- Game (Neon City) ----------------------------------------------------------
+const layoutGateCounts = Object.fromEntries(
+  listFiles(join(ROOT, 'src/game/layouts'), ['.json']).map((f) => {
+    const layout = JSON.parse(readFileSync(f, 'utf8'));
+    return [layout.id ?? basename(f, '.json'), (layout.gates ?? []).length];
+  }),
+);
+const scamFileIds = new Set(listFiles(join(CONTENT, 'scamFiles'), ['.json']).map((f) => basename(f, '.json')));
+const gameCtx = { layoutGateCounts, scamFileIds, concepts };
+
 // --- Run ---------------------------------------------------------------------
 let count = 0;
 for (const collection of REVIEWED) {
@@ -208,6 +221,8 @@ for (const collection of REVIEWED) {
     checkReviewFields(file, data);
     if (collection === 'stories') checkStory(file, data);
     if (collection === 'quizzes') checkQuiz(file, data);
+    if (collection === 'gameDistricts') for (const m of checkGameDistrict(data, gameCtx)) err(file, m);
+    if (collection === 'scamFiles') for (const m of checkScamFile(data)) err(file, m);
   }
 }
 
