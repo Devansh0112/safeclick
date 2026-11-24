@@ -1,18 +1,25 @@
 // A Neon City platform level: run from start to the exit portal through three gates.
-// Gates are solid until Task 5's challenge opens them:
-//   emits  'gate-reached' (gateIndex) once when Max touches the active gate,
+// Gates are solid until their challenge (gate-challenge.ts) is passed:
+//   emits  'gate-reached' (gateIndex) once when Max touches the active gate (rearmGate() resets it),
 //   listens 'gate-opened' (gateIndex?) to open it,
-//   emits  'level-exit' when Max reaches the portal.
+//   emits  'level-exit' when Max reaches the portal, then shows Level clear.
+// Max is frozen (physics paused, input ignored) while a gate challenge or overlay is open.
 import Phaser from 'phaser';
 import { createBackdrop, type Backdrop } from '../art/backdrop';
 import { HUD_FONT, PALETTE, hex } from '../art/palette';
 import { GATE_SIZE, PLATFORM_GLOW, createTextures, platformTexture } from '../art/textures';
 import { Max } from '../entities/max';
 import { getLayout } from '../layouts/index';
-import type { GamePayload, LayoutData } from '../types';
+import { GateRound } from '../logic/gate-round';
+import { recordLevel } from '../logic/progress';
+import { starsFor } from '../logic/scoring';
+import { levelKey } from '../logic/unlocks';
+import type { Shell } from '../shell';
+import type { DistrictData, LayoutData, LevelData } from '../types';
 import type { GameFocus } from '../ui/game-focus';
 import type { Hud } from '../ui/hud';
 import { keyboardControls, type ControlSource } from '../ui/keyboard';
+import { GateChallenge } from './gate-challenge';
 
 export interface LevelInit {
   districtId: string;
@@ -54,6 +61,15 @@ export class LevelScene extends Phaser.Scene {
   private hud?: Hud;
   private pausedByVisibility = false;
   private lastTrail = 0;
+  private shell!: Shell;
+  private district!: DistrictData;
+  private level!: LevelData;
+  /** Security mistakes this run (falling never counts). */
+  private catches = 0;
+  /** Last content round shown per gate, so a retry picks a different one. */
+  private lastRound: (number | null)[] = [];
+  private challenge?: GateChallenge;
+  private frozen = false;
 
   constructor() {
     super('level');
@@ -61,19 +77,25 @@ export class LevelScene extends Phaser.Scene {
 
   init(data: LevelInit): void {
     this.init_ = data;
-    this.reducedMotion = data.reducedMotion ?? window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    this.shell = this.registry.get('shell') as Shell;
+    this.reducedMotion = data.reducedMotion ?? this.shell.reducedMotion();
     this.gates = [];
     this.movers = [];
     this.opened = 0;
     this.exited = false;
     this.elapsed = 0;
+    this.catches = 0;
+    this.lastRound = [];
+    this.challenge = undefined;
+    this.frozen = false;
   }
 
   create(): void {
-    const payload = this.registry.get('payload') as GamePayload;
-    const district = payload.districts.find((d) => d.id === this.init_.districtId);
+    const district = this.shell.payload.districts.find((d) => d.id === this.init_.districtId);
     const level = district?.levels[this.init_.levelIndex];
     if (!district || !level) throw new Error(`No level ${this.init_.levelIndex} in district "${this.init_.districtId}"`);
+    this.district = district;
+    this.level = level;
     const layout = (this.layout = getLayout(level.layout));
 
     createTextures(this);
@@ -201,6 +223,9 @@ export class LevelScene extends Phaser.Scene {
   private wireEvents(keyboard: { destroy(): void }): void {
     const onGateOpened = (index?: number) => this.openGate(index ?? this.opened);
     this.events.on('gate-opened', onGateOpened);
+    const onGateReached = (index: number) => void this.runGate(index);
+    this.events.on('gate-reached', onGateReached);
+    this.events.once('level-exit', () => void this.finishLevel());
 
     const onVisibility = () => {
       if (document.hidden && this.scene.isActive()) {
@@ -214,15 +239,6 @@ export class LevelScene extends Phaser.Scene {
     };
     document.addEventListener('visibilitychange', onVisibility);
 
-    const focus = this.registry.get('focus') as GameFocus | undefined;
-    // Dev-only shortcut until Task 5 wires the gate challenges: O opens the reached gate.
-    if (import.meta.env.DEV) {
-      this.input.keyboard?.on('keydown-O', () => {
-        if (focus?.isActive() === false) return;
-        if (this.gates[this.opened]?.reached) this.events.emit('gate-opened', this.opened);
-      });
-    }
-
     // Window/document listeners must go on shutdown (restart) and on destroy (game torn down).
     let cleaned = false;
     const cleanup = () => {
@@ -230,10 +246,67 @@ export class LevelScene extends Phaser.Scene {
       cleaned = true;
       document.removeEventListener('visibilitychange', onVisibility);
       this.events.off('gate-opened', onGateOpened);
+      this.events.off('gate-reached', onGateReached);
+      this.challenge?.destroy();
+      this.challenge = undefined;
       keyboard.destroy();
     };
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, cleanup);
     this.events.once(Phaser.Scenes.Events.DESTROY, cleanup);
+  }
+
+  // ------------------------------------------------------------ gates and level clear
+
+  /** Let gate `index` fire 'gate-reached' again (retry after Caught). */
+  rearmGate(index: number): void {
+    const gate = this.gates[index];
+    if (gate && index === this.opened) gate.reached = false;
+  }
+
+  /** Freeze Max and the world while a gate challenge or overlay is open. */
+  private freeze(on: boolean): void {
+    if (on === this.frozen) return;
+    this.frozen = on;
+    this.max.frozen = on;
+    if (on) {
+      this.physics.world.pause();
+      this.max.anims.stop();
+      this.max.setTexture('max-idle');
+    } else {
+      this.input.keyboard?.resetKeys();
+      this.physics.world.resume();
+    }
+  }
+
+  private async runGate(index: number): Promise<void> {
+    const data = this.level.gates[index];
+    if (!data || this.challenge) return;
+    this.freeze(true);
+    const round = new GateRound(data, this.lastRound[index] ?? null, Math.random);
+    this.lastRound[index] = round.index;
+    this.challenge = new GateChallenge(this, this.shell, index, round);
+    const result = await this.challenge.run();
+    this.challenge = undefined;
+    if (result === 'caught') {
+      this.catches += 1;
+      // Max is still at the gate, so re-arming opens a new round on the next frame.
+      this.rearmGate(index);
+      return;
+    }
+    this.freeze(false);
+    this.events.emit('gate-opened', index);
+  }
+
+  private async finishLevel(): Promise<void> {
+    const stars = starsFor(this.catches);
+    const { districtId, levelIndex } = this.init_;
+    this.shell.update((p) => recordLevel(p, levelKey(districtId, this.level.id), stars));
+    this.shell.sfx('clear');
+    const hasNext = levelIndex + 1 < this.district.levels.length;
+    const choice = await this.shell.showLevelClear({ stars, rule: this.level.rule, challenge: this.level.grownUpChallenge, hasNext });
+    if (!this.sys.isActive() && !this.sys.isPaused()) return;
+    if (choice === 'map') this.shell.openMap();
+    else this.scene.restart({ districtId, levelIndex: choice === 'next' ? levelIndex + 1 : levelIndex });
   }
 
   // ------------------------------------------------------------ play
@@ -282,11 +355,13 @@ export class LevelScene extends Phaser.Scene {
 
   update(time: number, delta: number): void {
     const dt = Math.min(delta, 50);
-    this.elapsed += dt;
-    this.moveMovers(dt);
-    this.max.tick(time, dt);
-    this.trail(time);
     this.backdrop.update(this.cameras.main.scrollX);
+    if (!this.frozen) {
+      this.elapsed += dt;
+      this.moveMovers(dt);
+      this.max.tick(time, dt);
+      this.trail(time);
+    }
 
     const gate = this.gates[this.opened];
     if (gate && !gate.reached && this.max.body.right >= gate.x - GATE_BODY.w / 2 - 6) {

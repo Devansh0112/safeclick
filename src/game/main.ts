@@ -4,6 +4,8 @@ import Phaser from 'phaser';
 import { PALETTE } from './art/palette';
 import { MOVE } from './entities/max';
 import { LevelScene, type LevelInit } from './scenes/LevelScene';
+import { createShell } from './shell';
+import { store } from '../scripts/storage';
 import type { GamePayload } from './types';
 import { trackGameFocus } from './ui/game-focus';
 import { mountHud } from './ui/hud';
@@ -25,6 +27,11 @@ export function bootNeonCity(root: HTMLElement): void {
   const stage = root.querySelector<HTMLElement>('[data-game-stage]');
   const focus = stage ? trackGameFocus(root, stage) : undefined;
   if (overlay) mountRotateHint(overlay);
+  const start: LevelInit = { districtId: 'link-alley', levelIndex: 0 };
+  const shell = createShell(root, payload, store, {
+    // Placeholder until the district map (Task 7): back to the district's first level.
+    onOpenMap: () => game.scene.getScene('level')?.scene.restart({ ...start }),
+  });
 
   const game = new Phaser.Game({
     type: Phaser.AUTO,
@@ -35,13 +42,13 @@ export function bootNeonCity(root: HTMLElement): void {
     callbacks: {
       preBoot: (g) => {
         g.registry.set('payload', payload);
+        g.registry.set('shell', shell);
         if (touch) g.registry.set('touch', touch);
         if (hud) g.registry.set('hud', hud);
         if (focus) g.registry.set('focus', focus);
       },
     },
   });
-  const start: LevelInit = { districtId: 'link-alley', levelIndex: 0 };
   game.scene.add('level', LevelScene, true, start);
   // Dev-only handle for browser checks; stripped from production builds.
   if (import.meta.env.DEV) (window as unknown as { __neonCity?: Phaser.Game }).__neonCity = game;
