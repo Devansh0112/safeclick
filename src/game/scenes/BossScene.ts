@@ -13,6 +13,7 @@ import { createBackdrop, HORIZON } from '../art/backdrop';
 import { HUD_FONT, PALETTE, TONES, hex } from '../art/palette';
 import { createTextures } from '../art/textures';
 import { advanceWave, BOSS_TIMING, createBoss, messageId, resolveMessage, type BossAction, type BossState } from '../logic/boss';
+import { FALLBACK_RED_FLAG } from '../logic/gate-round';
 import { recordBoss } from '../logic/progress';
 import { shuffled } from '../logic/rounds';
 import { revealableFiles } from '../logic/unlocks';
@@ -285,7 +286,7 @@ export class BossScene extends Phaser.Scene {
 
   update(_time: number, delta: number): void {
     if (this.frozen || this.state.status !== 'fighting') return;
-    this.fightTime += Math.min(delta, 50);
+    this.fightTime += Math.min(delta, BOSS_TIMING.maxStepMs);
     if (this.queue.length > 0 && this.fightTime >= this.nextSpawnAt) this.spawn();
     // A card that reaches Max undecided gets through, as if let through.
     for (const card of this.cards.step(this.fightTime)) {
@@ -414,12 +415,16 @@ export class BossScene extends Phaser.Scene {
     await this.wait(this.reduced ? 500 : 1000);
     if (!this.alive()) return;
     this.freeze(true);
-    await this.shell.showCaught({ botName: this.district.boss.name, redFlag: msg.redFlag ?? '', retryLabel: 'RETRY BOSS' });
+    await this.shell.showCaught({ botName: this.district.boss.name, redFlag: msg.redFlag?.trim() ? msg.redFlag : FALLBACK_RED_FLAG, retryLabel: 'RETRY BOSS' });
     if (!this.alive()) return;
     this.scene.restart({ districtId: this.district.id });
   }
 
   private async win(): Promise<void> {
+    // Save the win (and its files) first, so leaving for the map mid-animation keeps it.
+    const d = this.district;
+    const files = revealableFiles(d.scamFileRewards, this.shell.payload.scamFiles);
+    this.shell.update((p) => recordBoss(p, d.id, files.map((f) => f.id)));
     this.panel?.setBusy(true);
     this.panel?.setCurrent(null);
     this.cards.clear(!this.reduced);
@@ -429,9 +434,6 @@ export class BossScene extends Phaser.Scene {
     await this.glitchOut();
     if (!this.alive()) return;
 
-    const d = this.district;
-    const files = revealableFiles(d.scamFileRewards, this.shell.payload.scamFiles);
-    this.shell.update((p) => recordBoss(p, d.id, files.map((f) => f.id)));
     this.shell.sfx('clear');
     this.freeze(true);
     await this.shell.showStash(files, NEXT_DISTRICT);

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { advanceWave, BOSS_TIMING, createBoss, messageId, resolveMessage } from '../src/game/logic/boss';
+import { advanceWave, BOSS_TIMING, createBoss, messageId, MIN_CURRENT_MS, resolveMessage, worstCaseCurrentMs } from '../src/game/logic/boss';
+import { ACTION_GAP_MS, actionAccepted } from '../src/game/ui/boss-panel';
 import type { BossData, BossMessage } from '../src/game/types';
 
 const fake = (n: number): BossMessage => ({ text: `fake ${n}`, fake: true, redFlag: 'flag' });
@@ -89,5 +90,47 @@ describe('advanceWave', () => {
     const s = createBoss(boss);
     expect(advanceWave(s).wave).toBe(1);
     expect(advanceWave(advanceWave(advanceWave(s))).wave).toBe(2);
+  });
+});
+
+describe('boss readability (Global Constraint: each card current >= 3000 ms)', () => {
+  it('keeps every wave\'s worst-case current time at or above 3000 ms at factor 1 and with reduced motion', () => {
+    expect(MIN_CURRENT_MS).toBe(3000);
+    BOSS_TIMING.spawnEveryMs.forEach((_, w) => {
+      expect(worstCaseCurrentMs(w)).toBeGreaterThanOrEqual(MIN_CURRENT_MS);
+      expect(worstCaseCurrentMs(w, BOSS_TIMING.reducedMotionFactor)).toBeGreaterThanOrEqual(MIN_CURRENT_MS);
+    });
+  });
+  it('derives the bound from the spawn gap minus one clock step, capped by the trip', () => {
+    const [w1, w2, w3] = BOSS_TIMING.spawnEveryMs;
+    expect(worstCaseCurrentMs(2)).toBe(Math.min(BOSS_TIMING.travelMs, w3 - BOSS_TIMING.maxStepMs));
+    expect(worstCaseCurrentMs(0)).toBe(Math.min(BOSS_TIMING.travelMs, w1 - BOSS_TIMING.maxStepMs));
+    expect(w2).toBeGreaterThan(w3);
+  });
+  it('gets harder by sending cards more often, not by moving them faster', () => {
+    const gaps = BOSS_TIMING.spawnEveryMs;
+    for (let i = 1; i < gaps.length; i++) expect(gaps[i]).toBeLessThan(gaps[i - 1]);
+    // One travel time for every wave: card speed never changes.
+    expect(typeof BOSS_TIMING.travelMs).toBe('number');
+    expect(BOSS_TIMING.travelMs).toBeGreaterThanOrEqual(MIN_CURRENT_MS);
+  });
+});
+
+describe('boss action gap', () => {
+  const run = (times: number[]) => {
+    let last = -Infinity;
+    return times.filter((t) => {
+      if (!actionAccepted(t, last)) return false;
+      last = t;
+      return true;
+    });
+  };
+  it('accepts presses at 0 and 400 out of 0, 200, 400, 600 ms', () => {
+    expect(ACTION_GAP_MS).toBe(300);
+    expect(run([0, 200, 400, 600])).toEqual([0, 400]);
+  });
+  it('ignored presses never re-arm the gap, so mashing still gets through', () => {
+    // Faster than 3.3 presses a second: before the fix every press after the first was lost.
+    expect(run([0, 250, 500, 750, 1000])).toEqual([0, 500, 1000]);
   });
 });
