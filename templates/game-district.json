@@ -60,6 +60,46 @@
               ]
             }
           ]
+        },
+        {
+          "id": "gate-2",
+          "type": "choose-portal",
+          "rounds": [
+            {
+              "prompt": "Max wants the real Museum.",
+              "options": [
+                {
+                  "label": "museum.org",
+                  "safe": true
+                },
+                {
+                  "label": "rnuseum.org",
+                  "safe": false,
+                  "redFlag": "An r and an n squeezed together look like an m."
+                },
+                {
+                  "label": "museum.org-tickets.win",
+                  "safe": false,
+                  "redFlag": "The real name comes first, but the address really ends in tickets.win."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "gate-3",
+          "type": "trust-or-report",
+          "rounds": [
+            {
+              "prompt": "A message pops up. Trust it or report it?",
+              "item": {
+                "kind": "message",
+                "text": "PrizeZone: You won! Tap the link in 5 minutes!"
+              },
+              "safe": false,
+              "redFlag": "A prize you never entered for and a rush to tap."
+            }
+          ]
         }
       ]
     }

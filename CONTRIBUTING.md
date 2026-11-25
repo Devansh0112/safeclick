@@ -158,7 +158,7 @@ The production build **fails** if a file is marked `reviewed` without a reviewer
 - Keep the site free of trackers, cookies, accounts and third-party requests (YouTube loads only on click).
 - The story engine must stay plain JavaScript and must only ever use `textContent` with story content. Never `innerHTML`, `eval` or `new Function`.
 - Keep it accessible: semantic HTML, keyboard support, visible focus, `prefers-reduced-motion`.
-- Run `npm run build` before opening a PR.
+- Run `npm test`, `npm run check` and `npm run build` before opening a PR.
 
 ## License
 

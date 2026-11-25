@@ -85,7 +85,7 @@
                   "safe": true
                 },
                 {
-                  "label": "northfield-school.login.win",
+                  "label": "northfield-school.login-now.win",
                   "safe": false,
                   "redFlag": "The real name comes first, but the address really ends in login-now.win."
                 },
