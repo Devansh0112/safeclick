@@ -45,7 +45,6 @@ export function mountGatePanel(overlay: HTMLElement, stage: HTMLElement, o: Gate
   const panel = el('section', 'gate-panel');
   const titleId = uid('gate-title');
   panel.setAttribute('role', 'dialog');
-  panel.setAttribute('aria-modal', 'true');
   panel.setAttribute('aria-labelledby', titleId);
 
   const label = el('p', 'gate-panel-label', `${o.gateLabel} // ${o.item ? 'TRUST OR REPORT?' : 'CHOOSE A PORTAL'}`);

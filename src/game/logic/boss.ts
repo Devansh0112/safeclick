@@ -1,6 +1,28 @@
 import type { BossData, BossMessage } from '../types';
 
-export const BOSS_TIMING = { maxHits: 3, travelMs: 4000, spawnEveryMs: [4000, 3200, 2500], reducedMotionFactor: 1.5 };
+/**
+ * travelMs: a card's trip from the bot to Max. spawnEveryMs: the gap between cards per wave
+ * (harder waves send cards more often, never faster). maxStepMs: the most the fight clock
+ * advances in one frame. reducedMotionFactor: every time is this much longer with reduced motion.
+ */
+export const BOSS_TIMING = { maxHits: 3, travelMs: 4000, spawnEveryMs: [4000, 3200, 3050], maxStepMs: 50, reducedMotionFactor: 1.5 };
+
+/** Every card must be the current one (shown in the panel) at least this long. */
+export const MIN_CURRENT_MS = 3000;
+
+/**
+ * The shortest time a card in `wave` can be current, in fight time. Only the oldest unresolved
+ * card is current, so card B becomes current when the card A before it is decided, at the
+ * latest when A reaches Max (spawnA + travel, seen up to one clock step late). B reaches Max
+ * at spawnB + travel, and spawnB >= spawnA + gap, so B is current for at least gap - step.
+ * If the gap is longer than the trip, A is gone before B appears and B is current for the
+ * whole trip. The first card of a wave never waits: a wave starts only once the last is done.
+ */
+export function worstCaseCurrentMs(wave: number, factor = 1): number {
+  const travel = BOSS_TIMING.travelMs * factor;
+  const gap = BOSS_TIMING.spawnEveryMs[wave] * factor;
+  return Math.min(travel, gap - BOSS_TIMING.maxStepMs);
+}
 
 export type BossAction = 'shield' | 'pass';
 export type BossEvent = 'damage' | 'bonus' | 'hit' | 'gentle-note' | 'ignored';

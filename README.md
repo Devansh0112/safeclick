@@ -5,6 +5,7 @@
 SafeClick is a free, open source website that teaches people of every age how to stay safe online and avoid scams: phishing, scam texts and calls, passwords, two-factor authentication, public Wi-Fi, privacy and more. It's built to feel like play, not a lecture.
 
 - 🎮 **Story games.** Step into a scam story, make choices, watch the *Trust* and *What the scammer knows about you* meters move, then hit **Rewind** to see the red flags you missed and what to do instead.
+- 🕹️ **Neon City (arcade platformer).** A Phaser platformer where you run, jump and spot safe vs. unsafe links across three levels, a boss and a Scam Files screen. It is a draft: hidden from the production build and the Games page, and only visible in `npm run dev` and `npm run build:preview`.
 - 🃏 **Quick cards.** One idea, one red flag, one thing to do.
 - 🎬 **Short videos** and 📖 **articles** for the full picture.
 - ☕ **Older Adults Corner.** Calm, plain-language readings, gentle quizzes and printable one-page handouts about phone and mail scams.
@@ -40,6 +41,8 @@ Other commands:
 
 | Command | What it does |
 | --- | --- |
+| `npm test` | Runs the unit tests (vitest), including the Neon City game logic |
+| `npm run check` | Type-checks the Astro and TypeScript code (`astro check`) |
 | `npm run validate` | Checks every content file: story links, unreachable scenes, missing endings, missing Rewind explanations, review fields, no HTML or scripts |
 | `npm run build` | Validates, then builds the live site into `dist/`. **Only `reviewed` content is included.** |
 | `npm run build:preview` | Same, but includes drafts (with banners). For private staging previews only, never the live site. |

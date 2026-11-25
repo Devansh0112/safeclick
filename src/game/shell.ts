@@ -1,13 +1,16 @@
 // The game shell: everything outside the canvas that scenes need. Saved progress,
 // settings, sound (Task 7) and the HTML reading screens. Stored in game.registry as 'shell'.
-import { loadProgress, saveProgress, type GameProgress, type KV } from './logic/progress';
+import { createSfx, type SfxName } from './audio/sfx';
+import { emptyProgress, loadProgress, resetProgress, saveProgress, type GameProgress, type KV } from './logic/progress';
 import type { GamePayload, ScamFileData } from './types';
 import { collectionView } from './logic/unlocks';
 import { showLevelClear, type LevelClearChoice, type LevelClearInfo } from './ui/level-clear';
-import { showCaught, showNote, type OverlayHost } from './ui/overlays';
+import { showMap, type MapChoice } from './ui/map';
+import { closeAllDialogs, showCaught, showNote, type OverlayHost } from './ui/overlays';
 import { showScamFiles, showStash } from './ui/scam-files';
+import { createMuteButton, mountCorner, showSettings, type SoundState } from './ui/settings';
 
-export type SfxName = 'jump' | 'gate' | 'caught' | 'hit' | 'damage' | 'clear' | 'click';
+export type { SfxName };
 
 export interface Shell {
   payload: GamePayload;
@@ -26,15 +29,24 @@ export interface Shell {
   showScamFiles(): void;
   /** Read `text` out through the game's polite live region. */
   announce(text: string): void;
-  openMap(): void;
+  /**
+   * Stops any running scene and shows the district map; the pick starts a level or the boss.
+   * `autofocus` (default true) moves focus into the map; false at page load.
+   */
+  openMap(autofocus?: boolean): void;
+  muted(): boolean;
   /** The overlay layer and game stage, for in-game HTML such as the gate panel. */
   readonly host: OverlayHost;
 }
 
 export interface ShellOptions {
-  /** Until the district map exists (Task 7), the caller decides what "Map" does. */
-  onOpenMap?: () => void;
+  /** Stops the level and boss scenes (no scene runs while the map is open). */
+  stopScenes?: () => void;
+  /** Starts the level or boss the player picked on the map. */
+  startScene?: (choice: MapChoice) => void;
 }
+
+const WAKE_EVENTS = ['pointerdown', 'keydown', 'touchend', 'click'] as const;
 
 export function createShell(root: HTMLElement, payload: GamePayload, kv: KV, opts: ShellOptions = {}): Shell {
   const overlay = root.querySelector<HTMLElement>('[data-game-overlay]') ?? root;
@@ -44,21 +56,92 @@ export function createShell(root: HTMLElement, payload: GamePayload, kv: KV, opt
   const reducedMotion = () => progress.settings.reducedMotion ?? systemReduced.matches;
   const host: OverlayHost = { overlay, stage, reducedMotion };
   const live = root.querySelector<HTMLElement>('[data-game-live]');
+  const hudEl = root.querySelector<HTMLElement>('[data-game-hud]');
+  const touchEl = root.querySelector<HTMLElement>('[data-game-touch]');
+
+  // Sound. The audio context only wakes on the player's first press inside the game.
+  const sound = createSfx();
+  sound.setMuted(progress.settings.muted);
+  const mutedListeners = new Set<(m: boolean) => void>();
+  const soundState: SoundState = {
+    muted: () => progress.settings.muted,
+    setMuted(m) {
+      if (m === progress.settings.muted) return;
+      save((p) => ({ ...p, settings: { ...p.settings, muted: m } }));
+      sound.setMuted(m);
+      mutedListeners.forEach((fn) => fn(m));
+    },
+    onMutedChange(fn) {
+      mutedListeners.add(fn);
+      return () => mutedListeners.delete(fn);
+    },
+  };
+  const wake = () => {
+    sound.unlock();
+    sound.startMusic();
+    for (const type of WAKE_EVENTS) root.removeEventListener(type, wake, true);
+  };
+  for (const type of WAKE_EVENTS) root.addEventListener(type, wake, true);
+
+  function save(fn: (p: GameProgress) => GameProgress): void {
+    progress = fn(progress);
+    saveProgress(kv, progress);
+  }
+  const click = () => sound.play('click');
+
   const openCollection = () => showScamFiles(host, payload.scamFiles, collectionView(payload.scamFiles, progress.scamFiles));
   let announceTimer: ReturnType<typeof setTimeout> | undefined;
+  let mapOpen = false;
+
+  const openSettings = () => showSettings(host, {
+    ...soundState,
+    reducedMotion: () => progress.settings.reducedMotion,
+    setReducedMotion: (v) => save((p) => ({ ...p, settings: { ...p.settings, reducedMotion: v } })),
+    reset() {
+      // Only Neon City's data goes; the story games' progress stays. Settings are kept.
+      resetProgress(kv);
+      const settings = progress.settings;
+      progress = { ...emptyProgress(), settings };
+      saveProgress(kv, progress);
+    },
+    sfx: click,
+  });
+
+  const { mapButton } = mountCorner(overlay, stage, soundState, click, () => openMap());
+
+  const openMap = (autofocus = true) => {
+    if (mapOpen) return;
+    mapOpen = true;
+    mapButton.hidden = true;
+    opts.stopScenes?.();
+    // Abandon any screen left open (Caught, Level clear, stash...): their scene is stopped.
+    closeAllDialogs();
+    if (hudEl) hudEl.hidden = true;
+    if (touchEl) touchEl.hidden = true;
+    void showMap(host, payload, {
+      progress: () => progress,
+      sfx: click,
+      openSettings,
+      openScamFiles: openCollection,
+      muteButton: () => createMuteButton(soundState, click),
+    }, autofocus).then((choice) => {
+      mapOpen = false;
+      mapButton.hidden = false;
+      if (hudEl) hudEl.hidden = false;
+      if (touchEl) touchEl.hidden = false;
+      opts.startScene?.(choice);
+    });
+  };
+
 
   return {
     payload,
     host,
     progress: () => progress,
-    update(fn) {
-      progress = fn(progress);
-      saveProgress(kv, progress);
-    },
+    update: save,
     reducedMotion,
-    sfx() {
-      /* sound arrives in Task 7 */
-    },
+    sfx: (name) => sound.play(name),
+    muted: soundState.muted,
     showCaught: (o) => showCaught(host, o),
     showNote: (text) => showNote(host, text),
     showLevelClear: (o) => showLevelClear(host, o),
@@ -71,6 +154,6 @@ export function createShell(root: HTMLElement, payload: GamePayload, kv: KV, opt
       clearTimeout(announceTimer);
       announceTimer = setTimeout(() => { live.textContent = text; }, 60);
     },
-    openMap: () => opts.onOpenMap?.(),
+    openMap,
   };
 }

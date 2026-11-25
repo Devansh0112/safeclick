@@ -1,3 +1,5 @@
+import { STORAGE_KEYS } from '../../site.config';
+
 export interface GameProgress {
   version: 1;
   levels: Record<string, { cleared: boolean; bestStars: 1 | 2 | 3 }>;
@@ -12,7 +14,7 @@ export interface KV {
   set(key: string, value: string): void;
 }
 
-const KEY = 'sc-progress';
+const KEY = STORAGE_KEYS.progress;
 
 export function emptyProgress(): GameProgress {
   return { version: 1, levels: {}, bosses: {}, scamFiles: [], settings: { muted: false, reducedMotion: null } };

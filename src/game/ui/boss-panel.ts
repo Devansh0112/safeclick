@@ -4,16 +4,24 @@
 //
 // Keys (heard on the game root, so only while the game is focused): S or ← shields,
 // L or → lets it through. Held keys never act (key-repeat is ignored), and any action
-// within ACTION_GAP_MS of the previous one (key, click or tap) is ignored, so mashing S
+// within ACTION_GAP_MS of the last accepted one (key, click or tap) is ignored, so mashing S
 // or a double tap resolves only the current card, never the next one as well.
 import { el } from './overlays';
 
 export type BossChoice = 'shield' | 'pass';
 
-const ACTION_GAP_MS = 300;
+export const ACTION_GAP_MS = 300;
 const TOAST_MS = 1800;
 const KEYS: Record<string, BossChoice> = { s: 'shield', S: 'shield', ArrowLeft: 'shield', l: 'pass', L: 'pass', ArrowRight: 'pass' };
 const INTERACTIVE = 'button, a, input, select, textarea, summary, [contenteditable]';
+
+/**
+ * Whether a press at `now` counts, given the time of the last press that counted. Ignored
+ * presses do not move `lastAccepted`, so mashing can never lock the buttons out.
+ */
+export function actionAccepted(now: number, lastAccepted: number, gapMs = ACTION_GAP_MS): boolean {
+  return now - lastAccepted >= gapMs;
+}
 
 export interface BossPanelOptions {
   /** Shown until the first card arrives. */
@@ -67,9 +75,8 @@ export function mountBossPanel(root: HTMLElement, stage: HTMLElement, o: BossPan
 
   function act(choice: BossChoice): void {
     const t = performance.now();
-    const tooSoon = t - lastAction < ACTION_GAP_MS;
+    if (busy || !actionAccepted(t, lastAction)) return;
     lastAction = t;
-    if (busy || tooSoon) return;
     o.onChoose(choice);
   }
 
