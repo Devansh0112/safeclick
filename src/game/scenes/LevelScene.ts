@@ -11,6 +11,7 @@ import { GATE_SIZE, PLATFORM_GLOW, createTextures, platformTexture } from '../ar
 import { Max } from '../entities/max';
 import { getLayout } from '../layouts/index';
 import { GateRound } from '../logic/gate-round';
+import { moverVelocity } from '../logic/movers';
 import { recordLevel } from '../logic/progress';
 import { starsFor } from '../logic/scoring';
 import { isBossUnlocked, levelKey } from '../logic/unlocks';
@@ -41,6 +42,7 @@ interface Gate {
 interface Mover {
   image: Phaser.Physics.Arcade.Image;
   base: { x: number; y: number };
+  timeMs: number;
   move: NonNullable<Platform['moving']>;
 }
 
@@ -149,7 +151,7 @@ export class LevelScene extends Phaser.Scene {
         const img = this.physics.add.image(p.x + p.w / 2, p.y - PLATFORM_GLOW + (p.h + PLATFORM_GLOW) / 2, key);
         img.body.setSize(p.w, p.h, false).setOffset(0, PLATFORM_GLOW);
         img.body.setAllowGravity(false).setImmovable(true);
-        this.movers.push({ image: img, base: { x: img.x, y: img.y }, move: p.moving });
+        this.movers.push({ image: img, base: { x: img.x, y: img.y }, timeMs: 0, move: p.moving });
       } else {
         this.add.image(p.x, p.y - PLATFORM_GLOW, key).setOrigin(0);
         const zone = this.add.zone(p.x + p.w / 2, p.y + p.h / 2, p.w, p.h);
@@ -243,12 +245,15 @@ export class LevelScene extends Phaser.Scene {
     };
     document.addEventListener('visibilitychange', onVisibility);
 
+    this.physics.world.on(Phaser.Physics.Arcade.Events.WORLD_STEP, this.onWorldStep);
+
     // Window/document listeners must go on shutdown (restart) and on destroy (game torn down).
     let cleaned = false;
     const cleanup = () => {
       if (cleaned) return;
       cleaned = true;
       document.removeEventListener('visibilitychange', onVisibility);
+      this.physics.world?.off(Phaser.Physics.Arcade.Events.WORLD_STEP, this.onWorldStep);
       this.events.off('gate-opened', onGateOpened);
       this.events.off('gate-reached', onGateReached);
       this.events.off('level-exit', onLevelExit);
@@ -345,15 +350,21 @@ export class LevelScene extends Phaser.Scene {
     this.sparks.explode(count, x, y);
   }
 
-  private moveMovers(delta: number): void {
+  /** Runs after every fixed physics step: aim each mover at where its path says it will be one step from now. */
+  private readonly onWorldStep = (stepSeconds: number): void => {
+    const stepMs = stepSeconds * 1000;
     for (const m of this.movers) {
-      const phase = (1 - Math.cos((2 * Math.PI * this.elapsed) / m.move.periodMs)) / 2;
-      const tx = m.base.x + m.move.dx * phase;
-      const ty = m.base.y + m.move.dy * phase;
-      const s = delta / 1000;
-      (m.image.body as Phaser.Physics.Arcade.Body).setVelocity((tx - m.image.x) / s, (ty - m.image.y) / s);
+      const body = m.image.body as Phaser.Physics.Arcade.Body | null;
+      if (!body) continue;
+      if (this.frozen) {
+        body.setVelocity(0, 0);
+        continue;
+      }
+      m.timeMs += stepMs;
+      const v = moverVelocity(m.base, m.move, m.timeMs + stepMs, stepMs, m.image);
+      body.setVelocity(v.x, v.y);
     }
-  }
+  };
 
   private trail(time: number): void {
     if (this.reducedMotion || this.max.onGround || time - this.lastTrail < 45) return;
@@ -368,7 +379,6 @@ export class LevelScene extends Phaser.Scene {
     this.backdrop.update(this.cameras.main.scrollX);
     if (!this.frozen) {
       this.elapsed += dt;
-      this.moveMovers(dt);
       this.max.tick(time, dt);
       this.trail(time);
     }
