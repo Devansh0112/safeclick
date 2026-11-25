@@ -64,21 +64,24 @@ const json = JSON.stringify(payload).replace(/</g, '\\u003c');
   /* On-screen controls for every pointer type: a compact row below the canvas for a mouse,
      big buttons below the canvas on an upright phone, and overlaid in phone landscape. */
   .game-touch[hidden] { display: none; }
-  .game-touch :global(.touch-pad) { display: flex; gap: 0.5rem; padding: 0.5rem 0.75rem; background: #07021a; }
+  .game-touch :global(.touch-pad) { display: flex; flex-wrap: wrap; gap: 0.5rem; padding: 0.5rem 0.75rem; background: #07021a; }
   .game-touch :global(.touch-btn) {
     min-width: 3rem; min-height: 2.75rem; padding: 0 0.75rem; border: 2px solid #18f0ff; border-radius: 0.6rem;
     background: rgba(24, 240, 255, 0.12); color: #e6f7ff; font: bold 1.1rem/1 "Courier New", ui-monospace, monospace;
     cursor: pointer; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
   }
-  .game-touch :global(.touch-jump) { margin-left: auto; min-width: 5rem; border-color: #ff3d9a; background: rgba(255, 61, 154, 0.15); }
+  .game-touch :global(.touch-jumpLeft), .game-touch :global(.touch-jumpRight) { min-width: 5rem; border-color: #ff3d9a; background: rgba(255, 61, 154, 0.15); }
+  .game-touch :global(.touch-jumpLeft) { margin-left: auto; }
+  .game-touch :global(.touch-jump) { margin-left: 0; min-width: 5rem; border-color: #ff3d9a; background: rgba(255, 61, 154, 0.15); }
   .game-touch :global(.touch-btn:focus-visible) { outline: 3px solid #ffd166; outline-offset: 2px; }
   .game-touch :global(.touch-btn.is-down) { background: rgba(24, 240, 255, 0.4); }
-  .game-touch :global(.touch-jump.is-down) { background: rgba(255, 61, 154, 0.45); }
+  .game-touch :global(.touch-jumpLeft.is-down), .game-touch :global(.touch-jumpRight.is-down), .game-touch :global(.touch-jump.is-down) { background: rgba(255, 61, 154, 0.45); }
   :global(:root[data-contrast='high']) .game-touch :global(.touch-btn) { background: #fff; color: #000; border: 3px solid #000; }
   @media (pointer: coarse) {
     .game-touch :global(.touch-pad) { gap: 0.75rem; padding: 0.75rem; }
     .game-touch :global(.touch-btn) { min-width: 4.5rem; min-height: 4.5rem; padding: 0 1rem; border-radius: 1rem; font-size: 1.5rem; }
     .game-touch :global(.touch-jump) { min-width: 6.5rem; }
+    .game-touch :global(.touch-jumpLeft), .game-touch :global(.touch-jumpRight) { min-width: 5.5rem; padding: 0 0.5rem; font-size: 1.05rem; }
   }
   @media (pointer: coarse) and (orientation: landscape) {
     /* Keep the whole 16:9 canvas plus the HUD bar on screen; Phaser letterboxes inside. */

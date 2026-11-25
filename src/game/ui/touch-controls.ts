@@ -1,4 +1,4 @@
-// On-screen ◀ ▶ JUMP buttons for every pointer type (touch, mouse, pen), so the game is
+// On-screen ◀ ▶ JUMP (plus combined ↖ JUMP / JUMP ↗) buttons for every pointer type (touch, mouse, pen), so the game is
 // playable mouse-only or touch-only. Pointer events make press-and-hold work the same
 // everywhere; the LevelScene polls their state each frame. CSS lays them out per pointer.
 
@@ -9,16 +9,30 @@ export interface TouchControls {
   destroy(): void;
 }
 
-type Control = 'left' | 'right' | 'jump';
+type Control = 'left' | 'right' | 'jump' | 'jumpLeft' | 'jumpRight';
+
+// A mouse has one pointer, so it cannot hold a direction and JUMP together. The combined
+// buttons count as that direction AND jump, so one pointer can make a running jump.
+export function reportFrom(held: Record<Control, { size: number }>): { left: boolean; right: boolean; jump: boolean } {
+  return {
+    left: held.left.size > 0 || held.jumpLeft.size > 0,
+    right: held.right.size > 0 || held.jumpRight.size > 0,
+    jump: held.jump.size > 0 || held.jumpLeft.size > 0 || held.jumpRight.size > 0,
+  };
+}
 
 const BUTTONS: { id: Control; label: string; text: string }[] = [
   { id: 'left', label: 'Move left', text: '◀' },
   { id: 'right', label: 'Move right', text: '▶' },
+  { id: 'jumpLeft', label: 'Jump left', text: '↖ JUMP' },
+  { id: 'jumpRight', label: 'Jump right', text: 'JUMP ↗' },
   { id: 'jump', label: 'Jump', text: 'JUMP' },
 ];
 
 export function mountTouchControls(el: HTMLElement): TouchControls {
-  const held: Record<Control, Set<number>> = { left: new Set(), right: new Set(), jump: new Set() };
+  const held: Record<Control, Set<number>> = {
+    left: new Set(), right: new Set(), jump: new Set(), jumpLeft: new Set(), jumpRight: new Set(),
+  };
   const cleanups: (() => void)[] = [];
   const pad = document.createElement('div');
   pad.className = 'touch-pad';
@@ -60,9 +74,9 @@ export function mountTouchControls(el: HTMLElement): TouchControls {
   el.hidden = false;
 
   return {
-    left: () => held.left.size > 0,
-    right: () => held.right.size > 0,
-    jump: () => held.jump.size > 0,
+    left: () => reportFrom(held).left,
+    right: () => reportFrom(held).right,
+    jump: () => reportFrom(held).jump,
     destroy() {
       cleanups.forEach((fn) => fn());
       pad.remove();
