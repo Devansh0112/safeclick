@@ -41,7 +41,6 @@ interface Gate {
 
 interface Mover {
   image: Phaser.Physics.Arcade.Image;
-  base: { x: number; y: number };
   timeMs: number;
   /** The body's own base position (body space), captured on the first physics step. */
   bodyBase?: { x: number; y: number };
@@ -60,7 +59,6 @@ export class LevelScene extends Phaser.Scene {
   private movers: Mover[] = [];
   private opened = 0;
   private exited = false;
-  private elapsed = 0;
   private sparks!: Phaser.GameObjects.Particles.ParticleEmitter;
   private hud?: Hud;
   private pausedByVisibility = false;
@@ -87,7 +85,6 @@ export class LevelScene extends Phaser.Scene {
     this.movers = [];
     this.opened = 0;
     this.exited = false;
-    this.elapsed = 0;
     this.catches = 0;
     this.lastRound = [];
     this.challenge = undefined;
@@ -153,7 +150,7 @@ export class LevelScene extends Phaser.Scene {
         const img = this.physics.add.image(p.x + p.w / 2, p.y - PLATFORM_GLOW + (p.h + PLATFORM_GLOW) / 2, key);
         img.body.setSize(p.w, p.h, false).setOffset(0, PLATFORM_GLOW);
         img.body.setAllowGravity(false).setImmovable(true);
-        this.movers.push({ image: img, base: { x: img.x, y: img.y }, timeMs: 0, move: p.moving });
+        this.movers.push({ image: img, timeMs: 0, move: p.moving });
       } else {
         this.add.image(p.x, p.y - PLATFORM_GLOW, key).setOrigin(0);
         const zone = this.add.zone(p.x + p.w / 2, p.y + p.h / 2, p.w, p.h);
@@ -383,7 +380,6 @@ export class LevelScene extends Phaser.Scene {
     const dt = Math.min(delta, 50);
     this.backdrop.update(this.cameras.main.scrollX);
     if (!this.frozen) {
-      this.elapsed += dt;
       this.max.tick(time, dt);
       this.trail(time);
     }
