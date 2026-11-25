@@ -12,27 +12,36 @@ describe('movers', () => {
     expect(far.y).toBeCloseTo(400);
   });
 
-  it('tracks the path with fixed 60 Hz steps regardless of frame rate', () => {
+  // Models the engine: per rendered frame, `body` integrates every fixed step with that step's
+  // velocity, but the GameObject position is only copied from the body once per frame.
+  function simulate(useStale: boolean, stepsPerFrame: number): number {
     const step = 1000 / 60;
-    for (const stepsPerFrame of [0.5, 1, 3, 6]) {
-      let pos = { ...base };
-      let t = 0;
-      let carry = 0;
-      let maxDev = 0;
-      for (let frame = 0; frame < 600; frame++) {
-        carry += stepsPerFrame;
-        while (carry >= 1) {
-          carry -= 1;
-          const v = moverVelocity(base, move, t + step, step, pos);
-          pos = { x: pos.x + (v.x * step) / 1000, y: pos.y + (v.y * step) / 1000 };
-          t += step;
-          const want = moverTarget(base, move, t);
-          maxDev = Math.max(maxDev, Math.abs(pos.x - want.x), Math.abs(pos.y - want.y));
-          expect(pos.x).toBeGreaterThanOrEqual(base.x - 0.001);
-          expect(pos.x).toBeLessThanOrEqual(base.x + move.dx + 0.001);
-        }
+    let body = { ...base };
+    let gameObject = { ...base };
+    let t = 0;
+    let carry = 0;
+    let maxDev = 0;
+    for (let frame = 0; frame < 600; frame++) {
+      carry += stepsPerFrame;
+      while (carry >= 1) {
+        carry -= 1;
+        const v = moverVelocity(base, move, t + 2 * step, step, useStale ? gameObject : body);
+        // (the world step has just run; this velocity drives the NEXT step)
+        t += step;
+        body = { x: body.x + (v.x * step) / 1000, y: body.y + (v.y * step) / 1000 };
+        const want = moverTarget(base, move, t + step);
+        maxDev = Math.max(maxDev, Math.abs(body.x - want.x), Math.abs(body.y - want.y));
       }
-      expect(maxDev).toBeLessThan(0.01);
+      gameObject = { ...body };
     }
+    return maxDev;
+  }
+
+  it('tracks the path at any frame rate when driven from body position', () => {
+    for (const n of [0.5, 1, 3, 6]) expect(simulate(false, n)).toBeLessThan(0.01);
+  });
+
+  it('would diverge if driven from the stale GameObject position (regression guard)', () => {
+    expect(simulate(true, 3)).toBeGreaterThan(50);
   });
 });

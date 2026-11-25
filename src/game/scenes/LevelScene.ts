@@ -43,6 +43,8 @@ interface Mover {
   image: Phaser.Physics.Arcade.Image;
   base: { x: number; y: number };
   timeMs: number;
+  /** The body's own base position (body space), captured on the first physics step. */
+  bodyBase?: { x: number; y: number };
   move: NonNullable<Platform['moving']>;
 }
 
@@ -360,8 +362,11 @@ export class LevelScene extends Phaser.Scene {
         body.setVelocity(0, 0);
         continue;
       }
+      // Body space only: the GameObject x/y is copied from the body once per rendered frame,
+      // so with several physics steps in one frame it is stale. body.x/y update every step.
+      m.bodyBase ??= { x: body.x, y: body.y };
       m.timeMs += stepMs;
-      const v = moverVelocity(m.base, m.move, m.timeMs + stepMs, stepMs, m.image);
+      const v = moverVelocity(m.bodyBase, m.move, m.timeMs + stepMs, stepMs, { x: body.x, y: body.y });
       body.setVelocity(v.x, v.y);
     }
   };
