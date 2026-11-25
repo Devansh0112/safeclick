@@ -29,8 +29,11 @@ export interface Shell {
   showScamFiles(): void;
   /** Read `text` out through the game's polite live region. */
   announce(text: string): void;
-  /** Stops any running scene and shows the district map; the pick starts a level or the boss. */
-  openMap(): void;
+  /**
+   * Stops any running scene and shows the district map; the pick starts a level or the boss.
+   * `autofocus` (default true) moves focus into the map; false at page load.
+   */
+  openMap(autofocus?: boolean): void;
   muted(): boolean;
   /** The overlay layer and game stage, for in-game HTML such as the gate panel. */
   readonly host: OverlayHost;
@@ -106,7 +109,7 @@ export function createShell(root: HTMLElement, payload: GamePayload, kv: KV, opt
 
   const { mapButton } = mountCorner(overlay, stage, soundState, click, () => openMap());
 
-  const openMap = () => {
+  const openMap = (autofocus = true) => {
     if (mapOpen) return;
     mapOpen = true;
     mapButton.hidden = true;
@@ -121,7 +124,7 @@ export function createShell(root: HTMLElement, payload: GamePayload, kv: KV, opt
       openSettings,
       openScamFiles: openCollection,
       muteButton: () => createMuteButton(soundState, click),
-    }).then((choice) => {
+    }, autofocus).then((choice) => {
       mapOpen = false;
       mapButton.hidden = false;
       if (hudEl) hudEl.hidden = false;

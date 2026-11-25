@@ -66,7 +66,8 @@ export function bootNeonCity(root: HTMLElement): void {
   const devBoss = import.meta.env.DEV && new URLSearchParams(location.search).has('boss');
   game.scene.add('level', LevelScene, false);
   game.scene.add('boss', BossScene, devBoss, { districtId: payload.districts[0]?.id });
-  if (!devBoss) shell.openMap();
+  // No autofocus at boot: loading the page must not move focus into the game.
+  if (!devBoss) shell.openMap(false);
   // Dev-only handle for browser checks; stripped from production builds.
   if (import.meta.env.DEV) (window as unknown as { __neonCity?: Phaser.Game; __shell?: unknown }).__neonCity = game;
   if (import.meta.env.DEV) (window as unknown as { __shell?: unknown }).__shell = shell;

@@ -81,11 +81,15 @@ function districtSection(d: DistrictData, p: GameProgress, pick: (c: MapChoice) 
   return section;
 }
 
-/** Resolves with the level or boss the player picked. The overlay closes first. */
-export function showMap(host: OverlayHost, payload: GamePayload, hooks: MapHooks): Promise<MapChoice> {
+/**
+ * Resolves with the level or boss the player picked. The overlay closes first.
+ * The map is the persistent home screen, so it is non-modal (Tab can leave it for the rest of
+ * the page). `autofocus` is false when it opens at page load, so loading never moves focus.
+ */
+export function showMap(host: OverlayHost, payload: GamePayload, hooks: MapHooks, autofocus = true): Promise<MapChoice> {
   return new Promise((resolve) => {
     const title = el('h2', 'ov-title map-title', 'NEON CITY // DISTRICT MAP');
-    const dialog = openDialog(host, { className: 'ov-map', title });
+    const dialog = openDialog(host, { className: 'ov-map', title, modal: false, autofocus });
     const header = el('div', 'map-tools');
     const settings = button('ov-btn map-settings', 'Settings', '⚙');
     settings.dataset.key = 'settings';
@@ -100,7 +104,7 @@ export function showMap(host: OverlayHost, payload: GamePayload, hooks: MapHooks
     };
     const districts = [...payload.districts].sort((a, b) => a.order - b.order);
 
-    const render = (focusKey?: string) => {
+    const render = (focusKey?: string, focus = true) => {
       const p = hooks.progress();
       const firstTodo = { set: false };
       const files = button('ov-btn map-files', '', '▦');
@@ -116,13 +120,13 @@ export function showMap(host: OverlayHost, payload: GamePayload, hooks: MapHooks
       const sections = districts.map((d) => districtSection(d, p, pick, firstTodo));
       body.replaceChildren(...sections, files, soon);
       const target = focusKey ? header.querySelector<HTMLElement>(`[data-key="${focusKey}"]`) ?? body.querySelector<HTMLElement>(`[data-key="${focusKey}"]`) : body.querySelector<HTMLElement>('[data-autofocus]');
-      target?.focus({ preventScroll: true });
+      if (focus) target?.focus({ preventScroll: true });
     };
 
     settings.addEventListener('click', () => {
       hooks.sfx();
       void hooks.openSettings().then(() => render('settings'));
     });
-    render();
+    render(undefined, autofocus);
   });
 }
