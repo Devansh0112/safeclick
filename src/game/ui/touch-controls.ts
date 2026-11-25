@@ -25,8 +25,8 @@ const BUTTONS: { id: Control; label: string; text: string }[] = [
   { id: 'left', label: 'Move left', text: '◀' },
   { id: 'right', label: 'Move right', text: '▶' },
   { id: 'jumpLeft', label: 'Jump left', text: '↖ JUMP' },
-  { id: 'jumpRight', label: 'Jump right', text: 'JUMP ↗' },
   { id: 'jump', label: 'Jump', text: 'JUMP' },
+  { id: 'jumpRight', label: 'Jump right', text: 'JUMP ↗' },
 ];
 
 export function mountTouchControls(el: HTMLElement): TouchControls {
@@ -36,6 +36,12 @@ export function mountTouchControls(el: HTMLElement): TouchControls {
   const cleanups: (() => void)[] = [];
   const pad = document.createElement('div');
   pad.className = 'touch-pad';
+  // Two groups so a wrapping pad never splits the jump buttons: move on the left, jumps on the right.
+  const moveGroup = document.createElement('div');
+  moveGroup.className = 'touch-group touch-moves';
+  const jumpGroup = document.createElement('div');
+  jumpGroup.className = 'touch-group touch-jumps';
+  pad.append(moveGroup, jumpGroup);
 
   for (const b of BUTTONS) {
     const btn = document.createElement('button');
@@ -67,7 +73,7 @@ export function mountTouchControls(el: HTMLElement): TouchControls {
       btn.removeEventListener('lostpointercapture', release);
       btn.removeEventListener('contextmenu', noMenu);
     });
-    pad.append(btn);
+    (b.id === 'left' || b.id === 'right' ? moveGroup : jumpGroup).append(btn);
   }
 
   el.append(pad);
